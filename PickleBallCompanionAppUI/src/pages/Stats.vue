@@ -1,5 +1,5 @@
 <template>
-  <HelloWorld />
+    <h1>Stats Page</h1>
 </template>
 
 <script setup>
