@@ -8,9 +8,11 @@ import java.sql.Timestamp;
 @Table(name="USERS")
 public class User {
     @Id
-    @Column(name="user_id")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer userId;
+    @Column(name="user_name")
+    private String userName;
+
+    @Column(name="user_full_name")
+    private String userFullName;
 
     @Column(name="email_addr")
     private String emailAddress;
@@ -78,7 +80,8 @@ public class User {
     @Override
     public String toString() {
         return "User{" +
-                "userId=" + userId +
+                "userName=" + userName + '\'' +
+                ", userFullName='" + userFullName + '\'' +
                 ", emailAddress='" + emailAddress + '\'' +
                 ", password='" + password + '\'' +
                 ", profileImgLoc='" + profileImgLoc + '\'' +
