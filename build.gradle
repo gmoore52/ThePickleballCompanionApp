@@ -24,6 +24,11 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-jdbc'
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-web-services'
+    implementation 'org.postgresql:postgresql'
+    implementation 'com.google.code.gson:gson'
+    implementation 'com.querydsl:querydsl-jpa::jakarta'
+    annotationProcessor("com.querydsl:querydsl-apt::jakarta")
+    annotationProcessor("org.springframework.boot:spring-boot-starter-data-jpa")
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
     providedRuntime 'org.springframework.boot:spring-boot-starter-tomcat'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
