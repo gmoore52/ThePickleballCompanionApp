@@ -1,16 +1,17 @@
 <template>
   <v-container class="fill-height d-flex justify-center align-center">
-    <v-card elevation="10" class="pa-6" width="400">
-      <v-card-title class="text-center">Create Pickleball Account</v-card-title>
+    <v-card elevation="10" width="600" class="pa-6">
+      <v-card-title class="text-center">Create Pickleball Companion Account</v-card-title>
       <v-card-text>
-        <v-form v-model="formValid" ref="form">
+        <v-form ref="form" v-model="formValid">
           <!-- First Name -->
           <v-text-field
             label="First Name"
             v-model="firstName"
             :rules="[v => !!v || 'First name is required']"
-            required
             dense
+            :error-messages="firstNameError"
+            @blur="validateFirstName"
           ></v-text-field>
 
           <!-- Last Name -->
@@ -18,8 +19,9 @@
             label="Last Name"
             v-model="lastName"
             :rules="[v => !!v || 'Last name is required']"
-            required
             dense
+            :error-messages="lastNameError"
+            @blur="validateLastName"
           ></v-text-field>
 
           <!-- Email -->
@@ -27,8 +29,9 @@
             label="Email"
             v-model="email"
             :rules="[v => !!v || 'Email is required', v => /.+@.+\..+/.test(v) || 'Email must be valid']"
-            required
             dense
+            :error-messages="emailError"
+            @blur="validateEmail"
           ></v-text-field>
 
           <!-- Skill Level -->
@@ -37,8 +40,9 @@
             v-model="skillLevel"
             :items="skillLevels"
             :rules="[v => !!v || 'Skill level is required']"
-            required
             dense
+            :error-messages="skillLevelError"
+            @blur="validateSkillLevel"
           ></v-select>
 
           <!-- Username -->
@@ -46,8 +50,9 @@
             label="Username"
             v-model="username"
             :rules="usernameRules"
-            required
             dense
+            :error-messages="usernameError"
+            @blur="validateUsername"
           ></v-text-field>
 
           <!-- Password -->
@@ -56,8 +61,9 @@
             v-model="password"
             :rules="passwordRules"
             type="password"
-            required
             dense
+            :error-messages="passwordError"
+            @blur="validatePassword"
           ></v-text-field>
 
           <!-- Confirm Password -->
@@ -66,17 +72,27 @@
             v-model="confirmPassword"
             :rules="confirmPasswordRules"
             type="password"
-            required
             dense
+            :error-messages="confirmPasswordError"
+            @blur="validateConfirmPassword"
           ></v-text-field>
         </v-form>
       </v-card-text>
 
       <!-- Register Button -->
       <v-card-actions>
-        <v-btn color="primary" block @click="register" :disabled="!formValid">
-          Register
-        </v-btn>
+        <v-row>
+          <v-col>
+            <v-btn color="green" @click="register">
+              Register
+            </v-btn>
+          </v-col>
+          <v-col>
+            <v-btn text to="/login">
+              Already have an account? Click to log in.
+            </v-btn>
+          </v-col>
+        </v-row>       
       </v-card-actions>
     </v-card>
   </v-container>
@@ -94,6 +110,15 @@ const username = ref('')
 const password = ref('')
 const confirmPassword = ref('')
 const formValid = ref(false)
+
+// Error messages
+const firstNameError = ref('')
+const lastNameError = ref('')
+const emailError = ref('')
+const skillLevelError = ref('')
+const usernameError = ref('')
+const passwordError = ref('')
+const confirmPasswordError = ref('')
 
 // Skill level options
 const skillLevels = ['Beginner', 'Intermediate', 'Advanced', 'Pro']
@@ -114,10 +139,68 @@ const confirmPasswordRules = [
   v => v === password.value || 'Passwords do not match'
 ]
 
+// Form reference to access validate()
+const form = ref(null)
+
+// Field validation functions
+const validateFirstName = () => {
+  firstNameError.value = firstName.value ? '' : 'First name is required';
+}
+
+const validateLastName = () => {
+  lastNameError.value = lastName.value ? '' : 'Last name is required';
+}
+
+const validateEmail = () => {
+  emailError.value = email.value ? '' : 'Email is required';
+}
+
+const validateSkillLevel = () => {
+  skillLevelError.value = skillLevel.value ? '' : 'Skill level is required';
+}
+
+const validateUsername = () => {
+  usernameError.value = username.value ? '' : 'Username is required';
+}
+
+const validatePassword = () => {
+  passwordError.value = password.value ? '' : 'Password is required';
+}
+
+const validateConfirmPassword = () => {
+  confirmPasswordError.value = confirmPassword.value ? '' : 'Please confirm your password';
+}
+
 // Register button handler
 const register = () => {
-  if ($refs.form.validate()) {
+  // Validate all fields before checking the form
+  validateFirstName();
+  validateLastName();
+  validateEmail();
+  validateSkillLevel();
+  validateUsername();
+  validatePassword();
+  validateConfirmPassword();
+
+  // Check if any errors exist
+  if (
+    firstNameError.value || 
+    lastNameError.value || 
+    emailError.value || 
+    skillLevelError.value || 
+    usernameError.value || 
+    passwordError.value || 
+    confirmPasswordError.value
+  ) {
+    return; // Skip form validation if there are any errors
+  }
+
+  // Validate the form
+  if (form.value.validate()) {
+    // If form is valid, handle registration logic
     alert('Registration successful!'); // Replace with actual registration logic
+  } else {
+    console.log('Form is not valid');
   }
 }
 </script>
