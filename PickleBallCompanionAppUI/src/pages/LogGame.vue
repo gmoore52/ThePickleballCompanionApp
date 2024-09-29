@@ -131,12 +131,10 @@ import { onMounted } from '@vue/runtime-core';
   function parseData(){
     let allPlayerStrings = [];
     let allLocationNames = [];
-
     for (const user of usersJSON) {
       const userString = `${user.firstname} ${user.lastname} - (${user.username})`;
       allPlayerStrings.push(userString);
     }
-    
     for (const loc of locationJSON) {
       const locName = `${loc.court_name}`;
       allLocationNames.push(locName);
@@ -151,7 +149,6 @@ import { onMounted } from '@vue/runtime-core';
     console.log(allLocationNames);
     locations.value = allLocationNames;
   }
-
 
   function handleSubmit(){
     var jsonGame = {};
@@ -184,7 +181,6 @@ import { onMounted } from '@vue/runtime-core';
     }
   }
   
-
   function verifyScoreLogic(){
     if ((userScore.value == 11) && (oppScore.value == 11)){
       return 'Only one team may score 11 points, no ties allowed'
@@ -244,7 +240,6 @@ import { onMounted } from '@vue/runtime-core';
     }
   }
 
- 
   onMounted(() => {
     getData();
     parseData();
@@ -252,9 +247,7 @@ import { onMounted } from '@vue/runtime-core';
 
   // todo: add all the functionality LOL
   // todo: seems that we are onto form validation, resizing for phone screen, and some sort of option for singles v doubles 
-
   // todo: make the watchers replace the value if it exists somehwere else already
-
   // todo: make it so that the player names also have their username listed Name Name - (Username)
 
   function checkForPlayerNameListed(name, originNum){
@@ -441,22 +434,17 @@ import { onMounted } from '@vue/runtime-core';
   }];
 </script>
 <template>
-  <v-container fluid>
-
+  <v-container class="container">
+    <v-row>
     <!-- <h1>Log Game</h1> -->
     <v-form validate-on="submit lazy" @submit.prevent="handleSubmit">
-      <v-layout row wrap>
-          <v-card class="w-50 card">
+      <v-layout>
+        <v-col cols="12" sm="6" id="left-pannel">
+          <v-card id= "card-1" class="w-100 card">
             <v-row id="row1">
-              <!-- <v-col cols="3">Your Score</v-col>
-              <v-col cols="3"></v-col>
-              <v-col cols="3">Opp. Score</v-col>
-              <v-col cols="3"></v-col> -->
-              
               <v-col cols="12" class="left-pannel-col left-pannel-col-header">
                 <h2>Game Summary</h2>
               </v-col>
-              
               <v-col cols="12" id="score-formatting" class="left-pannel-col">
                 <v-btn-toggle
                   rounded="4"
@@ -472,13 +460,13 @@ import { onMounted } from '@vue/runtime-core';
                   </v-btn>
                 </v-btn-toggle>
               </v-col>
-              <v-col cols="4" class="left-pannel-col">
+              <v-col sm="6" md="5" class="left-pannel-col">
                 <v-text-field v-model="userScore" label="Your Score" type="number" class="num left-pannel" required :rules="yourScoreRules"></v-text-field>
               </v-col>
-              <v-col cols="4" class="left-pannel-col">
-                
+              <v-col cols="2" class="left-pannel-col d-none d-md-block">
+                <!-- invisible col for formatting -->
               </v-col>
-              <v-col cols="4" class="left-pannel-col">
+              <v-col sm="6" md="5" class="left-pannel-col">
                 <v-text-field v-model="oppScore" label="Opp Score" type="number" class="num left-pannel" required :rules="oppScoreRules"></v-text-field>
               </v-col>
               <v-col cols="12" class="left-pannel-col left-pannel-col-header no-margins">
@@ -495,15 +483,13 @@ import { onMounted } from '@vue/runtime-core';
                 <v-textarea v-model="notes" label="(Optional) Notes"type="text" class="text left-pannel"></v-textarea>
               
               </v-col>
-              <v-col cols="12" class="errors">
-                {{debugErrors}}
-              </v-col>
-            </v-row color="green">
+            </v-row>
         </v-card>  
-        <v-card class="w-50 card">
+      </v-col>
+      <v-col cols="12" sm="6" id="right-pannel">
+        <v-card id="card2" class="card">
           <v-row id="row2 w-100">
-            <v-col>
-              
+            <v-col cols="">
               <div class="player-container-1">
                 <h2 class="team-heading center left-pannel-col-header">Team 1 Players</h2> 
                 <div class="court">
@@ -511,8 +497,7 @@ import { onMounted } from '@vue/runtime-core';
                   <v-autocomplete v-model="player1" class="player-search" clearable required label="Player 1" :items="players1" :rules="player1Rules">
                   </v-autocomplete>
                 </div> 
-                <div class="court">
-                  
+                <div class="court">                  
                   <v-autocomplete v-model="player3" :disabled=!isInDuosMode class="player-search" clearable required label="Player 3" :items="players3" :rules="player3Rules">
                   </v-autocomplete>
                 </div>
@@ -538,18 +523,29 @@ import { onMounted } from '@vue/runtime-core';
             <v-col cols="12" class="btn-col">
                 <v-btn type="submit" variant="tonal" class="w-100 submit"> Submit Game</v-btn>
             </v-col>
+            <v-col cols="12" class="errors">
+                {{debugErrors}}
+              </v-col>
           </v-row>
         </v-card> 
+      </v-col>
       </v-layout>
     </v-form>
+  </v-row>
   </v-container>
 </template>
 
 <style scoped>
+  #card1{
+    margin-right: 0.1em;
+  }
+  #card2{
+    margin-left: 0.1em;
+  }
   .card{
-    padding: 0.8em;
-    margin: 0.1em;
-    /* height: 700px; */
+    border-radius: 8px;
+    padding: 16px;
+    height: 610px;
   }
   .duos-toggle{
     background-color: #333333;
@@ -559,19 +555,10 @@ import { onMounted } from '@vue/runtime-core';
     justify-content: center;
     display: block;
     padding-top: 12px;
-    
   }
-  div.v-input__details{
-  
+  .submit{
+    background-color: #4caf50;
   }
-  v-btn.submit{
-    color:red;
-  }
-  /* .team-divider{
-    background-color: #424242;
-    height:5px;
-    margin-bottom: 1rem;
-  } */
   .player-container-1{
     border-radius: 8px;
     background-color: #42424254;
@@ -580,30 +567,33 @@ import { onMounted } from '@vue/runtime-core';
   .player-container-2{
     border-radius: 8px;
     background-color: #42424254;
+    
   }
   .left-pannel-col{
-    /* padding-top: 0rem; */
     padding-bottom: 0rem;
   }
   #score-formatting {
-    /* padding-top: 0rem; */
     padding-bottom: 8px;
   }
   .left-pannel-col-header{
-    /* color:#f0f0f0ab; */
     margin-bottom: 6px;
-
   }
   .no-margins{
     padding-top: 1px;
     padding-bottom: 0rem;
   }
-  
   .left-pannel{
     margin-bottom: 0rem;
     margin-top: 0rem;
   }
-
+  #left-pannel{
+    padding-right: 1px;
+    display:block !important;
+  }
+  #right-pannel{
+    padding-left: 1px;
+    display:block !important;
+  }
   .btn-col{
     padding-top: 0;
   }
@@ -634,6 +624,7 @@ import { onMounted } from '@vue/runtime-core';
     text-align: center;
     color: rgb(223, 70, 70);
     font-weight: bold;
+    padding-top: 0;
+    font-size: 14px;
   }  
-  
 </style>
