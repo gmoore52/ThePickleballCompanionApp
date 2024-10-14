@@ -1,0 +1,69 @@
+<template>
+  <v-container class="d-flex justify-center align-center" fill-height>
+    <v-card class="pa-6" width="600"> <!-- Wider card -->
+      <v-card-title class="text-h5">Login</v-card-title>
+      <v-card-text>
+        <v-form ref="loginForm" v-model="valid">
+          <v-text-field
+            label="Username or Email"
+            v-model="login"
+            :rules="[rules.required]"
+            clearable
+            outlined
+          ></v-text-field>
+
+          <v-text-field
+            label="Password"
+            v-model="password"
+            :rules="[rules.required]"
+            type="password"
+            clearable
+            outlined
+          ></v-text-field>
+          
+          <v-card-actions>
+            <v-row>
+              <v-col>
+                <v-btn color="green" @click="submitForm">Login</v-btn>
+              </v-col>
+              <!-- Link to register -->
+              <v-col class="text-center">
+                <v-btn text to="/register">
+                  Don't have an account yet? Register here.
+                </v-btn>
+              </v-col>
+            </v-row>
+        </v-card-actions>
+        </v-form>
+      </v-card-text>
+    </v-card>
+  </v-container>
+</template>
+
+<script setup>
+import { ref } from 'vue';
+
+const login = ref('');
+const password = ref('');
+const valid = ref(false);
+const loginForm = ref(null);
+
+const rules = {
+  required: (value) => !!value || 'Required.',
+};
+
+const submitForm = () => {
+  // Validate the form manually when the user clicks 'Login'
+  if (loginForm.value.validate()) {
+    // Proceed with form submission if valid
+    console.log('Login:', login.value);
+    console.log('Password:', password.value);
+  } else {
+    console.log('Form is not valid');
+  }
+};
+</script>
+
+<style scoped>
+/* Custom styles if needed */
+</style>
