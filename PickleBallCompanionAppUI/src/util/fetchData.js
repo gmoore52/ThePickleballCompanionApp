@@ -1,5 +1,5 @@
 // const baseUrl = '.' // production base URL
-const baseUrl = 'http://localhost8082/pickleball-companion' // development base URL
+const baseUrl = 'http://localhost:8080/pickleball-companion' // development base URL
 
 // const json = await fetchData(url, {                   ** SAMPLE CALL **
 //     method: 'POST', // (or 'GET')
@@ -7,7 +7,6 @@ const baseUrl = 'http://localhost8082/pickleball-companion' // development base 
 //     credentials: 'include', // This is all you need for a GET
 //     headers: {
 //         'Content-type':'application/json'
-//         'Access-Control-Allow-Credentials': 'true'
 //     }
 // });
 
