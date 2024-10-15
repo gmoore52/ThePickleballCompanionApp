@@ -3,6 +3,10 @@ import { ref, computed } from 'vue'
 
 // Search query reactive variable
 const searchQuery = ref('')
+const defaultDate = "2024-09-28T12:00:00";
+
+// TODO: do sorting based on the date if it has occured or not, and sort them into the two columns 
+// TODO: add profile pictures
 
 // Sample data for courts (you can replace this with API data)
 const eventsJSON = ref([
@@ -88,6 +92,22 @@ const eventsJSON = ref([
   }
 ]);
 
+function formatDate(date){
+  let newDate = new Date(date);
+  let fullDate = newDate.toDateString();
+  let hours = newDate.getHours();
+  let minutes = newDate.getMinutes();
+
+  let ampm = hours >= 12 ? 'PM' : 'AM';
+  hours = hours % 12 || 12;
+
+  if(minutes == 0){
+    minutes = '00'
+  }
+
+  return `${fullDate} ${hours}:${minutes}${ampm}`;
+}
+
 // Computed property to filter courts based on search query
 const filteredEvents = computed(() => {
   if (!searchQuery.value) {
@@ -96,67 +116,143 @@ const filteredEvents = computed(() => {
   return eventsJSON.value.filter(event =>
     event.event_title.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
     event.event_description.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-    event.event_location.toLowerCase().includes(searchQuery.value.toLowerCase())
+    event.location_name.toLowerCase().includes(searchQuery.value.toLowerCase())
   )
 })
 </script>
 <template>
-  <v-container>
-    <!-- Search and Location Toolbar -->
-    <v-row class="mb-4">
-      <v-col cols="12" md="8">
-        <v-btn class="mr-2">
-          Click here to use your precise location
-        </v-btn>
-      </v-col>
-      <v-col cols="12" md="4">
-        <v-text-field 
-          v-model="searchQuery" 
-          label="Search" 
-          append-icon="mdi-magnify"
-          single-line
-          dense
-          color="black"
-          class="white--text"
-        ></v-text-field>
-      </v-col>
-    </v-row>
+  <v-container class="main-container">
+    <div class="layout">
+      <!-- Search and Location Toolbar -->
+      <v-row>
+        <v-col cols="12" md="8">
+          <v-btn class="btn mr-2">
+            Placeholder button
+          </v-btn>
+        </v-col>
+        <v-col cols="12" md="4">
+          <v-text-field 
+            v-model="searchQuery" 
+            label="Search" 
+            append-icon="mdi-magnify"
+            single-line
+            dense
+            color="black"
+            class="white--text"
+          ></v-text-field>
+        </v-col>
+      </v-row>
 
-    <!-- List of Courts -->
-    <v-row>
-      <v-col
-        v-for="event in filteredEvents"
-        :key="event.event_title"
-        cols="12"
-      >
-        <v-card class="mb-3" outlined>
-          <v-row no-gutters>
-            <v-col cols="8">
-              <v-card-title>{{ event.event_title }}</v-card-title>
-              <v-card-subtitle>Event ID: {{ event.event_id }}</v-card-subtitle>
-              <v-card-subtitle>Start: {{ event.event_start }}</v-card-subtitle>
-              <v-card-subtitle>End: {{ event.event_end }}</v-card-subtitle>
-              <v-card-text>Description: {{ event.event_description }} </v-card-text>
-              <!-- <v-card-text>Number of courts: {{ event.numCourts }}</v-card-text> -->
+
+      <v-row class="main-row">
+        <v-col cols="6">
+          <v-row class="main-row-1">
+            <v-col cols="12" class="main-col-1">
+              <h2 class="cards-header" id="header-1">Ongoing Events</h2>
+              <div
+                class="left-card"
+                v-for="event in filteredEvents"
+                :key="event.event_title"
+                cols="6"
+              >
+                <v-card class="mb-3" outlined>
+                  <v-row no-gutters>
+                    <v-col cols="8">
+                      <v-card-title>{{ event.event_title }}</v-card-title>
+                      <!-- <v-card-subtitle>Event ID: {{ event.event_id }}</v-card-subtitle> -->
+                      <v-card-subtitle>Start: {{ formatDate(event.event_start) }}</v-card-subtitle>
+                      <v-card-subtitle>End: {{ formatDate(event.event_end)}}</v-card-subtitle>
+                      <v-card-text>{{ event.event_description }} </v-card-text>
+                      <v-card-subtitle>Hosted at {{ event.location_name }}</v-card-subtitle>
+                    </v-col>
+                  <v-col cols="4">
+                    <v-img class="img" cover src='https://www.groupestate.gr/images/joomlart/demo/default.jpg' alt="Default image"></v-img>
+                  </v-col>
+                  </v-row>
+                </v-card>
+              </div>
             </v-col>
-            <!-- <v-col cols="4">
-              <v-img :src="event.image" alt="Court Image" />
-            </v-col> -->
           </v-row>
-        </v-card>
-      </v-col>
-    </v-row>
+        </v-col>
+        <v-col cols="6">
+          <v-row class="main-row-2">
+            <v-col cols="12" class="main-col-2">
+              <h2 class="cards-header" id="header-2">Upcoming Events</h2>
+              <div
+                class="right-card"
+                v-for="event in filteredEvents"
+                :key="event.event_title"
+                cols="6"
+              >
+                <v-card class="mb-3" outlined>
+                  <v-row no-gutters>
+                    <v-col cols="8">
+                      <v-card-title>{{ event.event_title }}</v-card-title>
+                      <v-card-subtitle>Event ID: {{ event.event_id }}</v-card-subtitle>
+                      <v-card-subtitle>Start: {{ formatDate(event.event_start) }}</v-card-subtitle>
+                      <v-card-subtitle>End: {{ formatDate(event.event_end)}}</v-card-subtitle>
+                      <v-card-text>Description: {{ event.event_description }} </v-card-text>
+                      <v-card-subtitle>Hosted at {{ event.location_name }}</v-card-subtitle>
+                    </v-col>
+                  <v-col cols="4">
+                    <v-img class="img" cover src='https://www.groupestate.gr/images/joomlart/demo/default.jpg' alt="Default image"></v-img>
+                  </v-col>
+                  </v-row>
+                </v-card>
+              </div>
+            </v-col>
+          </v-row>
+        </v-col>
+      </v-row>
+    </div>
   </v-container>
 </template>
 
 <style scoped>
-  .v-card{
+  .main-container{
+    border-radius: 8px;
+    padding: 1rem;
+    /* padding-right: 16rem;
+    padding-left: 16rem; */
+  }
+  div.layout{
+    background-color: #222222;
+    border-radius: 8px;
+    padding:1rem;
+  }
+  .cards-header{
+    background-color: #42424254;
+    border-radius: 8px;
+    padding: 0.9rem;
+    margin-bottom: 12px;
+    text-align: center;
+  }
+   .v-card{
+    border-radius: 8px;
     padding: 0.8rem;
+    background-color: #42424254;
+  }
+  .btn{
+    background-color: #42424254;
   }
   .card{
     padding: 0.8em;
     margin: 0.1em;
     /* height: 700px; */
+  }
+  .right-card{
+
+  }
+  .left-card{
+
+  }
+  .img{
+    width: 100%;
+    height: 90%;
+  }
+  .row-container{
+    display:inline-block;
+    border :2px;
   }
 
 </style>

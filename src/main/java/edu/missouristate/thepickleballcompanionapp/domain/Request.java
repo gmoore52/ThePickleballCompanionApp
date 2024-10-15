@@ -13,7 +13,8 @@ public class Request {
     private Integer requestId;
 
     @Column(name="request_type")
-    private String requestType;
+    @Enumerated(EnumType.STRING)
+    private RequestType requestType;
 
     @Column(name="request_date")
     private Timestamp requestDate;
@@ -41,11 +42,11 @@ public class Request {
         this.requestId = requestId;
     }
 
-    public String getRequestType() {
+    public RequestType getRequestType() {
         return requestType;
     }
 
-    public void setRequestType(String requestType) {
+    public void setRequestType(RequestType requestType) {
         this.requestType = requestType;
     }
 
@@ -93,7 +94,7 @@ public class Request {
     public String toString() {
         return "Request{" +
                 "requestId=" + requestId +
-                ", requestType='" + requestType + '\'' +
+                ", requestType='" + requestType.toString() + '\'' +
                 ", requestDate=" + requestDate +
                 ", origin=" + origin +
                 ", event=" + event +

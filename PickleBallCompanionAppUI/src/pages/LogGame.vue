@@ -8,11 +8,17 @@ import { onMounted } from '@vue/runtime-core';
   const locations = ref(["loc1","loc2","loc3","loc4"]); // todo: make some sort of thing where if you put an input that already exists, like with a watcher doing it on the players, itll move the old player 
   const location = ref(null);
   const notes = ref(null);
+
+  const isInDuosMode = ref(true);
+  const debugErrors = ref(null) // delete later 
   
   const players1 = ref(["bob1","sue1","ron1","jon1"]);
   const players2 = ref(["bob2","sue2","ron2","jon2"]);
   const players3 = ref(["bob3","sue3","ron3","jon3"]);
   const players4 = ref(["bob4","sue4","ron4","jon4"]);
+
+  // THIS MUST LATER BE SET DYNAMICALLY AFTER THE USER IS LOGGED IN
+  const yourUserString = ref('Your User - (must_select)');
 
   const yourScoreRules = [
     value => {
@@ -31,13 +37,6 @@ import { onMounted } from '@vue/runtime-core';
       }
       return true
     }, 
-    value => {
-      if(value == 11 && oppScore.value == 11){
-         return 'Only one team may have a winning score';
-      }
-      return true
-    }
-    
   ];
 
   const oppScoreRules = [
@@ -57,14 +56,8 @@ import { onMounted } from '@vue/runtime-core';
       }
       return true
     }, 
-    value => {
-      if(value == 11 && userScore.value == 11){
-         return 'Only one team may have a winning score';
-      }
-      return true
-    }
   ];
-
+ 
   const locationRules = [
     value => {
       if (value) return true;
@@ -111,14 +104,14 @@ import { onMounted } from '@vue/runtime-core';
 
   const player3Rules = [
     value => {
-      if (value) return true;
+      if (value || !isInDuosMode.value) return true;
       return 'Select player 3';
     },
   ];
 
   const player4Rules = [
     value => {
-      if (value) return true;
+      if (value || !isInDuosMode.value) return true;
       return 'Select player 4';
     },
   ];
@@ -136,52 +129,84 @@ import { onMounted } from '@vue/runtime-core';
   }
 
   function parseData(){
-    let allPlayerNames = [];
+    let allPlayerStrings = [];
     let allLocationNames = [];
-
     for (const user of usersJSON) {
-      const fullName = `${user.firstname} ${user.lastname}`;
-      allPlayerNames.push(fullName);
+      const userString = `${user.firstname} ${user.lastname} - (${user.username})`;
+      allPlayerStrings.push(userString);
     }
-    
     for (const loc of locationJSON) {
       const locName = `${loc.court_name}`;
       allLocationNames.push(locName);
     }
 
-    console.log(allPlayerNames);
-    players1.value = allPlayerNames;
-    players2.value = allPlayerNames;
-    players3.value = allPlayerNames;
-    players4.value = allPlayerNames;
+    console.log(allPlayerStrings);
+    players1.value = allPlayerStrings;
+    players2.value = allPlayerStrings;
+    players3.value = allPlayerStrings;
+    players4.value = allPlayerStrings;
 
     console.log(allLocationNames);
     locations.value = allLocationNames;
   }
 
-
   function handleSubmit(){
     var jsonGame = {};
     var dataNames = ['userScore','oppScore','gameDate','location','notes','player1','player2','player3','player4'];
     var dataValues = [userScore.value, oppScore.value, gameDate.value, location.value, notes.value, player1.value, player2.value, player3.value, player4.value];
-    //console.log('left side stuff', userScore.value, oppScore.value, gameDate.value, location.value, notes.value, player1.value, player2.value, player3.value, player4.value);
 
+    // making the JSON object here 
     for (let i = 0; i< dataNames.length; i++){
      jsonGame[dataNames[i]] = dataValues[i];
     }
 
+    let nullsErr = checkForNulls();
+    let scoreErr = verifyScoreLogic();
+    let yourUserErr = verifyYourUserSelected();
 
-
-    let nullsRes = checkForNulls();
-
-    if (!nullsRes){
-      console.log(jsonGame);
+    if(nullsErr !== false){
+      //debugErrors.value = `Null(s) found, first at ${nullsErr}`;
     }
-    else{
-      console.log(`Null(s) found, first at ${nullsRes}`);
+    else if(scoreErr !== false){
+      debugErrors.value = `${scoreErr}`;
+      //console.log(`Score error found, ${scoreErr}`);
+    }
+    else if(yourUserErr !== false){
+      debugErrors.value = `${yourUserErr}`;
+      //console.log(`Player selection error, ${yourUserErr}`)
+    }
+    else{ // no nulls and no score err condition, send the data here to backend later 
+      debugErrors.value = ''; // delete this later
+      console.log(jsonGame); 
     }
   }
   
+  function verifyScoreLogic(){
+    if ((userScore.value == 11) && (oppScore.value == 11)){
+      return 'Only one team may score 11 points, no ties allowed'
+    }
+    else if((userScore.value!= 11 ) && (oppScore.value != 11)){ 
+      return 'One score of 11 must be reached'
+      } 
+    else{
+      return false 
+    }
+  }
+
+  function verifyYourUserSelected(){
+    if (isInDuosMode.value && ((player1.value !== yourUserString.value) && (player2.value !== yourUserString.value) &&  // todo, fix this logic, we need to render more or less players with v if
+    (player3.value !== yourUserString.value) && (player4.value !== yourUserString.value))){
+      return 'You must select yourself as a player in the game (duos)'
+    }
+    else if(!isInDuosMode.value && ((player1.value !== yourUserString.value) && (player2.value !== yourUserString.value))){
+      return 'You must select yourself as a player in the game (singles)'
+    }  
+
+    else{
+      return false;
+    }
+  }
+
   function checkForNulls(){
     if(userScore.value == null){
       return 'userscore';
@@ -198,16 +223,16 @@ import { onMounted } from '@vue/runtime-core';
     else if(userScore.value == null){
       return 'userscore';
     }
-    else if(player1.value == null){
+    else if(player1.value == null){ 
       return 'player1';
     }
-    else if(player2.value == null){
+    else if(player2.value == null){  
       return 'player2';
     }
-    else if(player3.value == null){
+    else if(isInDuosMode.value && player3.value == null){
       return 'player3';
     }
-    else if(player4.value == null){
+    else if(isInDuosMode.value && player4.value == null){
       return 'player4';
     }
     else{
@@ -215,7 +240,6 @@ import { onMounted } from '@vue/runtime-core';
     }
   }
 
- 
   onMounted(() => {
     getData();
     parseData();
@@ -223,33 +247,54 @@ import { onMounted } from '@vue/runtime-core';
 
   // todo: add all the functionality LOL
   // todo: seems that we are onto form validation, resizing for phone screen, and some sort of option for singles v doubles 
-
   // todo: make the watchers replace the value if it exists somehwere else already
-
   // todo: make it so that the player names also have their username listed Name Name - (Username)
 
+  function checkForPlayerNameListed(name, originNum){
+    if ((originNum!= 1) && (name === player1.value)){ // todo 
+      player1.value = null;
+    }
+    else if ((originNum!= 2) && (name === player2.value)){ // todo
+      player2.value = null;
+    }
+    else if(!isInDuosMode){
+      return; // breaks the logic for singles
+    }
+    else if ((originNum!= 3) && (name === player3.value)){
+      player3.value = null;
+    }
+    else if ((originNum!= 4) && (name === player4.value)){
+      player4.value = null;
+    }
+  }
 
-  watch(player1, (value, oldValue) => {
-  console.log("player1 changing from", oldValue, "to ", value);
+  watch(player1, (name) => {
+    checkForPlayerNameListed(name, 1)
   });
   
-  watch(player3, (value, oldValue) => {
-  console.log("player1 changing from", oldValue, "to ", value);
-  });3
-
-  watch(player3, (value, oldValue) => {
-  console.log("player1 changing from", oldValue, "to ", value);
+  watch(player2, (name) => {
+    checkForPlayerNameListed(name, 2)
   });
 
-  watch(player4, (value, oldValue) => {
-  console.log("player1 changing from", oldValue, "to ", value);
+  watch(player3, (name) => {
+    checkForPlayerNameListed(name, 3)
+  });
+
+  watch(player4, (name) => {
+    checkForPlayerNameListed(name, 4)
+  });
+  watch(isInDuosMode, (bool) =>{
+    if (bool === false){
+      player3.value=null
+      player4.value=null
+    }
   });
 
   const usersJSON = 
   [{
-    username: "john_doe",
-    firstname: "John",
-    lastname: "Doe",
+    username: "must_select",
+    firstname: "Your",
+    lastname: "User",
     email_address: "user1@example.com",
     password: "password123",
     profile_img: "profile_img_1.png",
@@ -389,96 +434,197 @@ import { onMounted } from '@vue/runtime-core';
   }];
 </script>
 <template>
-  <v-container fluid>
-    <h1>Log Game</h1>
+  <v-container class="container">
+    <v-row>
+    <!-- <h1>Log Game</h1> -->
     <v-form validate-on="submit lazy" @submit.prevent="handleSubmit">
-      <v-layout row wrap>
-          <v-card class="w-50 card">
+      <v-layout>
+        <v-col cols="12" sm="6" id="left-pannel">
+          <v-card id= "card-1" class="w-100 card">
             <v-row id="row1">
-              <!-- <v-col cols="3">Your Score</v-col>
-              <v-col cols="3"></v-col>
-              <v-col cols="3">Opp. Score</v-col>
-              <v-col cols="3"></v-col> -->
+              <v-col cols="12" class="left-pannel-col left-pannel-col-header">
+                <h2>Game Summary</h2>
+              </v-col>
+              <v-col cols="12" id="score-formatting" class="left-pannel-col">
+                <v-btn-toggle
+                  rounded="4"
+                  group
+                  v-model="isInDuosMode"
+                  mandatory
+                  class="left-pannel">
+                  <v-btn :value="false" class="duos-toggle">
+                    Singles
+                  </v-btn>
+                  <v-btn :value="true" class="duos-toggle">
+                    Duos
+                  </v-btn>
+                </v-btn-toggle>
+              </v-col>
+              <v-col sm="6" md="5" class="left-pannel-col">
+                <v-text-field v-model="userScore" label="Your Score" type="number" class="num left-pannel" required :rules="yourScoreRules"></v-text-field>
+              </v-col>
+              <v-col cols="2" class="left-pannel-col d-none d-md-block">
+                <!-- invisible col for formatting -->
+              </v-col>
+              <v-col sm="6" md="5" class="left-pannel-col">
+                <v-text-field v-model="oppScore" label="Opp Score" type="number" class="num left-pannel" required :rules="oppScoreRules"></v-text-field>
+              </v-col>
+              <v-col cols="12" class="left-pannel-col left-pannel-col-header no-margins">
+                <h2>Extra Information</h2>
+              </v-col>
               
-              <v-col cols="4">
-                <v-text-field v-model="userScore" label="Your Score" type="number" class="num" required :rules="yourScoreRules"></v-text-field>
+              <v-col cols="12" class="left-pannel-col">
+                <v-text-field v-model="gameDate" label="Date" type="date" class="text left-pannel" required :rules="dateRules"></v-text-field>
               </v-col>
-              <v-col cols="4">
-                
-              </v-col>
-            
-              <v-col cols="4">
-                <v-text-field v-model="oppScore" label="Opp Score" type="number" class="num" required :rules="oppScoreRules"></v-text-field>
-              </v-col>
-              <v-col cols="12">
-                <v-text-field v-model="gameDate" label="Date" type="date" class="text" required :rules="dateRules"></v-text-field>
-              </v-col>
-              <v-col cols="12">
-                <v-autocomplete v-model="location" clearable label="Location"type="text" class="text" required :items=locations :rules="locationRules"></v-autocomplete>
+              <v-col cols="12" class="left-pannel-col no-margins">
+                <v-autocomplete v-model="location" clearable label="Location"type="text" class="text left-pannel" required :items=locations :rules="locationRules"></v-autocomplete>
               </v-col> 
-              <v-col cols="12">
-                <v-text-field v-model="notes" label="(Optional) Notes"type="text" class="text"></v-text-field>
+              <v-col cols="12" class="left-pannel-col no-margins">
+                <v-textarea v-model="notes" label="(Optional) Notes"type="text" class="text left-pannel"></v-textarea>
+              
               </v-col>
-              <v-col cols="12">
-                <v-btn type="submit" variant="tonal" class="w-100"> Submit Game</v-btn>
-              </v-col>
-            </v-row color="green">
+            </v-row>
         </v-card>  
-        <v-card class="w-50 card">
+      </v-col>
+      <v-col cols="12" sm="6" id="right-pannel">
+        <v-card id="card2" class="card">
           <v-row id="row2 w-100">
-            <v-col> 
-              <div class="court border-lg border-b-md border-e-md">
-                <v-autocomplete v-model="player1" class="player-search" clearable required label="Player 1" :items="players1" :rules="player1Rules">
-
-                </v-autocomplete>
-              </div> 
-              <div class="court border-lg border-b-md border-s-md">
-               
-                
-                <v-autocomplete v-model="player3" class="player-search" clearable required label="Player 3" :items="players3" :rules="player3Rules">
-                </v-autocomplete>
+            <v-col cols="">
+              <div class="player-container-1">
+                <h2 class="team-heading center left-pannel-col-header">Team 1 Players</h2> 
+                <div class="court">
+                  
+                  <v-autocomplete v-model="player1" class="player-search" clearable required label="Player 1" :items="players1" :rules="player1Rules">
+                  </v-autocomplete>
+                </div> 
+                <div class="court">                  
+                  <v-autocomplete v-model="player3" :disabled=!isInDuosMode class="player-search" clearable required label="Player 3" :items="players3" :rules="player3Rules">
+                  </v-autocomplete>
+                </div>
               </div>
-              <div class="court border-lg border-t-md border-e-md">
-                 <v-autocomplete v-model="player2" class="player-search" clearable required label="Player 2" :items="players2" :rules="player2Rules">
-            
-                </v-autocomplete>
-              </div>
-              <div class="court border-lg border-t-md border-s-md">
-                <v-autocomplete v-model="player4" class="player-search" clearable required label="Player 4" :items="players4" :rules="player4Rules">
+              <div class="team-divider">
                 
-                </v-autocomplete>
+              </div>
+              <div class="player-container-2">  
+                <h2 class="team-heading left-pannel-col-header">Team 2 Players</h2>
+                <div class="court">
+                
+                  <v-autocomplete v-model="player2" class="player-search" clearable required label="Player 2" :items="players2" :rules="player2Rules">
+              
+                  </v-autocomplete>
+                </div>
+                <div class="court">
+                  <v-autocomplete v-model="player4" :disabled=!isInDuosMode class="player-search" clearable required label="Player 4" :items="players4" :rules="player4Rules">
+                  
+                  </v-autocomplete>
+                </div>
               </div>
             </v-col>
+            <v-col cols="12" class="btn-col">
+                <v-btn type="submit" variant="tonal" class="w-100 submit"> Submit Game</v-btn>
+            </v-col>
+            <v-col cols="12" class="errors">
+                {{debugErrors}}
+              </v-col>
           </v-row>
         </v-card> 
+      </v-col>
       </v-layout>
     </v-form>
+  </v-row>
   </v-container>
 </template>
 
 <style scoped>
-  .card{
-    padding: 0.8em;
-    margin: 0.1em;
-    /* height: 700px; */
+  #card1{
+    margin-right: 0.1em;
   }
-  #notes{
+  #card2{
+    margin-left: 0.1em;
+  }
+  .card{
+    border-radius: 8px;
+    padding: 16px;
+    height: 610px;
+  }
+  .duos-toggle{
+    background-color: #333333;
+  }
+  .team-heading{
+    text-align: center;
+    justify-content: center;
+    display: block;
+    padding-top: 12px;
+  }
+  .submit{
+    background-color: #4caf50;
+  }
+  .player-container-1{
+    border-radius: 8px;
+    background-color: #42424254;
+    margin-bottom: 0.5rem;
+  }
+  .player-container-2{
+    border-radius: 8px;
+    background-color: #42424254;
+    
+  }
+  .left-pannel-col{
+    padding-bottom: 0rem;
+  }
+  #score-formatting {
+    padding-bottom: 8px;
+  }
+  .left-pannel-col-header{
+    margin-bottom: 6px;
+  }
+  .no-margins{
+    padding-top: 1px;
+    padding-bottom: 0rem;
+  }
+  .left-pannel{
+    margin-bottom: 0rem;
+    margin-top: 0rem;
+  }
+  #left-pannel{
+    padding-right: 1px;
+    display:block !important;
+  }
+  #right-pannel{
+    padding-left: 1px;
+    display:block !important;
+  }
+  .btn-col{
+    padding-top: 0;
+  }
+  .submit{
+    height:3rem;
+  }
+  #notes{ 
     height:200px;
   }
   #row2{
     width: 50% !important;
   }
   .court{
-    height:15rem;
+    height:12rem;
     width:50%;
     display: inline-block;
     margin: auto;
     text-align: center;
   }
   .player-search{
-    margin-top: 1rem;
+    margin-top: 0.5rem;
     margin-left: 1rem;
     margin-right: 1rem;
   }
-  
+  .errors{
+    display: inline-block;
+    margin: auto;
+    text-align: center;
+    color: rgb(223, 70, 70);
+    font-weight: bold;
+    padding-top: 0;
+    font-size: 14px;
+  }  
 </style>
