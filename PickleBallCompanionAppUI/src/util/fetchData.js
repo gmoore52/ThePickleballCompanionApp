@@ -1,5 +1,5 @@
 // const baseUrl = '.' // production base URL
-const baseUrl = 'http://localhost8082/pickleball-companion' // development base URL
+const baseUrl = 'http://localhost:8080/pickleball-companion' // development base URL
 
 // const json = await fetchData(url, {                   ** SAMPLE CALL **
 //     method: 'POST', // (or 'GET')

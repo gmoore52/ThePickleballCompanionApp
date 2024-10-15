@@ -1,4 +1,4 @@
-package edu.missouristate.thepickleballcompanionapp.dto;
+package edu.missouristate.thepickleballcompanionapp.domain.dto;
 
 public class LocationDTO {
     private Long id;
