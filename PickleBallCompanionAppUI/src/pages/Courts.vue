@@ -18,7 +18,7 @@
           hide-details
         ></v-text-field>
         <v-btn color="#212121" class="ml-1 search-btn" @click="searchCourts">
-          <v-icon>mdi-magnify</v-icon>  
+          <v-icon>mdi-magnify</v-icon>
         </v-btn>
       </v-col>
     </v-row>
@@ -50,7 +50,7 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
-import { fetchData } from 'fetchData'
+import { fetchData } from '@/util/fetchData.js';
 
 // search bar string
 const searchQuery = ref('')
