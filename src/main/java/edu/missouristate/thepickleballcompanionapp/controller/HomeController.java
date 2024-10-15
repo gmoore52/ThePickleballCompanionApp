@@ -10,7 +10,6 @@ public class HomeController {
     @Autowired
     private HomeService homeService;
 
-
     @GetMapping("home/example")
     public String example() {
         return "Hello World!";
