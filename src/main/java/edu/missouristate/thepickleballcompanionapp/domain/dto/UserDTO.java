@@ -1,34 +1,33 @@
-package edu.missouristate.thepickleballcompanionapp.domain;
-
-import jakarta.persistence.*;
+package edu.missouristate.thepickleballcompanionapp.domain.dto;
 
 import java.sql.Timestamp;
 
-@Entity
-@Table(name="users")
-public class User {
-    @Id
-    @Column(name="user_name")
+public class UserDTO {
     private String userName;
-
-    @Column(name="user_full_name")
     private String userFullName;
-
-    @Column(name="email_addr")
     private String emailAddress;
-
-    @Column(name="password")
     private String password;
-
-    @Column(name="profile_img_loc")
     private String profileImgLoc;
-
-    @Column(name="skill_lvl")
     private Integer skillLevel;
-
-    @Column(name="acc_creation_date")
     private Timestamp accCreationDate;
 
+    // Default constructor
+    public UserDTO() {}
+
+    // Parameterized constructor
+    public UserDTO(String userName, String userFullName, String emailAddress,
+                   String password, String profileImgLoc, Integer skillLevel,
+                   Timestamp accCreationDate) {
+        this.userName = userName;
+        this.userFullName = userFullName;
+        this.emailAddress = emailAddress;
+        this.password = password;
+        this.profileImgLoc = profileImgLoc;
+        this.skillLevel = skillLevel;
+        this.accCreationDate = accCreationDate;
+    }
+
+    // Getters and setters
     public String getUserName() {
         return userName;
     }
@@ -87,8 +86,8 @@ public class User {
 
     @Override
     public String toString() {
-        return "User{" +
-                "userName=" + userName + '\'' +
+        return "UserDTO{" +
+                "userName='" + userName + '\'' +
                 ", userFullName='" + userFullName + '\'' +
                 ", emailAddress='" + emailAddress + '\'' +
                 ", password='" + password + '\'' +
