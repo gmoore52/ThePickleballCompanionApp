@@ -49,35 +49,55 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
+import { fetchData } from 'fetchData'
 
 // search bar string
 const searchQuery = ref('')
+const courts = ref([])
+
+onMounted(()=>{
+  getCourts();
+});
+
+const getCourts = async () => {
+  courts.value = [];
+  try {
+    const url = '/data/locations';
+    const json = await fetchData(url, {
+    credentials: 'include'
+    });
+    console.log(json);
+  } catch (error) {
+    console.error(error);
+  }
+}
+
 
 // sample data
-const courts = ref([
-  {
-    name: 'Court Name 1',
-    distance: '5',
-    location: 'Location 1',
-    numCourts: 4,
-    image: 'court-image-1.jpg'
-  },
-  {
-    name: 'Court Name 2',
-    distance: '10',
-    location: 'Location 2',
-    numCourts: 3,
-    image: 'court-image-2.jpg'
-  },
-  {
-    name: 'Court Name 3',
-    distance: '8',
-    location: 'Location 3',
-    numCourts: 2,
-    image: 'court-image-3.jpg'
-  }
-])
+// const courts = ref([
+//   {
+//     name: 'Court Name 1',
+//     distance: '5',
+//     location: 'Location 1',
+//     numCourts: 4,
+//     image: 'court-image-1.jpg'
+//   },
+//   {
+//     name: 'Court Name 2',
+//     distance: '10',
+//     location: 'Location 2',
+//     numCourts: 3,
+//     image: 'court-image-2.jpg'
+//   },
+//   {
+//     name: 'Court Name 3',
+//     distance: '8',
+//     location: 'Location 3',
+//     numCourts: 2,
+//     image: 'court-image-3.jpg'
+//   }
+// ])
 
 // search logic
 const filteredCourts = computed(() => {
