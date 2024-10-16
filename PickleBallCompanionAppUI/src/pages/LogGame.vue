@@ -2,7 +2,7 @@
 import { ref, watch} from 'vue';
 import { onMounted } from '@vue/runtime-core';
 
-  const userScore = ref(null);
+  const userScore = ref(null); 
   const oppScore = ref(null);
   const gameDate = ref(null);
   const locations = ref(["loc1","loc2","loc3","loc4"]); // todo: make some sort of thing where if you put an input that already exists, like with a watcher doing it on the players, itll move the old player 
@@ -10,15 +10,17 @@ import { onMounted } from '@vue/runtime-core';
   const notes = ref(null);
 
   const isInDuosMode = ref(true);
-  const debugErrors = ref(null) // delete later 
+  const formErrors = ref(null) // delete later 
   
   const players1 = ref(["bob1","sue1","ron1","jon1"]);
   const players2 = ref(["bob2","sue2","ron2","jon2"]);
   const players3 = ref(["bob3","sue3","ron3","jon3"]);
   const players4 = ref(["bob4","sue4","ron4","jon4"]);
+  const userDict = ref({}); // used to index between 'username' and 'firstname lastname - (username)' format
+  const locationDict = ref({}); // used to index between loc_id and location_name
 
   // THIS MUST LATER BE SET DYNAMICALLY AFTER THE USER IS LOGGED IN
-  const yourUserString = ref('Your User - (must_select)');
+  const yourUserName = ref('must_select');
 
   const yourScoreRules = [
     value => {
@@ -131,57 +133,67 @@ import { onMounted } from '@vue/runtime-core';
   function parseData(){
     let allPlayerStrings = [];
     let allLocationNames = [];
+    userDict.value = {}
     for (const user of usersJSON) {
       const userString = `${user.firstname} ${user.lastname} - (${user.username})`;
+      userDict.value[userString] = user.username
       allPlayerStrings.push(userString);
     }
     for (const loc of locationJSON) {
       const locName = `${loc.court_name}`;
+      locationDict.value[locName] = loc.loc_id
       allLocationNames.push(locName);
     }
 
-    console.log(allPlayerStrings);
+    //console.log(allPlayerStrings);
     players1.value = allPlayerStrings;
     players2.value = allPlayerStrings;
     players3.value = allPlayerStrings;
     players4.value = allPlayerStrings;
 
-    console.log(allLocationNames);
+    //console.log(allLocationNames);
     locations.value = allLocationNames;
   }
 
   function handleSubmit(){
     var jsonGame = {};
     var dataNames = ['userScore','oppScore','gameDate','location','notes','player1','player2','player3','player4'];
-    var dataValues = [userScore.value, oppScore.value, gameDate.value, location.value, notes.value, player1.value, player2.value, player3.value, player4.value];
+    var dataValues = [parseInt(userScore.value), parseInt(oppScore.value), gameDate.value, locationDict.value[location.value], notes.value, userDict.value[player1.value], userDict.value[player2.value], userDict.value[player3.value], userDict.value[player4.value]];
 
     // making the JSON object here 
-    for (let i = 0; i< dataNames.length; i++){
-     jsonGame[dataNames[i]] = dataValues[i];
+    for (let i = 0; i < dataNames.length; i++){
+      jsonGame[dataNames[i]] = dataValues[i];
+      //console.log(dataValues[i])
     }
 
     let nullsErr = checkForNulls();
-    let scoreErr = verifyScoreLogic();
+    let scoreErr = verifyScore();
     let yourUserErr = verifyYourUserSelected();
+    let dateErr = verifyDate();
 
-    if(nullsErr !== false){
+    if(dateErr !== false){
+      //debugErrors.value = `${dateErr}`;
+    }
+    else if(nullsErr !== false){
       //debugErrors.value = `Null(s) found, first at ${nullsErr}`;
     }
     else if(scoreErr !== false){
-      debugErrors.value = `${scoreErr}`;
+      formErrors.value = `${scoreErr}`;
       //console.log(`Score error found, ${scoreErr}`);
     }
     else if(yourUserErr !== false){
-      debugErrors.value = `${yourUserErr}`;
+      formErrors.value = `${yourUserErr}`;
       //console.log(`Player selection error, ${yourUserErr}`)
     }
     else{ // no nulls and no score err condition, send the data here to backend later 
-      debugErrors.value = ''; // delete this later
+      formErrors.value = ''; // delete this later
       console.log(jsonGame); 
+
+      // submitData() ... backend send occurs here
     }
   }
-  
-  function verifyScoreLogic(){
+
+  function verifyScore(){
     if ((userScore.value == 11) && (oppScore.value == 11)){
       return 'Only one team may score 11 points, no ties allowed'
     }
@@ -193,12 +205,31 @@ import { onMounted } from '@vue/runtime-core';
     }
   }
 
+  function verifyDate(){
+    // note that we are returning empty string here because the date picker already lets you know what the error is 
+    const today = new Date();
+    const now = new Date();
+    const oneYearAgo = new Date(now);
+    oneYearAgo.setFullYear(now.getFullYear() - 1);
+
+    if(new Date(gameDate.value) > today){
+      return 'Cannot select a date in the future' // date is in the future
+    }
+    else if(new Date(gameDate.value) < oneYearAgo){
+      return 'Cannot input a game over a year old' // date was over a year ago
+    }
+    else{
+      return false 
+    }
+  }
+
   function verifyYourUserSelected(){
-    if (isInDuosMode.value && ((player1.value !== yourUserString.value) && (player2.value !== yourUserString.value) &&  // todo, fix this logic, we need to render more or less players with v if
-    (player3.value !== yourUserString.value) && (player4.value !== yourUserString.value))){
+    if (isInDuosMode.value && ((userDict.value[player1.value] !== yourUserName.value) && (userDict.value[player2.value] !== yourUserName.value) &&  // todo, fix this logic, we need to render more or less players with v if
+    (userDict.value[player3.value] !== yourUserName.value) && (userDict.value[player4.value] !== yourUserName.value))){
+      //console.log(player1.value, player2.value, player3.value, player4.value)
       return 'You must select yourself as a player in the game (duos)'
     }
-    else if(!isInDuosMode.value && ((player1.value !== yourUserString.value) && (player2.value !== yourUserString.value))){
+    else if(!isInDuosMode.value && ((userDict.value[player1.value] !== yourUserName.value) && (userDict.value[player2.value] !== yourUserName.value))){
       return 'You must select yourself as a player in the game (singles)'
     }  
 
@@ -432,6 +463,7 @@ import { onMounted } from '@vue/runtime-core';
     "coordinates": "31.6895,14.6917",
     "court_meta_id": 105
   }];
+
 </script>
 <template>
   <v-container class="container">
@@ -461,7 +493,7 @@ import { onMounted } from '@vue/runtime-core';
                 </v-btn-toggle>
               </v-col>
               <v-col sm="6" md="5" class="left-pannel-col">
-                <v-text-field v-model="userScore" label="Your Score" type="number" class="num left-pannel" required :rules="yourScoreRules"></v-text-field>
+                <v-text-field v-model="userScore" label="Your Score"  hint="ie 1 through 11" type="number" class="num left-pannel" required :rules="yourScoreRules"></v-text-field>
               </v-col>
               <v-col cols="2" class="left-pannel-col d-none d-md-block">
                 <!-- invisible col for formatting -->
@@ -524,7 +556,7 @@ import { onMounted } from '@vue/runtime-core';
                 <v-btn type="submit" variant="tonal" class="w-100 submit"> Submit Game</v-btn>
             </v-col>
             <v-col cols="12" class="errors">
-                {{debugErrors}}
+                {{formErrors}}
               </v-col>
           </v-row>
         </v-card> 

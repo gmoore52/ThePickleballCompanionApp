@@ -20,6 +20,9 @@ public class Event {
 
     @Column(name="event_desc")
     private String eventDesc;
+    
+    @Column(name="location_id")
+    private String locationId;
 
     public Integer getEventId() {
         return eventId;
@@ -41,6 +44,10 @@ public class Event {
         return eventEnd;
     }
 
+    public Integer getLocationId(){
+        return locationId;
+    }
+
     public void setEventEnd(Timestamp eventEnd) {
         this.eventEnd = eventEnd;
     }
@@ -53,13 +60,18 @@ public class Event {
         this.eventDesc = eventDesc;
     }
 
+    public void setLocationId(Integer locationId){
+        this.locationId = locationId;
+    }
+
     @Override
     public String toString() {
         return "Event{" +
                 "eventId=" + eventId +
                 ", eventStart=" + eventStart +
                 ", eventEnd=" + eventEnd +
-                ", eventDesc='" + eventDesc + '\'' +
+                ", eventDesc='" + eventDesc +
+                ", locationId='" + locationId + '\'' +
                 '}';
     }
 }
