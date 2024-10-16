@@ -21,4 +21,11 @@ public class UserRepositoryImpl extends QuerydslRepositorySupport implements Use
         return from(user)
                 .fetch();
     }
+
+    public User getUserById(String username){
+        return from(user)
+                .select(user)
+                .where(user.userName.eq(username))
+                .fetchFirst();
+    }
 }
