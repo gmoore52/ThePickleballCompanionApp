@@ -7,7 +7,6 @@ const baseUrl = 'http://localhost:8080/pickleball-companion' // development base
 //     credentials: 'include', // This is all you need for a GET
 //     headers: {
 //         'Content-type':'application/json'
-//         'Access-Control-Allow-Credentials': 'true'
 //     }
 // });
 

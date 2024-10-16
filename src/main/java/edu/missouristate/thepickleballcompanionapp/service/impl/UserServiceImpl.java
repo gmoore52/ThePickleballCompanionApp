@@ -60,4 +60,22 @@ public class UserServiceImpl implements UserService {
         }
         return userDTOs;
     }
+
+    @Override
+    public Boolean addUser(UserDTO userDTO) {
+        User user = new User();
+        user.setUserName(userDTO.getUserName());
+        user.setUserFullName(userDTO.getUserFullName());
+        user.setEmailAddress(userDTO.getEmailAddress());
+        user.setPassword(userDTO.getPassword());
+        user.setProfileImgLoc(userDTO.getProfileImgLoc());
+        user.setSkillLevel(userDTO.getSkillLevel());
+        user.setAccCreationDate(userDTO.getAccCreationDate());
+        try {
+            userRepository.save(user);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
 }
