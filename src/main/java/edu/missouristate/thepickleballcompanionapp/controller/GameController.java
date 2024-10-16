@@ -1,10 +1,13 @@
 package edu.missouristate.thepickleballcompanionapp.controller;
 
+import edu.missouristate.thepickleballcompanionapp.domain.Game;
 import edu.missouristate.thepickleballcompanionapp.domain.User;
+import edu.missouristate.thepickleballcompanionapp.dto.LoggedGame;
 import edu.missouristate.thepickleballcompanionapp.service.GameService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -23,8 +26,15 @@ public class GameController {
     }
 
     @GetMapping("game/userById")
-    public List<User> getUserById(@RequestBody int id){
-        return null;
+    public User getUserById(@RequestBody String username){
+        return gameService.getUserById(username);
+    }
+
+
+    @PostMapping("game/logGame")
+    public boolean logGame(@RequestBody LoggedGame game){
+
+        return gameService.logGame(game);
     }
 
 

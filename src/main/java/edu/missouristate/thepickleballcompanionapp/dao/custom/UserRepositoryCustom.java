@@ -6,4 +6,6 @@ import java.util.List;
 
 public interface UserRepositoryCustom {
     public List<User> getAllUsers();
+
+    public User getUserById(String username);
 }
