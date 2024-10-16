@@ -22,7 +22,7 @@ public class Event {
     private String eventDesc;
     
     @Column(name="location_id")
-    private String locationId;
+    private Integer locationId;
 
     public Integer getEventId() {
         return eventId;
