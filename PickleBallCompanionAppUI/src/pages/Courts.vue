@@ -17,7 +17,7 @@
           class="white--text no-padding"
           hide-details
         ></v-text-field>
-        <v-btn color="#212121" class="ml-1 search-btn" @click="searchCourts">
+        <v-btn color="#212121" class="ml-1 search-btn">
           <v-icon>mdi-magnify</v-icon>
         </v-btn>
       </v-col>
@@ -27,16 +27,16 @@
     <v-row>
       <v-col
         v-for="court in filteredCourts"
-        :key="court.name"
+        :key="court.id"
         cols="12"
       >
         <v-card class="mb-3" outlined>
           <v-row no-gutters>
             <v-col cols="8">
-              <v-card-title>{{ court.name }}</v-card-title>
+              <v-card-title>{{ court.courtName }}</v-card-title>
               <v-card-subtitle>Distance: {{ court.distance }} km</v-card-subtitle>
-              <v-card-text>Location: {{ court.location }}</v-card-text>
-              <v-card-text>Number of courts: {{ court.numCourts }}</v-card-text>
+              <v-card-text>Location: {{ court.address }}</v-card-text>
+              <v-card-text>Number of courts: {{ court.numOfCourts }}</v-card-text>
             </v-col>
             <v-col cols="4">
               <v-img :src="court.image" alt="Court Image" />
@@ -49,35 +49,27 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
+import { fetchData } from '@/util/fetchData.js'
 
 // search bar string
 const searchQuery = ref('')
+const courts = ref([])
 
-// sample data
-const courts = ref([
-  {
-    name: 'Court Name 1',
-    distance: '5',
-    location: 'Location 1',
-    numCourts: 4,
-    image: 'court-image-1.jpg'
-  },
-  {
-    name: 'Court Name 2',
-    distance: '10',
-    location: 'Location 2',
-    numCourts: 3,
-    image: 'court-image-2.jpg'
-  },
-  {
-    name: 'Court Name 3',
-    distance: '8',
-    location: 'Location 3',
-    numCourts: 2,
-    image: 'court-image-3.jpg'
+onMounted(()=>{
+  getCourts();
+});
+
+const getCourts = async () => {
+  courts.value = [];
+  try {
+    const url = '/data/locations';
+    courts.value = await fetchData(url);
+    console.log(courts.value)
+  } catch (error) {
+    console.error(error);
   }
-])
+}
 
 // search logic
 const filteredCourts = computed(() => {
@@ -85,8 +77,8 @@ const filteredCourts = computed(() => {
     return courts.value
   }
   return courts.value.filter(court =>
-    court.name.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-    court.location.toLowerCase().includes(searchQuery.value.toLowerCase())
+    court.courtName.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
+    court.address.toLowerCase().includes(searchQuery.value.toLowerCase())
   )
 })
 
@@ -104,12 +96,6 @@ const getUserLocation = () => {
   } else {
     alert('Geolocation is not supported by your browser.');
   }
-}
-
-// Search action for search button
-const searchCourts = () => {
-  // Perform search based on searchQuery (this is already reactive)
-  console.log('Search triggered for:', searchQuery.value);
 }
 </script>
 

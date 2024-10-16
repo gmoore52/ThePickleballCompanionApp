@@ -1,16 +1,16 @@
 <template>
   <v-container class="fill-height d-flex justify-center align-center">
-    <v-card elevation="10" class="pa-6" width="400">
-      <v-card-title class="text-center">Create Pickleball Account</v-card-title>
+    <v-card elevation="10" width="600" class="pa-6">
+      <v-card-title class="text-center">Create Pickleball Companion Account</v-card-title>
       <v-card-text>
-        <v-form v-model="formValid" ref="form">
+        <v-form ref="form" v-model="formValid">
           <!-- First Name -->
           <v-text-field
             label="First Name"
             v-model="firstName"
             :rules="[v => !!v || 'First name is required']"
-            required
             dense
+            :error-messages="firstNameError"
           ></v-text-field>
 
           <!-- Last Name -->
@@ -18,8 +18,8 @@
             label="Last Name"
             v-model="lastName"
             :rules="[v => !!v || 'Last name is required']"
-            required
             dense
+            :error-messages="lastNameError"
           ></v-text-field>
 
           <!-- Email -->
@@ -27,8 +27,8 @@
             label="Email"
             v-model="email"
             :rules="[v => !!v || 'Email is required', v => /.+@.+\..+/.test(v) || 'Email must be valid']"
-            required
             dense
+            :error-messages="emailError"
           ></v-text-field>
 
           <!-- Skill Level -->
@@ -37,8 +37,8 @@
             v-model="skillLevel"
             :items="skillLevels"
             :rules="[v => !!v || 'Skill level is required']"
-            required
             dense
+            :error-messages="skillLevelError"
           ></v-select>
 
           <!-- Username -->
@@ -46,8 +46,8 @@
             label="Username"
             v-model="username"
             :rules="usernameRules"
-            required
             dense
+            :error-messages="usernameError"
           ></v-text-field>
 
           <!-- Password -->
@@ -56,8 +56,8 @@
             v-model="password"
             :rules="passwordRules"
             type="password"
-            required
             dense
+            :error-messages="passwordError"
           ></v-text-field>
 
           <!-- Confirm Password -->
@@ -66,60 +66,195 @@
             v-model="confirmPassword"
             :rules="confirmPasswordRules"
             type="password"
-            required
             dense
+            :error-messages="confirmPasswordError"
           ></v-text-field>
         </v-form>
       </v-card-text>
 
       <!-- Register Button -->
       <v-card-actions>
-        <v-btn color="primary" block @click="register" :disabled="!formValid">
-          Register
-        </v-btn>
+        <v-row>
+          <v-col>
+            <v-btn color="green" @click="register">
+              Register
+            </v-btn>
+          </v-col>
+          <v-col>
+            <v-btn text to="/login">
+              Already have an account? Click to log in.
+            </v-btn>
+          </v-col>
+        </v-row>
       </v-card-actions>
     </v-card>
   </v-container>
 </template>
 
 <script setup>
-import { ref } from 'vue'
+  import { ref } from 'vue'
+  import { useRouter } from 'vue-router' // Import useRouter
+  import { fetchData } from "@/util/fetchData";
 
-// Data properties
-const firstName = ref('')
-const lastName = ref('')
-const email = ref('')
-const skillLevel = ref('')
-const username = ref('')
-const password = ref('')
-const confirmPassword = ref('')
-const formValid = ref(false)
+  // Data properties
+  const firstName = ref('')
+  const lastName = ref('')
+  const email = ref('')
+  const skillLevel = ref('')
+  const username = ref('')
+  const password = ref('')
+  const confirmPassword = ref('')
+  const formValid = ref(false)
 
-// Skill level options
-const skillLevels = ['Beginner', 'Intermediate', 'Advanced', 'Pro']
+  // Error messages
+  const firstNameError = ref('')
+  const lastNameError = ref('')
+  const emailError = ref('')
+  const skillLevelError = ref('')
+  const usernameError = ref('')
+  const passwordError = ref('')
+  const confirmPasswordError = ref('')
 
-// Validation rules
-const usernameRules = [
+  // Skill level options
+  const skillLevels = ['Beginner', 'Intermediate', 'Advanced', 'Pro']
+
+  // Validation rules
+  const usernameRules = [
   v => !!v || 'Username is required',
   v => v.length >= 5 || 'Username must be at least 5 characters'
-]
+  ]
 
-const passwordRules = [
+  const passwordRules = [
   v => !!v || 'Password is required',
   v => v.length >= 8 || 'Password must be at least 8 characters'
-]
+  ]
 
-const confirmPasswordRules = [
+  const confirmPasswordRules = [
   v => !!v || 'Please confirm your password',
   v => v === password.value || 'Passwords do not match'
-]
+  ]
 
-// Register button handler
-const register = () => {
-  if ($refs.form.validate()) {
-    alert('Registration successful!'); // Replace with actual registration logic
-  }
+  // Form reference to access validate()
+  const form = ref(null)
+
+  // Field validation functions
+  const validateFirstName = () => {
+  firstNameError.value = firstName.value ? '' : 'First name is required';
 }
+
+  const validateLastName = () => {
+  lastNameError.value = lastName.value ? '' : 'Last name is required';
+}
+
+  const validateEmail = () => {
+  emailError.value = email.value ? '' : 'Email is required';
+}
+
+  const validateSkillLevel = () => {
+  skillLevelError.value = skillLevel.value ? '' : 'Skill level is required';
+}
+
+  const validateUsername = () => {
+  usernameError.value = username.value ? '' : 'Username is required';
+}
+
+  const validatePassword = () => {
+  passwordError.value = password.value ? '' : 'Password is required';
+}
+
+  const validateConfirmPassword = () => {
+  confirmPasswordError.value = confirmPassword.value ? '' : 'Please confirm your password';
+}
+
+  const resetForm = () => {
+  firstName.value = '';
+  lastName.value = '';
+  email.value = '';
+  skillLevel.value = '';
+  username.value = '';
+  password.value = '';
+  confirmPassword.value = '';
+  formValid.value = false; // Reset form validation state
+
+  // Clear error messages
+  firstNameError.value = '';
+  lastNameError.value = '';
+  emailError.value = '';
+  skillLevelError.value = '';
+  usernameError.value = '';
+  passwordError.value = '';
+  confirmPasswordError.value = '';
+}
+
+  // Use router
+  const router = useRouter(); // Initialize the router
+
+  // Register button handler
+  const register = async () => {
+    // Validate all fields before checking the form
+    validateFirstName();
+    validateLastName();
+    validateEmail();
+    validateSkillLevel();
+    validateUsername();
+    validatePassword();
+    validateConfirmPassword();
+
+    // Check if any errors exist
+    if (
+    firstNameError.value ||
+    lastNameError.value ||
+    emailError.value ||
+    skillLevelError.value ||
+    usernameError.value ||
+    passwordError.value ||
+    confirmPasswordError.value
+    ) {
+      return;
+    }
+
+    // Validate the form
+    if (form.value.validate()) {
+    // Build the UserDTO object
+      const skillLevelMap = {
+        'Beginner': 1,
+        'Intermediate': 2,
+        'Advanced': 3,
+        'Pro': 4
+      };
+
+      const userDTO = {
+        userName: username.value,
+        userFullName: `${firstName.value} ${lastName.value}`, // Combine first and last names
+        emailAddress: email.value,
+        password: password.value,
+        profileImgLoc: null, // Assuming no profile image is provided
+        skillLevel: skillLevelMap[skillLevel.value] || null, // Convert skill level string to integer
+        accCreationDate: new Date() // Set the current date or any other value as needed
+      };
+
+      try {
+        const response = await fetchData('/users/add', {
+          method: 'POST',
+          body: JSON.stringify(userDTO),
+          headers: {
+          'Content-Type': 'application/json'
+          }
+        });
+
+        console.log('User added successfully:', response);
+        resetForm()
+
+        // Redirect to the login page
+        await router.push('/login');
+      } catch (error) {
+      console.error('Error adding user:', error);
+      }
+    } else {
+      console.log('Form is not valid');
+    }
+};
+
 </script>
 
 <style scoped>
