@@ -60,7 +60,7 @@ import { useRoute } from 'vue-router';
 async function fetchUserData(username) {
   console.log('username' + username);
   try {
-    const json = await fetchData(`/users/users/find?username=${username}`
+    const json = await fetchData(`/users/find?username=${username}`
     );
 
     console.log('json' + JSON.stringify(json));

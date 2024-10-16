@@ -11,5 +11,5 @@ import java.util.List;
 public interface UserService {
     public List<UserDTO> getUsers();
     public List<UserDTO> getUsersByUserName(String username);
-
-    }
+    public Boolean addUser(UserDTO userDTO);
+}
