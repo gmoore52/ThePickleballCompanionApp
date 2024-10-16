@@ -41,6 +41,9 @@ public class Game {
     @Column(name="team_2_score")
     private Integer team2Score;
 
+    @Column(name="description")
+    private String description;
+
     public Integer getGameId() {
         return gameId;
     }
@@ -113,6 +116,10 @@ public class Game {
         this.team2Score = team2Score;
     }
 
+    public void setDescription(String description) { this.description = description; }
+
+    public String getDescription() { return description; }
+
     @Override
     public String toString() {
         return "Game{" +
@@ -125,6 +132,7 @@ public class Game {
                 ", location=" + location +
                 ", team1Score=" + team1Score +
                 ", team2Score=" + team2Score +
+                ", description='" + description + '\'' +
                 '}';
     }
 }
