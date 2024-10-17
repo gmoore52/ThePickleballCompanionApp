@@ -39,10 +39,10 @@ public class GameServiceImpl implements GameService {
         gameToLog.setTeam1Score(game.getUserScore());
         gameToLog.setTeam2Score(game.getOppScore());
         gameToLog.setLocation(locationRepository.getLocationById(game.getLocation()));
-        gameToLog.setPlayer1Id(userRepository.getUserById(game.getPlayer1()));
-        gameToLog.setPlayer2Id(userRepository.getUserById(game.getPlayer2()));
-        gameToLog.setPlayer3Id(userRepository.getUserById(game.getPlayer3()));
-        gameToLog.setPlayer4Id(userRepository.getUserById(game.getPlayer4()));
+        gameToLog.setPlayer1(userRepository.getUserById(game.getPlayer1()));
+        gameToLog.setPlayer2(userRepository.getUserById(game.getPlayer2()));
+        gameToLog.setPlayer3(userRepository.getUserById(game.getPlayer3()));
+        gameToLog.setPlayer4(userRepository.getUserById(game.getPlayer4()));
 
         return gameRepository.save(gameToLog) != null;
     }

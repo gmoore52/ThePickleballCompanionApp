@@ -9,34 +9,36 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:3000")
+@RequestMapping("/game")
 public class GameController {
     @Autowired
     private GameService gameService;
 
-
     @GetMapping("game/users")
-    public List<User> getUsers(){
+    public List<User> getUsers() {
         return gameService.getUsers();
     }
 
     @GetMapping("game/userById")
-    public User getUserById(@RequestBody String username){
+    public User getUserById(@RequestBody String username) {
         return gameService.getUserById(username);
     }
 
-
-    @PostMapping("game/logGame")
-    public boolean logGame(@RequestBody LoggedGame game){
-
-        return gameService.logGame(game);
+    @RequestMapping(value = "/logGame", method = RequestMethod.POST)
+    @ResponseBody
+    public LoggedGame logGame(@RequestBody LoggedGame game) {
+        gameService.logGame(game);
+        return null;
     }
-
 
     @GetMapping("game/example")
     public String example() {
