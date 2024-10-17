@@ -17,19 +17,19 @@ public class Game {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="player_1_id")
-    private User player1Id;
+    private User player1;
 
     @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="player_2_id")
-    private User player2Id;
+    private User player2;
 
     @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="player_3_id")
-    private User player3Id;
+    private User player3;
 
     @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="player_4_id")
-    private User player4Id;
+    private User player4;
 
     @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="location_id")
@@ -60,36 +60,36 @@ public class Game {
         this.gameDate = gameDate;
     }
 
-    public User getPlayer1Id() {
-        return player1Id;
+    public User getPlayer1() {
+        return player1;
     }
 
-    public void setPlayer1Id(User player1Id) {
-        this.player1Id = player1Id;
+    public void setPlayer1(User player1Id) {
+        this.player1 = player1Id;
     }
 
-    public User getPlayer2Id() {
-        return player2Id;
+    public User getPlayer2() {
+        return player2;
     }
 
-    public void setPlayer2Id(User player2Id) {
-        this.player2Id = player2Id;
+    public void setPlayer2(User player2Id) {
+        this.player2 = player2Id;
     }
 
-    public User getPlayer3Id() {
-        return player3Id;
+    public User getPlayer3() {
+        return player3;
     }
 
-    public void setPlayer3Id(User player3Id) {
-        this.player3Id = player3Id;
+    public void setPlayer3(User player3Id) {
+        this.player3 = player3Id;
     }
 
-    public User getPlayer4Id() {
-        return player4Id;
+    public User getPlayer4() {
+        return player4;
     }
 
-    public void setPlayer4Id(User player4Id) {
-        this.player4Id = player4Id;
+    public void setPlayer4(User player4Id) {
+        this.player4 = player4Id;
     }
 
     public Location getLocation() {
@@ -125,10 +125,10 @@ public class Game {
         return "Game{" +
                 "gameId=" + gameId +
                 ", gameDate=" + gameDate +
-                ", player1Id=" + player1Id +
-                ", player2Id=" + player2Id +
-                ", player3Id=" + player3Id +
-                ", player4Id=" + player4Id +
+                ", player1Id=" + player1 +
+                ", player2Id=" + player2 +
+                ", player3Id=" + player3 +
+                ", player4Id=" + player4 +
                 ", location=" + location +
                 ", team1Score=" + team1Score +
                 ", team2Score=" + team2Score +

@@ -2,6 +2,7 @@
 import { ref, computed} from 'vue'
 import { VTimePicker } from 'vuetify/labs/VTimePicker'
 import { onMounted } from '@vue/runtime-core';
+import { fetchData } from '@/util/fetchData';
 
 // Search query reactive variable
 const searchQuery = ref(null)
@@ -189,6 +190,9 @@ const eventsJSON = ref([
     location_name: "Local Pickleball Club"
   }
 ]);
+
+fetchData
+
 const locationJSON = ref([
   {
     "loc_id": 1,

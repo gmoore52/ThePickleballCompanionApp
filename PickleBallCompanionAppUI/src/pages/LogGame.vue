@@ -1,6 +1,7 @@
 <script setup>
 import { ref, watch} from 'vue';
 import { onMounted } from '@vue/runtime-core';
+import { fetchData } from '@/util/fetchData';
 
   const userScore = ref(null); 
   const oppScore = ref(null);
@@ -158,7 +159,7 @@ import { onMounted } from '@vue/runtime-core';
   function handleSubmit(){
     var jsonGame = {};
     var dataNames = ['userScore','oppScore','gameDate','location','notes','player1','player2','player3','player4'];
-    var dataValues = [parseInt(userScore.value), parseInt(oppScore.value), gameDate.value, locationDict.value[location.value], notes.value, userDict.value[player1.value], userDict.value[player2.value], userDict.value[player3.value], userDict.value[player4.value]];
+    var dataValues = [parseInt(userScore.value), parseInt(oppScore.value), `${gameDate.value} 00:00:00`, Number(locationDict.value[location.value]), notes.value, userDict.value[player1.value], userDict.value[player2.value], userDict.value[player3.value], userDict.value[player4.value]];
 
     // making the JSON object here 
     for (let i = 0; i < dataNames.length; i++){
@@ -189,8 +190,19 @@ import { onMounted } from '@vue/runtime-core';
       formErrors.value = ''; // delete this later
       console.log(jsonGame); 
 
-      // submitData() ... backend send occurs here
+    try {
+      const response = fetchData("/game/logGame", {                  
+        method: 'POST', // (or 'GET')
+        body: JSON.stringify(jsonGame),
+        headers: {
+            'Content-type':'application/json',
+        }
+      });
+    console.log('Success - game added :', response);
+    } catch (error){
+      console.error('Error adding game:', error);
     }
+  }
   }
 
   function verifyScore(){
@@ -343,36 +355,6 @@ import { onMounted } from '@vue/runtime-core';
     acc_creation_date: "2023-02-15"
   },
   {
-    username: "michael_johnson",
-    firstname: "Michael",
-    lastname: "Johnson",
-    email_address: "user3@example.com",
-    password: "password789",
-    profile_img: "profile_img_3.png",
-    skill_level: 4,
-    acc_creation_date: "2023-03-20"
-  },
-  {
-    username: "emily_davis",
-    firstname: "Emily",
-    lastname: "Davis",
-    email_address: "user4@example.com",
-    password: "securepass987",
-    profile_img: "profile_img_4.png",
-    skill_level: 6,
-    acc_creation_date: "2023-04-25"
-  },
-  {
-    username: "james_wilson",
-    firstname: "James",
-    lastname: "Wilson",
-    email_address: "user5@example.com",
-    password: "user5pass",
-    profile_img: "profile_img_5.png",
-    skill_level: 8,
-    acc_creation_date: "2023-05-30"
-  },
-  {
     username: "olivia_brown",
     firstname: "Olivia",
     lastname: "Brown",
@@ -381,26 +363,6 @@ import { onMounted } from '@vue/runtime-core';
     profile_img: "profile_img_6.png",
     skill_level: 5,
     acc_creation_date: "2023-06-14"
-  },
-  {
-    username: "william_taylor",
-    firstname: "William",
-    lastname: "Taylor",
-    email_address: "user7@example.com",
-    password: "userpass789",
-    profile_img: "profile_img_7.png",
-    skill_level: 9,
-    acc_creation_date: "2023-07-19"
-  },
-  {
-    username: "sophia_moore",
-    firstname: "Sophia",
-    lastname: "Moore",
-    email_address: "user8@example.com",
-    password: "pass456user",
-    profile_img: "profile_img_8.png",
-    skill_level: 6,
-    acc_creation_date: "2023-08-24"
   },
   {
     username: "benjamin_martinez",
@@ -412,16 +374,37 @@ import { onMounted } from '@vue/runtime-core';
     skill_level: 3,
     acc_creation_date: "2023-09-29"
   },
-  {
-    username: "amelia_garcia",
-    firstname: "Amelia",
-    lastname: "Garcia",
-    email_address: "user10@example.com",
-    password: "10userpass654",
-    profile_img: "profile_img_10.png",
-    skill_level: 7,
-    acc_creation_date: "2023-10-04"
-  }];
+  // {
+  //   username: "william_taylor",
+  //   firstname: "William",
+  //   lastname: "Taylor",
+  //   email_address: "user7@example.com",
+  //   password: "userpass789",
+  //   profile_img: "profile_img_7.png",
+  //   skill_level: 9,
+  //   acc_creation_date: "2023-07-19"
+  // },
+  // {
+  //   username: "sophia_moore",
+  //   firstname: "Sophia",
+  //   lastname: "Moore",
+  //   email_address: "user8@example.com",
+  //   password: "pass456user",
+  //   profile_img: "profile_img_8.png",
+  //   skill_level: 6,
+  //   acc_creation_date: "2023-08-24"
+  // },
+  // {
+  //   username: "amelia_garcia",
+  //   firstname: "Amelia",
+  //   lastname: "Garcia",
+  //   email_address: "user10@example.com",
+  //   password: "10userpass654",
+  //   profile_img: "profile_img_10.png",
+  //   skill_level: 7,
+  //   acc_creation_date: "2023-10-04"
+  // }
+];
   const locationJSON = [
   {
     "loc_id": 1,

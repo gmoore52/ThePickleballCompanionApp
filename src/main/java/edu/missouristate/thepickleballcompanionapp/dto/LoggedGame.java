@@ -1,34 +1,5 @@
 package edu.missouristate.thepickleballcompanionapp.dto;
 
-//gameDate
-//:
-//        "2024-10-10"
-//location
-//:
-//        "Westside Park"
-//notes
-//:
-//        null
-//userScore
-//:
-//        "11"
-//oppScore
-//:
-//        "1"
-//player1
-//:
-//        "must_select"
-//player2
-//:
-//        "sophia_moore"
-//player3
-//:
-//        "Jane Smith - (jane_smith)"
-//player4
-//:
-//        "Emily Davis - (emily_davis)"
-
-
 public class LoggedGame {
     private String gameDate;
 
@@ -47,6 +18,23 @@ public class LoggedGame {
     private String player3;
 
     private String player4;
+
+    public LoggedGame(String gameDate, Long location, String notes, Integer userScore, Integer oppScore, String player1,
+            String player2, String player3, String player4) {
+        this.gameDate = gameDate;
+        this.location = location;
+        this.notes = notes;
+        this.userScore = userScore;
+        this.oppScore = oppScore;
+        this.player1 = player1;
+        this.player2 = player2;
+        this.player3 = player3;
+        this.player4 = player4;
+    }
+
+    public LoggedGame() {
+
+    }
 
     public String getGameDate() {
         return gameDate;
@@ -72,11 +60,11 @@ public class LoggedGame {
         this.notes = notes;
     }
 
-    public Integer getUserScore(){
+    public Integer getUserScore() {
         return userScore;
     }
 
-    public void setUserScore(Integer userScore){
+    public void setUserScore(Integer userScore) {
         this.userScore = userScore;
     }
 
