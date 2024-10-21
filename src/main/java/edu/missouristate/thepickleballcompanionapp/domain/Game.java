@@ -64,32 +64,32 @@ public class Game {
         return player1;
     }
 
-    public void setPlayer1(User player1Id) {
-        this.player1 = player1Id;
+    public void setPlayer1(User player1) {
+        this.player1 = player1;
     }
 
     public User getPlayer2() {
         return player2;
     }
 
-    public void setPlayer2(User player2Id) {
-        this.player2 = player2Id;
+    public void setPlayer2(User player2) {
+        this.player2 = player2;
     }
 
     public User getPlayer3() {
         return player3;
     }
 
-    public void setPlayer3(User player3Id) {
-        this.player3 = player3Id;
+    public void setPlayer3(User player3) {
+        this.player3 = player3;
     }
 
     public User getPlayer4() {
         return player4;
     }
 
-    public void setPlayer4(User player4Id) {
-        this.player4 = player4Id;
+    public void setPlayer4(User player4) {
+        this.player4 = player4;
     }
 
     public Location getLocation() {
@@ -125,10 +125,10 @@ public class Game {
         return "Game{" +
                 "gameId=" + gameId +
                 ", gameDate=" + gameDate +
-                ", player1Id=" + player1 +
-                ", player2Id=" + player2 +
-                ", player3Id=" + player3 +
-                ", player4Id=" + player4 +
+                ", player1=" + player1 +
+                ", player2=" + player2 +
+                ", player3=" + player3 +
+                ", player4=" + player4 +
                 ", location=" + location +
                 ", team1Score=" + team1Score +
                 ", team2Score=" + team2Score +

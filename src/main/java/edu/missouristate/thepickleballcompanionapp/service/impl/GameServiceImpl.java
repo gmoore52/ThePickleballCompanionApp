@@ -22,28 +22,36 @@ public class GameServiceImpl implements GameService {
     @Autowired
     private LocationRepository locationRepository;
 
-
-    public List<User> getUsers(){
+    public List<User> getUsers() {
         return userRepository.getAllUsers();
     }
 
-    public User getUserById(String username){
+    public User getUserById(String username) {
         return userRepository.getUserById(username);
     }
 
-    public boolean logGame(LoggedGame game){
+    public boolean logGame(LoggedGame game) {
         Game gameToLog = new Game();
 
         gameToLog.setGameId(-1);
         gameToLog.setGameDate(Timestamp.valueOf(game.getGameDate()));
         gameToLog.setTeam1Score(game.getUserScore());
         gameToLog.setTeam2Score(game.getOppScore());
+        gameToLog.setDescription(game.getNotes());
         gameToLog.setLocation(locationRepository.getLocationById(game.getLocation()));
         gameToLog.setPlayer1(userRepository.getUserById(game.getPlayer1()));
         gameToLog.setPlayer2(userRepository.getUserById(game.getPlayer2()));
-        gameToLog.setPlayer3(userRepository.getUserById(game.getPlayer3()));
-        gameToLog.setPlayer4(userRepository.getUserById(game.getPlayer4()));
+//        System.out.println(game.getPlayer3()!=null);
+        if (game.getPlayer3()!=null){
+            gameToLog.setPlayer3(userRepository.getUserById(game.getPlayer3()));
+        }
+//        gameToLog.setPlayer3(userRepository.getUserById(game.getPlayer3()));
+//        gameToLog.setPlayer4(userRepository.getUserById(game.getPlayer4()));
+        if (game.getPlayer4()!=null){
+            gameToLog.setPlayer4(userRepository.getUserById(game.getPlayer4()));
+        }
 
-        return gameRepository.save(gameToLog) != null;
+        gameRepository.save(gameToLog);
+        return true;
     }
 }

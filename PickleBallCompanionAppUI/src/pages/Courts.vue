@@ -36,7 +36,7 @@
               <v-card-title>{{ court.courtName }}</v-card-title>
               <v-card-subtitle>Distance: {{ court.distance }} km</v-card-subtitle>
               <v-card-text>Location: {{ court.address }}</v-card-text>
-              <v-card-text>Number of courts: {{ court.numOfCourts }}</v-card-text>
+              <v-card-text>Number of courts: {{ court.numOfCourts }}</v-card-text>\
             </v-col>
             <v-col cols="4">
               <v-img :src="court.image" alt="Court Image" />
@@ -65,7 +65,7 @@ const getCourts = async () => {
   try {
     const url = '/data/locations';
     courts.value = await fetchData(url);
-    console.log(courts.value)
+    //console.log(courts.value)
   } catch (error) {
     console.error(error);
   }

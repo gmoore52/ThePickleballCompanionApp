@@ -1,6 +1,6 @@
 package edu.missouristate.thepickleballcompanionapp.dto;
 
-public class LoggedGame {
+public class LoggedGame{
     private String gameDate;
 
     private Long location;
