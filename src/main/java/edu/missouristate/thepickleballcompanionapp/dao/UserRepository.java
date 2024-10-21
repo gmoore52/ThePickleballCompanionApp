@@ -13,5 +13,5 @@ import java.util.Optional;
 public interface UserRepository extends CrudRepository<User, Integer>, UserRepositoryCustom {
     public List<User> findAll();
 
-    List<User> findByUserName(String username);
+    public User findByUserName(String username);
 }

@@ -1,6 +1,6 @@
 <template>
   <v-container class="d-flex justify-center align-center" fill-height>
-    <v-card class="pa-6" width="600"> <!-- Wider card -->
+    <v-card class="pa-6" width="600">
       <v-card-title class="text-h5">Login</v-card-title>
       <v-card-text>
         <v-form ref="loginForm" v-model="valid">
@@ -20,20 +20,19 @@
             clearable
             outlined
           ></v-text-field>
-          
+
           <v-card-actions>
             <v-row>
               <v-col>
                 <v-btn color="green" @click="submitForm">Login</v-btn>
               </v-col>
-              <!-- Link to register -->
               <v-col class="text-center">
                 <v-btn text to="/register">
                   Don't have an account yet? Register here.
                 </v-btn>
               </v-col>
             </v-row>
-        </v-card-actions>
+          </v-card-actions>
         </v-form>
       </v-card-text>
     </v-card>
@@ -42,7 +41,11 @@
 
 <script setup>
 import { ref } from 'vue';
+import { useStore } from 'vuex'; // Import useStore
+import { useRouter } from 'vue-router';
 
+const store = useStore(); // Get the Vuex store
+const router = useRouter();
 const login = ref('');
 const password = ref('');
 const valid = ref(false);
@@ -52,12 +55,19 @@ const rules = {
   required: (value) => !!value || 'Required.',
 };
 
-const submitForm = () => {
+const submitForm = async () => {
   // Validate the form manually when the user clicks 'Login'
   if (loginForm.value.validate()) {
-    // Proceed with form submission if valid
-    console.log('Login:', login.value);
-    console.log('Password:', password.value);
+    try {
+      await store.dispatch('login', {
+        login: login.value,
+        password: password.value,
+      });
+      // Redirect to the homepage after successful login
+      await router.push('/');
+    } catch (error) {
+      console.error('Login failed:', error.message);
+    }
   } else {
     console.log('Form is not valid');
   }
