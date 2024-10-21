@@ -40,25 +40,17 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<UserDTO> getUsersByUserName(String username) {
-        List<User> users = userRepository.findByUserName(username);
-
-        List<UserDTO> userDTOs = new ArrayList<>();
-
-        for (User user: users){
-            UserDTO userDTO = new UserDTO(
-                    user.getUserName(),
-                    user.getUserFullName(),
-                    user.getEmailAddress(),
-                    user.getPassword(),
-                    user.getProfileImgLoc(),
-                    user.getSkillLevel(),
-                    user.getAccCreationDate()
-            );
-
-            userDTOs.add(userDTO);
-        }
-        return userDTOs;
+    public UserDTO getUserByUserName(String username) {
+        User user = userRepository.findByUserName(username);
+        UserDTO userDTO = new UserDTO(
+                user.getUserName(),
+                user.getUserFullName(),
+                user.getEmailAddress(),
+                user.getPassword(),
+                user.getProfileImgLoc(),
+                user.getSkillLevel(),
+                user.getAccCreationDate());
+        return userDTO;
     }
 
     @Override

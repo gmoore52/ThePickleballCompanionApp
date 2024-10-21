@@ -28,4 +28,12 @@ public class UserRepositoryImpl extends QuerydslRepositorySupport implements Use
                 .where(user.userName.eq(username))
                 .fetchFirst();
     }
+
+    @Override
+    public User getUserByIdOrEmail(String usernameOrEmail) {
+        return from(user)
+                .select(user)
+                .where(user.userName.eq(usernameOrEmail).or(user.emailAddress.eq(usernameOrEmail)))
+                .fetchFirst();
+    }
 }

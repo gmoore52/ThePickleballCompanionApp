@@ -17,8 +17,8 @@ public class UserController {
 
     @RequestMapping(value = "/find", method = RequestMethod.GET)
     @ResponseBody
-    public List<UserDTO> findByUsername(@RequestParam("username") String username) {
-        return userService.getUsersByUserName(username);
+    public UserDTO findByUsername(@RequestParam("username") String username) {
+        return userService.getUserByUserName(username);
     }
 
     @RequestMapping(value = "/add", method = RequestMethod.POST)

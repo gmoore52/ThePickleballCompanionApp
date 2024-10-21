@@ -58,20 +58,15 @@ import { useRoute } from 'vue-router';
 
   //function to fetch user data from DB
 async function fetchUserData(username) {
-  console.log('username' + username);
   try {
     const json = await fetchData(`/users/find?username=${username}`
     );
-
     console.log('json' + JSON.stringify(json));
-
-    userData.value = json[0];
-
+    userData.value.userName = json.userName;
   } catch(err) {
     console.err('error fetchUserData', err);
   }
 }
-
   const route = useRoute();
 
  onMounted(() => {

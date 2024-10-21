@@ -10,6 +10,6 @@ import java.util.List;
 @Service
 public interface UserService {
     public List<UserDTO> getUsers();
-    public List<UserDTO> getUsersByUserName(String username);
+    public UserDTO getUserByUserName(String username);
     public Boolean addUser(UserDTO userDTO);
 }
