@@ -3,7 +3,9 @@ VALUES
     ('jane_smith', 'Jane Smith', 'jane.smith@example.com', 'password123', '/images/jane_smith.jpg', 5, NOW()),
     ('must_select', 'Must Select', 'must.select@example.com', 'password456', '/images/must_select.jpg', 4, NOW()),
     ('olivia_brown', 'Olivia Brown', 'olivia.brown@example.com', 'password789', '/images/olivia_brown.jpg', 3, NOW()),
-    ('benjamin_martinez', 'Benjamin Martinez', 'benjamin.martinez@example.com', 'password101', '/images/benjamin_martinez.jpg', 2, NOW());
+    ('benjamin_martinez', 'Benjamin Martinez', 'benjamin.martinez@example.com', 'password101', '/images/benjamin_martinez.jpg', 2, NOW()),
+    ('Peter_Dinklage3', 'Peter Dinklage', 'dinkle@example.com', 'password101', '/images/benjamin_martinez.jpg', 2, NOW());
+
 
 select * from USERS;
 

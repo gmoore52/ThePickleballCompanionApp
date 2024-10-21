@@ -1,14 +1,19 @@
 <script setup>
-import { ref, watch} from 'vue';
+import { ref, watch, computed} from 'vue';
 import { onMounted } from '@vue/runtime-core';
 import { fetchData } from '@/util/fetchData';
+import { errorMessages } from 'vue/compiler-sfc';
 
   const userScore = ref(null); 
   const oppScore = ref(null);
   const gameDate = ref(null);
-  const locations = ref(["loc1","loc2","loc3","loc4"]); // todo: make some sort of thing where if you put an input that already exists, like with a watcher doing it on the players, itll move the old player 
+  const locations = ref([]); // todo: make some sort of thing where if you put an input that already exists, like with a watcher doing it on the players, itll move the old player 
   const location = ref(null);
   const notes = ref(null);
+
+  const users = ref(null)
+  const JSONCourts = ref([])
+  let balls 
 
   const isInDuosMode = ref(true);
   const formErrors = ref(null) // delete later 
@@ -126,23 +131,48 @@ import { fetchData } from '@/util/fetchData';
 
   // vee validate stuff
   
-  function getData(){
-    // unused currently, will connect to the backend
-    
-  }
 
-  function parseData(){
+  onMounted(async () => {
+    await getCourts();
+    await getUsers();
+    await parseData();
+  })
+
+
+const getUsers = async () => {
+  users.value = [];
+  try {
+    const url = '/game/users';
+    users.value = await fetchData(url);
+    console.log(users.value)
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+const getCourts = async () => {
+  JSONCourts.value = [];
+  try {
+    const url = '/data/locations';
+    JSONCourts.value = await fetchData(url);
+    console.log(JSONCourts.value);
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+  const parseData = async () =>{
     let allPlayerStrings = [];
     let allLocationNames = [];
     userDict.value = {}
-    for (const user of usersJSON) {
-      const userString = `${user.firstname} ${user.lastname} - (${user.username})`;
-      userDict.value[userString] = user.username
+    for (const user of users.value) {
+      const userString = `${user.userFullName} - (${user.userName})`;
+      userDict.value[userString] = user.userName
       allPlayerStrings.push(userString);
     }
-    for (const loc of locationJSON) {
-      const locName = `${loc.court_name}`;
-      locationDict.value[locName] = loc.loc_id
+    for (const loc of JSONCourts.value) {
+      const locName = `${loc.courtName}`;
+      locationDict.value[locName] = loc.id
       allLocationNames.push(locName);
     }
 
@@ -198,7 +228,9 @@ import { fetchData } from '@/util/fetchData';
             'Content-type':'application/json',
         }
       });
+
     console.log('Success - game added :', response);
+    clearForm()
     } catch (error){
       console.error('Error adding game:', error);
     }
@@ -250,6 +282,21 @@ import { fetchData } from '@/util/fetchData';
     }
   }
 
+  function clearForm(){
+    // oppScore.value = null
+    // userScore.value = null
+    // gameDate.value = null
+    // player1.value = null
+    // player2.value = null
+    // player3.value = null
+    // player4.value = null
+    // location.value = null
+    // isInDuosMode.value = true
+
+    // formErrors.value = null
+    //window.location.reload()
+  }
+
   function checkForNulls(){
     if(userScore.value == null){
       return 'userscore';
@@ -262,9 +309,6 @@ import { fetchData } from '@/util/fetchData';
     }
     else if(location.value == null){
       return 'location';
-    }
-    else if(userScore.value == null){
-      return 'userscore';
     }
     else if(player1.value == null){ 
       return 'player1';
@@ -283,15 +327,11 @@ import { fetchData } from '@/util/fetchData';
     }
   }
 
-  onMounted(() => {
-    getData();
-    parseData();
-  })
-
   // todo: add all the functionality LOL
   // todo: seems that we are onto form validation, resizing for phone screen, and some sort of option for singles v doubles 
   // todo: make the watchers replace the value if it exists somehwere else already
   // todo: make it so that the player names also have their username listed Name Name - (Username)
+  //todo: Lol you cant enter a game over 11 points for some reason haha 
 
   function checkForPlayerNameListed(name, originNum){
     if ((originNum!= 1) && (name === player1.value)){ // todo 
@@ -333,120 +373,6 @@ import { fetchData } from '@/util/fetchData';
     }
   });
 
-  const usersJSON = 
-  [{
-    username: "must_select",
-    firstname: "Your",
-    lastname: "User",
-    email_address: "user1@example.com",
-    password: "password123",
-    profile_img: "profile_img_1.png",
-    skill_level: 5,
-    acc_creation_date: "2023-01-10"
-  },
-  {
-    username: "jane_smith",
-    firstname: "Jane",
-    lastname: "Smith",
-    email_address: "user2@example.com",
-    password: "mypassword456",
-    profile_img: "profile_img_2.png",
-    skill_level: 7,
-    acc_creation_date: "2023-02-15"
-  },
-  {
-    username: "olivia_brown",
-    firstname: "Olivia",
-    lastname: "Brown",
-    email_address: "user6@example.com",
-    password: "mypassword123",
-    profile_img: "profile_img_6.png",
-    skill_level: 5,
-    acc_creation_date: "2023-06-14"
-  },
-  {
-    username: "benjamin_martinez",
-    firstname: "Benjamin",
-    lastname: "Martinez",
-    email_address: "user9@example.com",
-    password: "9userpass321",
-    profile_img: "profile_img_9.png",
-    skill_level: 3,
-    acc_creation_date: "2023-09-29"
-  },
-  // {
-  //   username: "william_taylor",
-  //   firstname: "William",
-  //   lastname: "Taylor",
-  //   email_address: "user7@example.com",
-  //   password: "userpass789",
-  //   profile_img: "profile_img_7.png",
-  //   skill_level: 9,
-  //   acc_creation_date: "2023-07-19"
-  // },
-  // {
-  //   username: "sophia_moore",
-  //   firstname: "Sophia",
-  //   lastname: "Moore",
-  //   email_address: "user8@example.com",
-  //   password: "pass456user",
-  //   profile_img: "profile_img_8.png",
-  //   skill_level: 6,
-  //   acc_creation_date: "2023-08-24"
-  // },
-  // {
-  //   username: "amelia_garcia",
-  //   firstname: "Amelia",
-  //   lastname: "Garcia",
-  //   email_address: "user10@example.com",
-  //   password: "10userpass654",
-  //   profile_img: "profile_img_10.png",
-  //   skill_level: 7,
-  //   acc_creation_date: "2023-10-04"
-  // }
-];
-  const locationJSON = [
-  {
-    "loc_id": 1,
-    "court_name": "Downtown Court",
-    "number_of_courts": 4,
-    "address": "123 Main St, Cityville",
-    "coordinates": "40.7128,-74.0060",
-    "court_meta_id": 101
-  },
-  {
-    "loc_id": 2,
-    "court_name": "Westside Park",
-    "number_of_courts": 6,
-    "address": "456 West St, Townsville",
-    "coordinates": "34.0522,-118.2437",
-    "court_meta_id": 102
-  },
-  {
-    "loc_id": 3,
-    "court_name": "Eastwood Courts",
-    "number_of_courts": 3,
-    "address": "789 East Ave, Villageton",
-    "coordinates": "51.5074,-0.1278",
-    "court_meta_id": 103
-  },
-  {
-    "loc_id": 4,
-    "court_name": "Riverside Court",
-    "number_of_courts": 2,
-    "address": "101 River Rd, Waterbury",
-    "coordinates": "35.6895,139.6917",
-    "court_meta_id": 104
-  },
-  {
-    "loc_id": 5,
-    "court_name": "Central Park Courts",
-    "number_of_courts": 8,
-    "address": "202",
-    "coordinates": "31.6895,14.6917",
-    "court_meta_id": 105
-  }];
-
 </script>
 <template>
   <v-container class="container">
@@ -476,7 +402,7 @@ import { fetchData } from '@/util/fetchData';
                 </v-btn-toggle>
               </v-col>
               <v-col sm="6" md="5" class="left-pannel-col">
-                <v-text-field v-model="userScore" label="Your Score"  hint="ie 1 through 11" type="number" class="num left-pannel" required :rules="yourScoreRules"></v-text-field>
+                <v-text-field v-model="userScore" label="Your Score" type="number" class="num left-pannel" required :rules="yourScoreRules"></v-text-field>
               </v-col>
               <v-col cols="2" class="left-pannel-col d-none d-md-block">
                 <!-- invisible col for formatting -->

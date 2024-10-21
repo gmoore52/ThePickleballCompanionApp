@@ -19,6 +19,8 @@ const startAMPM = ref(null)
 const endAMPM = ref(null)
 const eventDescription = ref(null); 
 
+const JSONCourts = ref([])
+
 const picker1Render = ref(false);
 const picker2Render = ref(false);
 
@@ -252,17 +254,33 @@ function filterTimeOfEvents(){
   }
 }
 
-function getData(){
-  // unused currently, will connect to the backend
-  
+onMounted(() => {
+  getData();
+  parseData();
+})
+
+function getData() {
+  getCourts()
+  }
+
+const getCourts = async () => {
+  JSONCourts.value = [];
+  try {
+    const url = '/data/locations';
+    JSONCourts.value = await fetchData(url);
+    console.log(JSONCourts.value);
+  } catch (error) {
+    console.error(error);
+  }
 }
 
 function parseData(){
   filterTimeOfEvents();
   let allLocationNames = [];
-  for (const loc of locationJSON.value) {
-    const locName = `${loc.court_name}`;
-    locationDict.value[locName] = loc.loc_id
+  for (const loc of JSONCourts.value) {
+    console.log(loc)
+    const locName = `${loc.courtName}`;
+    locationDict.value[locName] = loc.id
     allLocationNames.push(locName);
   }
 
@@ -437,11 +455,6 @@ function closeModal(){
 
   return `${fullDate} ${hours}:${minutes}${ampm}`;
 }
-
-onMounted(() => {
-    getData();
-    parseData();
-})
 
 // Computed property to filter courts based on search query
 const filteredUpcomingEvents = computed(() => {
