@@ -41,13 +41,10 @@ public class GameServiceImpl implements GameService {
         gameToLog.setLocation(locationRepository.getLocationById(game.getLocation()));
         gameToLog.setPlayer1(userRepository.getUserById(game.getPlayer1()));
         gameToLog.setPlayer2(userRepository.getUserById(game.getPlayer2()));
-//        System.out.println(game.getPlayer3()!=null);
-        if (game.getPlayer3()!=null){
+        if (game.getPlayer3() != null) {
             gameToLog.setPlayer3(userRepository.getUserById(game.getPlayer3()));
         }
-//        gameToLog.setPlayer3(userRepository.getUserById(game.getPlayer3()));
-//        gameToLog.setPlayer4(userRepository.getUserById(game.getPlayer4()));
-        if (game.getPlayer4()!=null){
+        if (game.getPlayer4() != null) {
             gameToLog.setPlayer4(userRepository.getUserById(game.getPlayer4()));
         }
 

@@ -1,34 +1,31 @@
-package edu.missouristate.thepickleballcompanionapp.domain;
-
-import jakarta.persistence.*;
+package edu.missouristate.thepickleballcompanionapp.domain.dto;
 
 import java.sql.Timestamp;
 
-@Entity
-@Table(name="EVENTS")
-public class Event {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "event_id")
+public class EventDTO {
     private Integer eventId;
-
-    @Column(name = "event_start")
     private Timestamp eventStart;
-
-    @Column(name = "event_end")
     private Timestamp eventEnd;
-
-    @Column(name = "event_loc")
     private Integer eventLoc;
-
-    @Column(name = "event_title")
     private String eventTitle;
-
-    @Column(name = "event_desc")
     private String eventDesc;
+    private Integer locationId;
+
+    // Constructors
+    public EventDTO() {
+    }
+
+    public EventDTO(Integer eventId, java.sql.Timestamp eventStart, java.sql.Timestamp eventEnd, Integer eventLoc, String eventTitle, String eventDesc, Integer locationId) {
+        this.eventId = eventId;
+        this.eventStart = eventStart;
+        this.eventEnd = eventEnd;
+        this.eventLoc = eventLoc;
+        this.eventTitle = eventTitle;
+        this.eventDesc = eventDesc;
+        this.locationId = locationId;
+    }
 
     // Getters and Setters
-
     public Integer getEventId() {
         return eventId;
     }
@@ -37,19 +34,19 @@ public class Event {
         this.eventId = eventId;
     }
 
-    public Timestamp getEventStart() {
+    public java.sql.Timestamp getEventStart() {
         return eventStart;
     }
 
-    public void setEventStart(Timestamp eventStart) {
+    public void setEventStart(java.sql.Timestamp eventStart) {
         this.eventStart = eventStart;
     }
 
-    public Timestamp getEventEnd() {
+    public java.sql.Timestamp getEventEnd() {
         return eventEnd;
     }
 
-    public void setEventEnd(Timestamp eventEnd) {
+    public void setEventEnd(java.sql.Timestamp eventEnd) {
         this.eventEnd = eventEnd;
     }
 
@@ -77,15 +74,25 @@ public class Event {
         this.eventDesc = eventDesc;
     }
 
+    public Integer getLocationId() {
+        return locationId;
+    }
+
+    public void setLocationId(Integer locationId) {
+        this.locationId = locationId;
+    }
+
+    // toString Method
     @Override
     public String toString() {
-        return "Event{" +
+        return "EventDTO{" +
                 "eventId=" + eventId +
                 ", eventStart=" + eventStart +
                 ", eventEnd=" + eventEnd +
                 ", eventLoc=" + eventLoc +
                 ", eventTitle='" + eventTitle + '\'' +
                 ", eventDesc='" + eventDesc + '\'' +
+                ", locationId=" + locationId +
                 '}';
     }
 }
