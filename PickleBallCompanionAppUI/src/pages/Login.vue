@@ -27,7 +27,7 @@
                 <v-btn color="green" @click="submitForm">Login</v-btn>
               </v-col>
               <v-col class="text-center">
-                <v-btn text to="/register">
+                <v-btn to="/register">
                   Don't have an account yet? Register here.
                 </v-btn>
               </v-col>
@@ -40,9 +40,10 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
-import { useStore } from 'vuex'; // Import useStore
-import { useRouter } from 'vue-router';
+import {ref} from 'vue';
+import {useStore} from 'vuex'; // Import useStore
+import {useRouter} from 'vue-router';
+import {showAlert} from '@/util/alert.js'; // Import the showAlert utility
 
 const store = useStore(); // Get the Vuex store
 const router = useRouter();
@@ -66,6 +67,8 @@ const submitForm = async () => {
       // Redirect to the homepage after successful login
       await router.push('/');
     } catch (error) {
+      // Show the alert if login fails
+      showAlert('error', 'Incorrect email/username or password.', 5000); // Show error alert for 5 seconds
       console.error('Login failed:', error.message);
     }
   } else {

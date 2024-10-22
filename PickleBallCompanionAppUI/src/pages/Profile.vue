@@ -7,32 +7,34 @@
           <!-- Profile Box -->
           <v-card class="pa-4 flex-grow-1" outlined>
             <v-row>
-              <v-col cols="12" md ="3">
-                <v-card-title class="white--text text-h4">{{userData.userName}}</v-card-title> <!--Pulled from DB-->
+              <v-col cols="12" md="3">
+                <v-card-title class="white--text text-h4">{{ userData.userName }}</v-card-title> <!--Pulled from DB-->
                 <v-card-subtitle class="white--text text-h6">{{ userData.userFullName }}</v-card-subtitle>
                 <v-img
-                    :width="300"
-                    aspect-ratio="16/9"
-                    cover
-                    src="https://hips.hearstapps.com/hmg-prod/images/pickleball-tips-04-1658358796.png"
-                  ></v-img>
+                  :width="300"
+                  aspect-ratio="16/9"
+                  cover
+                  src="https://hips.hearstapps.com/hmg-prod/images/pickleball-tips-04-1658358796.png"
+                ></v-img>
               </v-col>
 
               <v-col cols="12" md="8">
                 <v-card>
                   <v-card-title class="white--text">Email</v-card-title>
-                  <v-card-text class="white--text">{{ userData.emailAddress }}</v-card-text> <!-- Editable, on separate window? Are we doing that? -->
+                  <v-card-text class="white--text">{{ userData.emailAddress }}</v-card-text>
                   <v-card-title class="white--text">Location (city)</v-card-title>
                   <v-card-text class="white--text">Springfield, MO --not currently in DB</v-card-text>
                   <v-card-title class="white--text">Birthday</v-card-title>
                   <v-card-text class="white--text">xx/xx/xxxx --not currently in DB</v-card-text>
                   <v-card-title class="white--text">Account Creation Date</v-card-title>
-                  <v-card-text class="white--text">{{new Date(userData.accCreationDate).toLocaleDateString()}}</v-card-text>
+                  <v-card-text class="white--text">{{ new Date(userData.accCreationDate).toLocaleDateString() }}</v-card-text>
                 </v-card>
+                <!-- Logout Button -->
+                <v-btn class="mt-5" color="red" @click="logout">Logout</v-btn>
               </v-col>
             </v-row>
           </v-card>
-        <v-row> <!--Empty space--></v-row>
+          <v-row> <!--Empty space--></v-row>
         </v-col>
         <v-card-title class="white--text text-h4">Friends</v-card-title>
         <!-- Will probably need to render the friends on the JS side here. Can you give v-card a custom class? Iterate through and append to v-card class = "friends"?-->
@@ -41,47 +43,60 @@
   </v-app>
 </template>
 
+
 <script setup>
 import { ref, onMounted } from 'vue';
 import { fetchData } from '@/util/fetchData.js';
 import { useRoute } from 'vue-router';
+import { useStore } from 'vuex';
+import {showAlert} from "@/util/alert";
+import router from "@/router"; // Import Vuex store
 
-  const userData = ref({
-    userName: '',
-    userFullName: '',
-    emailAddress: '',
-    password:'',
-    profileImgLoc: '',
-    skillLevel: '',
-    accCreationDate: ''
-  });
+const store = useStore(); // Use Vuex store
 
-  //function to fetch user data from DB
+const userData = ref({
+  userName: '',
+  userFullName: '',
+  emailAddress: '',
+  password: '',
+  profileImgLoc: '',
+  skillLevel: '',
+  accCreationDate: ''
+});
+
+// Function to fetch user data from DB
 async function fetchUserData(username) {
   try {
-    const json = await fetchData(`/users/find?username=${username}`
-    );
+    const json = await fetchData(`/users/find?username=${username}`);
     console.log('json' + JSON.stringify(json));
     userData.value.userName = json.userName;
+    userData.value.userFullName = json.userFullName; // Assuming you're getting full name from DB
+    userData.value.emailAddress = json.emailAddress; // Assuming you're getting email from DB
+    userData.value.accCreationDate = json.accCreationDate; // Assuming you're getting account creation date from DB
   } catch(err) {
-    console.err('error fetchUserData', err);
+    console.error('error fetchUserData', err);
   }
 }
-  const route = useRoute();
 
- onMounted(() => {
-   const userNameFromURL = route.params.username; //defined as this in index.js
+const route = useRoute();
 
-   if (userNameFromURL) {
-     fetchUserData(userNameFromURL);
-   }
-   else {
-     fetchUserData('john_doe');
-   }
- })
+onMounted(() => {
+  const userNameFromURL = route.params.username; // defined as this in index.js
 
+  if (userNameFromURL) {
+    fetchUserData(userNameFromURL);
+  } else {
+    fetchUserData('john_doe');
+  }
+});
+
+// Logout method
+const logout = async () => {
+  await store.dispatch('logout'); // Dispatch the logout action
+  await router.push('/');
+  showAlert('success','You have been successfully logged out.',5000);
+};
 </script>
-
 <style scoped>
 .v-app {
   height: 100vh;

@@ -81,7 +81,7 @@
             </v-btn>
           </v-col>
           <v-col>
-            <v-btn text to="/login">
+            <v-btn to="/login">
               Already have an account? Click to log in.
             </v-btn>
           </v-col>
@@ -95,6 +95,7 @@
   import { ref } from 'vue'
   import { useRouter } from 'vue-router' // Import useRouter
   import { fetchData } from "@/util/fetchData";
+  import {showAlert} from "@/util/alert";
 
   // Data properties
   const firstName = ref('')
@@ -242,7 +243,7 @@
           }
         });
 
-        console.log('User added successfully:', response);
+        showAlert('success', 'Your account has been created', 5000);
         resetForm()
 
         // Redirect to the login page
