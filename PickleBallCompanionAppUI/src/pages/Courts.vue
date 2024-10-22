@@ -36,7 +36,7 @@
               <v-card-title>{{ court.courtName }}</v-card-title>
               <v-card-subtitle>Distance: {{ court.distance }} km</v-card-subtitle>
               <v-card-text>Location: {{ court.address }}</v-card-text>
-              <v-card-text>Number of courts: {{ court.numOfCourts }}</v-card-text>\
+              <v-card-text>Number of courts: {{ court.numOfCourts }}</v-card-text>
             </v-col>
             <v-col cols="4">
               <v-img :src="court.image" alt="Court Image" />

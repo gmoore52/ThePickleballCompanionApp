@@ -2,7 +2,6 @@
 import { ref, watch, computed} from 'vue';
 import { onMounted } from '@vue/runtime-core';
 import { fetchData } from '@/util/fetchData';
-import { errorMessages } from 'vue/compiler-sfc';
 
   const userScore = ref(null); 
   const oppScore = ref(null);
@@ -13,20 +12,20 @@ import { errorMessages } from 'vue/compiler-sfc';
 
   const users = ref(null)
   const JSONCourts = ref([])
-  let balls 
 
   const isInDuosMode = ref(true);
   const formErrors = ref(null) // delete later 
   
-  const players1 = ref(["bob1","sue1","ron1","jon1"]);
-  const players2 = ref(["bob2","sue2","ron2","jon2"]);
-  const players3 = ref(["bob3","sue3","ron3","jon3"]);
-  const players4 = ref(["bob4","sue4","ron4","jon4"]);
+  const players1 = ref([]);
+  const players2 = ref([]);
+  const players3 = ref([]);
+  const players4 = ref([]);
   const userDict = ref({}); // used to index between 'username' and 'firstname lastname - (username)' format
   const locationDict = ref({}); // used to index between loc_id and location_name
 
   // THIS MUST LATER BE SET DYNAMICALLY AFTER THE USER IS LOGGED IN
   const yourUserName = ref('must_select');
+  const yourUserNameDisplayString = ref('Must Select - (must_select)');
 
   const yourScoreRules = [
     value => {
@@ -96,12 +95,12 @@ import { errorMessages } from 'vue/compiler-sfc';
     }
   ];
 
-  const player1Rules = [
-    value => {
-      if (value) return true;
-      return 'Select player 1';
-    },
-  ];
+  // const .Rules = [
+  //   value => {
+  //     if (value) return true;
+  //     return 'Select player 1';
+  //   },
+  // ];
 
   const player2Rules = [
     value => {
@@ -133,6 +132,7 @@ import { errorMessages } from 'vue/compiler-sfc';
   
 
   onMounted(async () => {
+    player1.value = yourUserNameDisplayString.value
     await getCourts();
     await getUsers();
     await parseData();
@@ -144,7 +144,7 @@ const getUsers = async () => {
   try {
     const url = '/game/users';
     users.value = await fetchData(url);
-    console.log(users.value)
+    // console.log(users.value)
   } catch (error) {
     console.error(error);
   }
@@ -155,7 +155,7 @@ const getCourts = async () => {
   try {
     const url = '/data/locations';
     JSONCourts.value = await fetchData(url);
-    console.log(JSONCourts.value);
+    // console.log(JSONCourts.value);
   } catch (error) {
     console.error(error);
   }
@@ -166,9 +166,11 @@ const getCourts = async () => {
     let allLocationNames = [];
     userDict.value = {}
     for (const user of users.value) {
-      const userString = `${user.userFullName} - (${user.userName})`;
-      userDict.value[userString] = user.userName
-      allPlayerStrings.push(userString);
+      if (user.userName !== yourUserName.value){
+        const userString = `${user.userFullName} - (${user.userName})`;
+        userDict.value[userString] = user.userName
+        allPlayerStrings.push(userString);
+      }
     }
     for (const loc of JSONCourts.value) {
       const locName = `${loc.courtName}`;
@@ -187,9 +189,10 @@ const getCourts = async () => {
   }
 
   function handleSubmit(){
+    // console.log(gameDate.value)
     var jsonGame = {};
     var dataNames = ['userScore','oppScore','gameDate','location','notes','player1','player2','player3','player4'];
-    var dataValues = [parseInt(userScore.value), parseInt(oppScore.value), `${gameDate.value} 00:00:00`, Number(locationDict.value[location.value]), notes.value, userDict.value[player1.value], userDict.value[player2.value], userDict.value[player3.value], userDict.value[player4.value]];
+    var dataValues = [parseInt(userScore.value), parseInt(oppScore.value), `${gameDate.value} 00:00:00`, Number(locationDict.value[location.value]), notes.value, yourUserName.value, userDict.value[player2.value], userDict.value[player3.value], userDict.value[player4.value]];
 
     // making the JSON object here 
     for (let i = 0; i < dataNames.length; i++){
@@ -199,7 +202,7 @@ const getCourts = async () => {
 
     let nullsErr = checkForNulls();
     let scoreErr = verifyScore();
-    let yourUserErr = verifyYourUserSelected();
+    // let yourUserErr = verifyYourUserSelected();
     let dateErr = verifyDate();
 
     if(dateErr !== false){
@@ -212,16 +215,16 @@ const getCourts = async () => {
       formErrors.value = `${scoreErr}`;
       //console.log(`Score error found, ${scoreErr}`);
     }
-    else if(yourUserErr !== false){
-      formErrors.value = `${yourUserErr}`;
-      //console.log(`Player selection error, ${yourUserErr}`)
-    }
+    // else if(yourUserErr !== false){
+    //   formErrors.value = `${yourUserErr}`;
+    //   //console.log(`Player selection error, ${yourUserErr}`)
+    // }
     else{ // no nulls and no score err condition, send the data here to backend later 
       formErrors.value = ''; // delete this later
       console.log(jsonGame); 
 
     try {
-      const response = fetchData("/game/logGame", {                  
+        const response = fetchData("/game/logGame", {                  
         method: 'POST', // (or 'GET')
         body: JSON.stringify(jsonGame),
         headers: {
@@ -267,20 +270,20 @@ const getCourts = async () => {
     }
   }
 
-  function verifyYourUserSelected(){
-    if (isInDuosMode.value && ((userDict.value[player1.value] !== yourUserName.value) && (userDict.value[player2.value] !== yourUserName.value) &&  // todo, fix this logic, we need to render more or less players with v if
-    (userDict.value[player3.value] !== yourUserName.value) && (userDict.value[player4.value] !== yourUserName.value))){
-      //console.log(player1.value, player2.value, player3.value, player4.value)
-      return 'You must select yourself as a player in the game (duos)'
-    }
-    else if(!isInDuosMode.value && ((userDict.value[player1.value] !== yourUserName.value) && (userDict.value[player2.value] !== yourUserName.value))){
-      return 'You must select yourself as a player in the game (singles)'
-    }  
+  // function verifyYourUserSelected(){
+  //   if (isInDuosMode.value && ((userDict.value[player1.value] !== yourUserName.value) && (userDict.value[player2.value] !== yourUserName.value) &&  // todo, fix this logic, we need to render more or less players with v if
+  //   (userDict.value[player3.value] !== yourUserName.value) && (userDict.value[player4.value] !== yourUserName.value))){
+  //     //console.log(player1.value, player2.value, player3.value, player4.value)
+  //     return 'You must select yourself as a player in the game (duos)'
+  //   }
+  //   else if(!isInDuosMode.value && ((userDict.value[player1.value] !== yourUserName.value) && (userDict.value[player2.value] !== yourUserName.value))){
+  //     return 'You must select yourself as a player in the game (singles)'
+  //   }  
 
-    else{
-      return false;
-    }
-  }
+  //   else{
+  //     return false;
+  //   }
+  // }
 
   function clearForm(){
     // oppScore.value = null
@@ -432,14 +435,14 @@ const getCourts = async () => {
           <v-row id="row2 w-100">
             <v-col cols="">
               <div class="player-container-1">
-                <h2 class="team-heading center left-pannel-col-header">Team 1 Players</h2> 
+                <h2 class="team-heading center left-pannel-col-header">Your Team Players</h2> 
                 <div class="court">
                   
-                  <v-autocomplete v-model="player1" class="player-search" clearable required label="Player 1" :items="players1" :rules="player1Rules">
-                  </v-autocomplete>
+                  <v-text-field v-model="player1" class="player-search" readonly required label="You (selected)" :items="players1">
+                  </v-text-field> 
                 </div> 
                 <div class="court">                  
-                  <v-autocomplete v-model="player3" :disabled=!isInDuosMode class="player-search" clearable required label="Player 3" :items="players3" :rules="player3Rules">
+                  <v-autocomplete v-model="player3" :disabled=!isInDuosMode class="player-search" auto-select-first clearable required label="Player 3" :items="players3" :rules="player3Rules">
                   </v-autocomplete>
                 </div>
               </div>
@@ -447,7 +450,7 @@ const getCourts = async () => {
                 
               </div>
               <div class="player-container-2">  
-                <h2 class="team-heading left-pannel-col-header">Team 2 Players</h2>
+                <h2 class="team-heading left-pannel-col-header">Opposing Team Players</h2>
                 <div class="court">
                 
                   <v-autocomplete v-model="player2" class="player-search" clearable required label="Player 2" :items="players2" :rules="player2Rules">
