@@ -10,10 +10,15 @@ const store = createStore({
     SET_USER(state, user) {
       state.user = user;
       state.isAuthenticated = !!user;
+      // Persist the user information to localStorage
+      localStorage.setItem('user', JSON.stringify(user));
+      localStorage.setItem('isAuthenticated', state.isAuthenticated);
     },
     LOGOUT(state) {
       state.user = null;
       state.isAuthenticated = false;
+      localStorage.removeItem('user');
+      localStorage.removeItem('isAuthenticated');
     },
   },
   actions: {
@@ -35,17 +40,23 @@ const store = createStore({
     logout({ commit }) {
       commit('LOGOUT');
     },
-  },
+    initializeStore({ commit }) {
+      // Initialize state from localStorage
+      const user = JSON.parse(localStorage.getItem('user'));
+      const isAuthenticated = localStorage.getItem('isAuthenticated') === 'true';
+
+      if (user) {
+        commit('SET_USER', user);
+      }
+      if (isAuthenticated) {
+        commit('SET_USER', user); // Set the user if authenticated
+      }
+    },
+  }
 });
 
+// Initialize store from localStorage right after creating it
+store.dispatch('initializeStore').catch(error => {
+  console.error('Failed to initialize store:', error);
+});
 export default store;
-
-// Fake API login function for demonstration purposes
-async function fakeApiLogin(credentials) {
-  // Simulate a login request (replace with actual API call)
-  const { usernameOrEmail, password } = credentials;
-  if (usernameOrEmail === 'user@example.com' && password === 'password') {
-    return { success: true, user: { username: 'User', email: 'user@example.com' } };
-  }
-  return { success: false, message: 'Invalid credentials' };
-}

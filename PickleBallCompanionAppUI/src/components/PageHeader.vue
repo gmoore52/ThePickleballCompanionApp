@@ -1,15 +1,12 @@
 <template>
   <!-- App Bar -->
   <v-app-bar app color="green darken-4" dark>
-    <!-- Centered Title -->
     <v-toolbar-title class="text-center">
       <span class="text-h4 font-italic">Pickleball Companion</span>
     </v-toolbar-title>
 
-    <!-- Spacer to push the buttons to the right -->
     <v-spacer></v-spacer>
 
-    <!-- Right Section: Full Name or Login/Register -->
     <v-toolbar-items>
       <template v-if="isLoggedIn">
         <v-btn color="white" @click="goToProfile">{{ user.userName }}</v-btn>
@@ -20,6 +17,21 @@
       </template>
     </v-toolbar-items>
   </v-app-bar>
+
+  <!-- Alert Section -->
+  <v-alert
+    class="alert"
+    v-if="alert.visible"
+    :type="alert.type"
+    dismissible
+    @click:close="closeAlert"
+    absolute
+    top
+    left
+    transition="slide-x-transition"
+  >
+    {{ alert.message }}
+  </v-alert>
 
   <!-- Tabs Section -->
   <v-tabs v-model="tab" background-color="grey lighten-2" centered>
@@ -38,6 +50,7 @@
 import { ref, computed } from 'vue';
 import { useStore } from 'vuex';
 import { useRouter } from 'vue-router';
+import { useAlert } from '@/util/alert.js'; // Import the alert utility
 
 // Router instance
 const router = useRouter();
@@ -58,7 +71,10 @@ const tabs = ref([
   { title: 'Profile', route: '/profile' }
 ]);
 
-// Navigation to login and register pages
+// Use alert state and methods
+const { alert, showAlert, closeAlert } = useAlert();
+
+// Navigation functions
 const goToLogin = () => {
   router.push('/login');
 }
@@ -68,16 +84,20 @@ const goToRegister = () => {
 }
 
 const goToProfile = () => {
-  router.push(`/profile/${user.value.userName}`); // Adjust the route if necessary
+  router.push(`/profile/${user.value.userName}`);
 }
+
+// Example of triggering an alert (you can call this from anywhere)
+const triggerErrorAlert = () => {
+  showAlert('error', 'Error: Incorrect email/username or password.', 5000); // Show alert for 5 seconds
+};
 </script>
-
 <style scoped>
-.v-toolbar-title {
-  font-weight: bold;
-}
-
-.v-app-bar {
-  box-shadow: none;
+.alert {
+  position: absolute;
+  z-index: 9999;
+  margin-top: 50px;
+  right: 50%;
+  transform: translateX(50%);
 }
 </style>
