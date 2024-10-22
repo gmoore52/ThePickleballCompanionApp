@@ -9,7 +9,7 @@ const searchQuery = ref(null)
 const showDialog = ref(false);
 const formErrors = ref(null) // delete later 
 
-const eventTitle = ref(null);  // TODO the events backend doesn't even have location </3
+const eventTitle = ref(null);  // todo fix REALLY weird off by 5 hours glitch on sending to the backend, frontent looks fine I dont know whats going wrong
 const eventLocation = ref(null); 
 const startDate = ref(null);
 const endDate = ref(null);
@@ -20,13 +20,15 @@ const endAMPM = ref(null)
 const eventDescription = ref(null); 
 
 const JSONCourts = ref([])
+const JSONEvents = ref([])
 
 const picker1Render = ref(false);
 const picker2Render = ref(false);
 
 const timeStamps = ref(['AM','PM']);
-const locations = ref(['temp']);
+const locations = ref([]);
 const locationDict = ref({}); // used to index between loc_id and location_name
+const inverseLocationDict = ref({})
 
 const ongoingEvents = ref([]);
 const upcomingEvents = ref([]);
@@ -110,180 +112,69 @@ const descriptionRules = [
     return 'Must write a description';
   },
 ];
-const eventsJSON = ref([
-  {
-    event_id: 1,
-    event_title: "All Year Pickle",
-    event_start: new Date("2024-08-01T14:00:00"),
-    event_end: new Date("2025-09-22T16:00:00"),
-    event_description: "A test event that will be occuring for a year",
-    location_name: "Pickleball Central Courts"
-  },
-  {
-    event_id: 2,
-    event_title: "Pickle in the Future",
-    event_start: new Date("2025-11-23T10:00:00"),
-    event_end: new Date("2025-12-23T12:00:00"),
-    event_description: "Mixed Doubles - Quarterfinal match featuring top players from the community, aiming for a spot in the semifinals.",
-    location_name: "Pickle Courts"
-  },
-  {
-    event_id: 3,
-    event_title: "Long Term Pickle Event",
-    event_start: new Date("2024-08-01T14:00:00"),
-    event_end: new Date("2025-09-22T16:00:00"),
-    event_description: "A test event that will be occuring for a year",
-    location_name: "Pickleball Central Courts"
-  },
-  {
-    event_id: 4,
-    event_title: "Pickle Hapenning Now",
-    event_start: new Date("2024-08-01T14:00:00"),
-    event_end: new Date("2024-12-22T16:00:00"),
-    event_description: "A test event that will be occuring for a year",
-    location_name: "Pickleball Central Courts"
-  },
-  {
-    event_id: 5,
-    event_title: "Pickle in the Far Future",
-    event_start: new Date("2025-11-23T10:00:00"),
-    event_end: new Date("2026-12-23T12:00:00"),
-    event_description: "Mixed Doubles - Quarterfinal match featuring top players from the community, aiming for a spot in the semifinals.",
-    location_name: "Pickle Courts"
-  },
-  {
-    event_id: 6,
-    event_title: "Exhibition Showcase",
-    event_start: new Date("2024-09-27T12:00:00"),
-    event_end: new Date("2024-09-27T14:00:00"),
-    event_description: "Women's Doubles - Exhibition match featuring some of the region's most talented players, highlighting their top skills.",
-    location_name: "Regional Sports Complex"
-  },
-  {
-    event_id: 7,
-    event_title: "Third Place Showdown",
-    event_start: new Date("2024-09-28T09:00:00"),
-    event_end: new Date("2024-09-28T11:00:00"),
-    event_description: "Men's Doubles - Third-place consolation match between top contenders after a hard-fought semifinal round.",
-    location_name: "City Park Pickleball Courts"
-  },
-  {
-    event_id: 8,
-    event_title: "Junior Rising Stars",
-    event_start: new Date("2024-09-29T15:00:00"),
-    event_end: new Date("2024-09-29T17:00:00"),
-    event_description: "Junior Pickleball - Youth doubles match showcasing the next generation of talent in a friendly competitive setting.",
-    location_name: "Junior Sports Arena"
-  },
-  {
-    event_id: 9,
-    event_title: "Final Showdown",
-    event_start: new Date("2024-09-30T13:30:00"),
-    event_end: new Date("2024-09-30T15:30:00"),
-    event_description: "Women's Singles - The final showdown to crown the champion of the city-wide pickleball tournament after an exciting season.",
-    location_name: "Pickleball Champion Court"
-  },
-  {
-    event_id: 10,
-    event_title: "Friendly Competitors",
-    event_start: new Date("2024-10-01T11:00:00"),
-    event_end: new Date("2024-10-01T13:00:00"),
-    event_description: "Mixed Doubles - A highly anticipated friendly match featuring advanced players from different clubs.",
-    location_name: "Local Pickleball Club"
-  }
-]);
-
-fetchData
-
-const locationJSON = ref([
-  {
-    "loc_id": 1,
-    "court_name": "Downtown Court",
-    "number_of_courts": 4,
-    "address": "123 Main St, Cityville",
-    "coordinates": "40.7128,-74.0060",
-    "court_meta_id": 101
-  },
-  {
-    "loc_id": 2,
-    "court_name": "Westside Park",
-    "number_of_courts": 6,
-    "address": "456 West St, Townsville",
-    "coordinates": "34.0522,-118.2437",
-    "court_meta_id": 102
-  },
-  {
-    "loc_id": 3,
-    "court_name": "Eastwood Courts",
-    "number_of_courts": 3,
-    "address": "789 East Ave, Villageton",
-    "coordinates": "51.5074,-0.1278",
-    "court_meta_id": 103
-  },
-  {
-    "loc_id": 4,
-    "court_name": "Riverside Court",
-    "number_of_courts": 2,
-    "address": "101 River Rd, Waterbury",
-    "coordinates": "35.6895,139.6917",
-    "court_meta_id": 104
-  },
-  {
-    "loc_id": 5,
-    "court_name": "Central Park Courts",
-    "number_of_courts": 8,
-    "address": "202",
-    "coordinates": "31.6895,14.6917",
-    "court_meta_id": 105
-}]);
-
 
 function filterTimeOfEvents(){
   const now = new Date();
 
-  for (const event of eventsJSON.value){
-    if (event.event_start > now){ // future events 
+  for (const event of JSONEvents.value){
+    // console.log(event)
+    if (event.eventStart > now){ // future events 
+      // console.log(event.eventStart)
+      // console.log(now)
       upcomingEvents.value.push(event)
     }
-    else if ((event.event_start <= now) && (event.event_end > now)){ // events occuring now 
+    else if ((event.eventStart <= now) && (event.eventEnd > now)){ // events occuring now 
       ongoingEvents.value.push(event)
     }
-    else if (event.event_end < now){ // past events 
+    else if (event.eventEnd < now){ // past events 
       pastEvents.value.push(event)
     }
   }
 }
 
-onMounted(() => {
-  getData();
-  parseData();
+onMounted(async () => {
+  await getCourts();
+  await getEvents();
+  await formatEvents();
+  await parseData();
 })
 
-function getData() {
-  getCourts()
+const formatEvents = async () => {
+  for (let event of JSONEvents.value){
+    event.eventStart = new    Date(event.eventStart)
+    event.eventEnd = new Date(event.eventEnd)
   }
+}
+
+const getEvents = async () => {
+  JSONEvents.value = [];
+  try {
+    const url = '/event/events';
+    JSONEvents.value = await fetchData(url);
+    // console.log(JSONEvents.value)
+  } catch (error) {
+    console.error(error);
+  }
+}
 
 const getCourts = async () => {
   JSONCourts.value = [];
   try {
     const url = '/data/locations';
     JSONCourts.value = await fetchData(url);
-    console.log(JSONCourts.value);
   } catch (error) {
     console.error(error);
   }
 }
-
-function parseData(){
+const parseData = async () =>{
   filterTimeOfEvents();
   let allLocationNames = [];
   for (const loc of JSONCourts.value) {
-    console.log(loc)
     const locName = `${loc.courtName}`;
     locationDict.value[locName] = loc.id
+    inverseLocationDict.value[loc.id] = locName
     allLocationNames.push(locName);
   }
-
   locations.value = allLocationNames;
 }
 
@@ -320,15 +211,21 @@ function convertTo24HourTime(time, ampm) {
   return `${hours}:${minutes}`;
 }
 
-function convertToDateObject(date, time, ampm) {
+function convertToDateString(date, time, ampm) {
   const time24hr = convertTo24HourTime(time, ampm);
-  return new Date(`${date}T${time24hr}`);
+  return `${date}T${time24hr}`;
+}
+
+function convertLocIdToName(id){
+  return inverseLocationDict.value[id]
 }
 
 function handleSubmit(){
   var jsonEvent = {};
-  var dataNames = ['eventTitle','locationId','eventDescription'];
+  var dataNames = ['eventTitle','eventLoc','eventDesc'];
   var dataValues = [eventTitle.value, locationDict.value[eventLocation.value], eventDescription.value];
+
+  // console.log(`Event Location ID: ${locationDict.value[eventLocation.value]}`); // Check the value before submission
 
   for (let i = 0; i < dataNames.length; i++){
     jsonEvent[dataNames[i]] = dataValues[i];
@@ -348,11 +245,26 @@ function handleSubmit(){
   else{ // no errors, everything should go through here
     
     // date objects are getting created once the time logic is completed 
-    jsonEvent['eventStart'] = convertToDateObject(startDate.value, startTime.value, startAMPM.value);
-    jsonEvent['eventEnd'] = convertToDateObject(endDate.value, endTime.value, endAMPM.value);
+    jsonEvent['eventStart'] = convertToDateString(startDate.value, startTime.value, startAMPM.value);
+    jsonEvent['eventEnd'] = convertToDateString(endDate.value, endTime.value, endAMPM.value);
 
     formErrors.value = ''; // delete this later
     console.log(jsonEvent); 
+
+
+    try {
+        const response = fetchData("/event/logEvent", {                  
+        method: 'POST', // (or 'GET')
+        body: JSON.stringify(jsonEvent),
+        headers: {
+            'Content-type':'application/json',
+        }
+      });
+
+    console.log('Success - game added :', response);
+    } catch (error){
+      console.error('Error adding Event:', error);
+    }
 
     // post event will occur here 
 
@@ -365,8 +277,8 @@ function checkForTimeAndDateLogic(nullsErr){
     return null // short circuit to prevent errors trying to create dates with bad data 
   }
 
-  let startObj = convertToDateObject(startDate.value, startTime.value, startAMPM.value);
-  let endObj = convertToDateObject(endDate.value, endTime.value, endAMPM.value);
+  let startObj = new Date(convertToDateString(startDate.value, startTime.value, startAMPM.value));
+  let endObj = new Date(convertToDateString(endDate.value, endTime.value, endAMPM.value));
   let msIn30Mins = 1800000;
   const now = new Date();
   const oneYearAhead = new Date(now);
@@ -472,7 +384,7 @@ const filteredOngoingEvents = computed(() => {
   if (!searchQuery.value) {
     return ongoingEvents.value
   }
-  return eventsJSON.value.filter(event =>
+  return JSONEvents.value.filter(event =>
     event.event_title.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
     event.event_description.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
     event.location_name.toLowerCase().includes(searchQuery.value.toLowerCase())
@@ -594,12 +506,12 @@ const filteredOngoingEvents = computed(() => {
                 <v-card class="mb-3 card-item" outlined>
                   <v-row no-gutters>
                     <v-col cols="8">
-                      <v-card-title>{{ event.event_title }}</v-card-title>
+                      <v-card-title>{{ event.eventTitle }}</v-card-title>
                       <!-- <v-card-subtitle>Event ID: {{ event.event_id }}</v-card-subtitle> -->
-                      <v-card-subtitle>Start: {{ convertDateObjToFrontendDate(event.event_start) }}</v-card-subtitle>
-                      <v-card-subtitle>End: {{ convertDateObjToFrontendDate(event.event_end) }}</v-card-subtitle>
-                      <v-card-text>{{ event.event_description }} </v-card-text>
-                      <v-card-subtitle>Hosted at {{ event.location_name }}</v-card-subtitle>
+                      <v-card-subtitle>Start: {{ convertDateObjToFrontendDate(event.eventStart) }}</v-card-subtitle>
+                      <v-card-subtitle>End: {{ convertDateObjToFrontendDate(event.eventEnd) }}</v-card-subtitle>
+                      <v-card-text>{{ event.eventDesc }} </v-card-text>
+                      <v-card-subtitle>Hosted at {{ convertLocIdToName(event.eventLoc) }}</v-card-subtitle>
                     </v-col>
                   <v-col cols="4">
                     <v-img class="img" cover src='https://www.groupestate.gr/images/joomlart/demo/default.jpg' alt="Default image"></v-img>
@@ -623,12 +535,12 @@ const filteredOngoingEvents = computed(() => {
                 <v-card class="mb-3 card-item" outlined>
                   <v-row no-gutters>
                     <v-col cols="8">
-                      <v-card-title>{{ event.event_title }}</v-card-title>
-                      <v-card-subtitle>Event ID: {{ event.event_id }}</v-card-subtitle>
-                      <v-card-subtitle>Start: {{ convertDateObjToFrontendDate(event.event_start) }}</v-card-subtitle>
-                      <v-card-subtitle>End: {{ convertDateObjToFrontendDate(event.event_end)}}</v-card-subtitle>
-                      <v-card-text>Description: {{ event.event_description }} </v-card-text>
-                      <v-card-subtitle>Hosted at {{ event.location_name }}</v-card-subtitle>
+                      <v-card-title>{{ event.eventTitle }}</v-card-title>
+                      <!-- <v-card-subtitle>Event ID: {{ event.eventId }}</v-card-subtitle> -->
+                      <v-card-subtitle>Start: {{ convertDateObjToFrontendDate(event.eventStart) }}</v-card-subtitle>
+                      <v-card-subtitle>End: {{ convertDateObjToFrontendDate(event.eventEnd)}}</v-card-subtitle>
+                      <v-card-text>Description: {{ event.eventDesc }} </v-card-text>
+                      <v-card-subtitle>Hosted at {{ convertLocIdToName(event.eventLoc) }}</v-card-subtitle>
                     </v-col>
                   <v-col cols="4">
                     <v-img class="img" cover src='https://www.groupestate.gr/images/joomlart/demo/default.jpg' alt="Default image"></v-img>
