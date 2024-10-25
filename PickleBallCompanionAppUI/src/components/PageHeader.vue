@@ -84,7 +84,7 @@ const goToRegister = () => {
 }
 
 const goToProfile = () => {
-  router.push(`/profile/${user.value.userName}`);
+  router.push(`/profile`);
 }
 
 // Example of triggering an alert (you can call this from anywhere)
