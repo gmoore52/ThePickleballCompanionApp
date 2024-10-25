@@ -383,8 +383,9 @@ const getCourts = async () => {
     <!-- <h1>Log Game</h1> -->
     <v-form validate-on="submit lazy" @submit.prevent="handleSubmit">
       <v-layout>
-        <v-col cols="12" sm="6" id="left-pannel">
-          <v-card id= "card-1" class="w-100 card">
+        <v-row class="no-styling px-3-xm row-container">
+        <v-col cols="12" sm="6" id="left-pannel" class="pr-xs-5">
+          <v-card id= "card-1" class="w-100 card m-sm-0">
             <v-row id="row1">
               <v-col cols="12" class="left-pannel-col left-pannel-col-header">
                 <h2>Game Summary</h2>
@@ -429,15 +430,15 @@ const getCourts = async () => {
               </v-col>
             </v-row>
         </v-card>  
+        
       </v-col>
-      <v-col cols="12" sm="6" id="right-pannel">
+        <v-col cols="12" sm="6" id="right-pannel" class="">
         <v-card id="card2" class="card">
           <v-row id="row2 w-100">
             <v-col cols="">
               <div class="player-container-1">
                 <h2 class="team-heading center left-pannel-col-header">Your Team Players</h2> 
                 <div class="court">
-                  
                   <v-text-field v-model="player1" class="player-search" readonly required label="You (selected)" :items="players1">
                   </v-text-field> 
                 </div> 
@@ -472,7 +473,8 @@ const getCourts = async () => {
               </v-col>
           </v-row>
         </v-card> 
-      </v-col>
+        </v-col>
+      </v-row>
       </v-layout>
     </v-form>
   </v-row>
@@ -480,12 +482,15 @@ const getCourts = async () => {
 </template>
 
 <style scoped>
-  #card1{
+  .no-styling{
+    margin:0px;
+  }
+  /* #card1{
     margin-right: 0.1em;
   }
   #card2{
     margin-left: 0.1em;
-  }
+  } */
   .card{
     border-radius: 8px;
     padding: 16px;
@@ -538,6 +543,21 @@ const getCourts = async () => {
     padding-left: 1px;
     display:block !important;
   }
+  
+  @media (max-width: 599px) {
+    #left-pannel {
+      padding-left: 2px;
+      padding-bottom: 2px;
+    }
+    #right-pannel{
+      padding-right: 2px;
+      padding-top: 2px;
+    }
+    .container{
+      padding-right: 25px; 
+      padding-left: 25px; 
+    }
+  }
   .btn-col{
     padding-top: 0;
   }
@@ -545,7 +565,7 @@ const getCourts = async () => {
     height:3rem;
   }
   #notes{ 
-    height:200px;
+    height:100px;
   }
   #row2{
     width: 50% !important;
