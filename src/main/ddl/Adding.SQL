@@ -16,3 +16,11 @@ VALUES
     (3, 'Eastwood Courts', '/images/eastwood_courts.jpg', 3, '789 East Ave, Villageton', '51.5074,-0.1278', 3),
     (4, 'Riverside Court', '/images/riverside_court.jpg', 2, '101 River Rd, Waterbury', '35.6895,139.6917', 4),
     (5, 'Central Park Courts', '/images/central_park_courts.jpg', 8, '202 Central Ave, Cityville', '31.6895,14.6917', 5);
+
+INSERT INTO EVENTS (EVENT_START, EVENT_END, EVENT_LOC, EVENT_TITLE, EVENT_DESC, LOCATION_ID)
+VALUES
+    ('2024-10-01 10:00:00', '2024-10-01 12:00:00', 1, 'Pickleball Tournament', 'Join us for an exciting pickleball tournament!', 1),
+    ('2024-10-05 14:00:00', '2024-10-05 16:00:00', 2, 'Community Game Day', 'A fun-filled day of pickleball games for everyone!', 2),
+    ('2024-10-10 09:00:00', '2024-10-10 11:00:00', 3, 'Beginner Lessons', 'Free lessons for beginners to learn the game of pickleball.', 3),
+    ('2024-10-15 18:00:00', '2024-10-15 20:00:00', 4, 'Night Play', 'Enjoy pickleball under the lights!', 4),
+    ('2024-10-20 19:00:00', '2024-10-20 21:00:00', 5, 'Pickleball Social', 'Join us for a social evening of pickleball and networking!', 5);
