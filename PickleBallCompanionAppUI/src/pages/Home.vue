@@ -16,18 +16,15 @@
 
           <!-- Events Section -->
           <v-card class="pa-4 flex-grow-1" outlined>
-            <v-card-title class="white--text text-h5">Events</v-card-title>
+            <v-card-title class="white--text text-h5">Upcoming Events</v-card-title>
             <v-row>
-              <v-col cols="12" md="6">
-                <v-card outlined color="#212121">
-                  <v-card-title class="white--text">Event Name</v-card-title>
-                  <v-card-text class="white--text">Event information</v-card-text>
-                </v-card>
-              </v-col>
-              <v-col cols="12" md="6">
+              <v-col v-for="event in sortedEvents" :key="event.eventId" cols="12" md="6">
                 <v-card outlined>
-                  <v-card-title class="white--text">Event Name</v-card-title>
-                  <v-card-text class="white--text">Event information</v-card-text>
+                  <v-card-title class="white--text">{{ event.eventTitle }}</v-card-title>
+                  <v-card-text class="white--text">{{ event.eventDesc }}</v-card-text>
+                  <v-card-subtitle class="white--text">
+                    {{ new Date(event.eventStart).toLocaleString() }}
+                  </v-card-subtitle>
                 </v-card>
               </v-col>
             </v-row>
@@ -57,7 +54,30 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted, computed } from 'vue';
+import { fetchData } from "@/util/fetchData";
+
+const JSONEvents = ref([]);
+
+const getEvents = async () => {
+  JSONEvents.value = [];
+  try {
+    JSONEvents.value = await fetchData("/event/events");
+    console.log(JSONEvents.value)
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+// Fetch events when the component is mounted
+onMounted(() => {
+  getEvents();
+});
+
+// Computed property to sort events by EVENT_START date
+const sortedEvents = computed(() => {
+  return JSONEvents.value.sort((a, b) => new Date(a.EVENT_START) - new Date(b.EVENT_START));
+});
 </script>
 
 <style scoped>
