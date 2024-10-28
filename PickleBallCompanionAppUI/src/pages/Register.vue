@@ -76,7 +76,7 @@
       <v-card-actions>
         <v-row>
           <v-col>
-            <v-btn color="green" @click="register">
+            <v-btn color="green" @click="register" :disabled="!formValid">
               Register
             </v-btn>
           </v-col>
@@ -127,12 +127,17 @@
 
   const passwordRules = [
   v => !!v || 'Password is required',
-  v => v.length >= 8 || 'Password must be at least 8 characters'
+  v => v.length >= 8 || 'Password must be at least 8 characters',
+    v => /[A-Z]/.test(v) || 'Password must contain at least one uppercase letter',
+    v => /[\d!@#$%^&*(),.?":{}|<>]/.test(v) || 'Password must contain at least one number or special character'
   ]
 
   const confirmPasswordRules = [
   v => !!v || 'Please confirm your password',
-  v => v === password.value || 'Passwords do not match'
+  v => v === password.value || 'Passwords do not match',
+    v => v.length >= 8 || 'Password must be at least 8 characters',
+    v => /[A-Z]/.test(v) || 'Password must contain at least one uppercase letter',
+    v => /[\d!@#$%^&*(),.?":{}|<>]/.test(v) || 'Password must contain at least one number or special character'
   ]
 
   // Form reference to access validate()
@@ -192,6 +197,11 @@
 
   // Register button handler
   const register = async () => {
+
+    // formValid only true if all rules are followed
+    // otherwise button is disabled
+    formValid.value = form.value.validate();
+
     // Validate all fields before checking the form
     validateFirstName();
     validateLastName();
