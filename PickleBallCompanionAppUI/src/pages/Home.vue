@@ -1,7 +1,7 @@
 <template>
   <v-app>
-    <v-container class="fill-height d-flex flex-column" fluid>
-      <v-row justify="space-between" align="stretch" class="flex-grow-1">
+    <v-container class="fill-height d-flex flex-column big-container">
+      <v-row  align="stretch" class="flex-grow-1">
         <!-- Main Left Section (Welcome and Events) -->
         <v-col cols="12" md="8" class="d-flex flex-column">
           <!-- Welcome Section -->
@@ -19,7 +19,7 @@
             <v-card-title class="white--text text-h5">Upcoming Events</v-card-title>
             <v-row>
               <v-col v-for="event in sortedEvents" :key="event.eventId" cols="12" md="6">
-                <v-card outlined>
+                <v-card class="inner-card">
                   <v-card-title class="white--text">{{ event.eventTitle }}</v-card-title>
                   <v-card-text class="white--text">{{ event.eventDesc }}</v-card-text>
                   <v-card-subtitle class="white--text">
@@ -32,7 +32,7 @@
         </v-col>
 
         <!-- Recent Games Section -->
-        <v-col cols="12" md="3" class="d-flex flex-column">
+        <v-col cols="12" md="4" class="d-flex flex-column">
           <v-card class="pa-4 flex-grow-1" outlined>
             <v-card-title class="white--text text-h5">Recent Games</v-card-title>
             <v-card-text>
@@ -86,15 +86,29 @@ const sortedEvents = computed(() => {
   height: 100vh;
 }
 
+.big-container{
+  background-color:#212121;
+  margin-top: 16px;
+  margin-bottom: 16px;
+}
+
 .v-container {
   height: 100%;
+  border-radius: 8px;
+}
+
+.inner-card{
+  background-color: none;
 }
 
 .v-card {
+  background-color: #42424254;
   border: 1px solid white;
+  border-radius: 8px;
   padding: 0.8em;
   margin: 0.1em;
   color: #212121 !important;
+  border:none;
 }
 
 .white--text {

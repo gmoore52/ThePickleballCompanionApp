@@ -7,8 +7,6 @@ VALUES
     ('Peter_Dinklage3', 'Peter Dinklage', 'dinkle@example.com', 'password101', '/images/benjamin_martinez.jpg', 2, NOW());
 
 
-select * from USERS;
-
 INSERT INTO LOCATIONS (LOC_ID, COURT_NAME, COURT_PIC, NUM_OF_COURTS, ADDRESS, COORDINATES, COURT_META_ID)
 VALUES
     (1, 'Downtown Court', '/images/downtown_court.jpg', 4, '123 Main St, Cityville', '40.7128,-74.0060', 1),

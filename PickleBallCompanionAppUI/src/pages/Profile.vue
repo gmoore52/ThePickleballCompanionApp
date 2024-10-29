@@ -1,6 +1,6 @@
 <template>
   <v-app>
-    <v-container fluid>
+    <v-container>
       <v-row v-if="isLoggedIn" justify="space-between" align="stretch" class="flex-grow-1">
         <v-col cols="12" md="12" class="d-flex flex-column">
           <v-card class="pa-4 flex-grow-1" outlined>
@@ -42,7 +42,7 @@
           <v-card class="pa-4 border-dark">
             <v-card-title class="white--text text-h5">You are not logged in</v-card-title>
             <v-card-text class="white--text">
-              Please <router-link to="/login" class="text-blue">click here</router-link> to log in and access your profile.
+              Please <router-link to="/login" class="text-blue">Click Here</router-link> to log in and access your profile.
             </v-card-text>
           </v-card>
         </v-col>
@@ -115,6 +115,10 @@ const confirmLogout = async () => {
 </script>
 
 <style scoped>
+div.v-card{
+  border:none;
+}
+
 .v-app {
   height: 100vh;
 }
@@ -126,8 +130,9 @@ const confirmLogout = async () => {
 .v-card {
   border: 1px solid white;
   padding: 0.8em;
-  margin: 0.1em;
+  
   color: #212121 !important;
+  border-radius: 8px;
 }
 
 .white--text {

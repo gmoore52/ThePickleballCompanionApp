@@ -1,12 +1,12 @@
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted} from 'vue'
 import { VTimePicker } from 'vuetify/labs/VTimePicker'
 import { fetchData } from '@/util/fetchData';
+import { showAlert } from '@/util/alert'
 
 // Search query reactive variable
 const searchQuery = ref(null)
 const showDialog = ref(false);
-const formErrors = ref(null) // delete later
 
 const eventTitle = ref(null);  // todo fix REALLY weird off by 5 hours glitch on sending to the backend, frontent looks fine I dont know whats going wrong
 const eventLocation = ref(null);
@@ -101,7 +101,7 @@ const endTimeRules = [
 const endAMPMRules = [
   value => {
     if (value) return true;
-    return 'Must choose AM / PM';
+    return 'Select AM / PM';
   },
 ];
 
@@ -140,7 +140,7 @@ onMounted(async () => {
 
 const formatEvents = async () => {
   for (let event of JSONEvents.value){
-    event.eventStart = new    Date(event.eventStart)
+    event.eventStart = new Date(event.eventStart)
     event.eventEnd = new Date(event.eventEnd)
   }
 }
@@ -235,19 +235,16 @@ function handleSubmit(){
   let timeAndDateLogic = checkForTimeAndDateLogic(nullsErr);
 
   if(nullsErr !== false){
-    // console.log(`Nulls Error detected ${nullsErr}`)
+    showAlert('error', `Error: First error found in field: '${nullsErr}'`)
   }
   else if(timeAndDateLogic !== false){
-    formErrors.value = `${timeAndDateLogic}`;
-    console.log(formErrors.value)
+    showAlert('error', timeAndDateLogic)
   }
   else{ // no errors, everything should go through here
-
-    // date objects are getting created once the time logic is completed
+    
+    // date objects are getting created once the time logic is completed 
     jsonEvent['eventStart'] = convertToDateString(startDate.value, startTime.value, startAMPM.value);
     jsonEvent['eventEnd'] = convertToDateString(endDate.value, endTime.value, endAMPM.value);
-
-    formErrors.value = ''; // delete this later
     console.log(jsonEvent);
 
 
@@ -338,7 +335,6 @@ function checkForNulls(){
 
 function closeModal(){
   showDialog.value = false
-  formErrors.value = null
 
   eventTitle.value = null;
   eventLocation.value = null;
@@ -373,8 +369,8 @@ const filteredUpcomingEvents = computed(() => {
     return upcomingEvents.value
   }
   return upcomingEvents.value.filter(event =>
-    event.event_title.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-    event.event_description.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
+    event.eventTitle.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
+    event.eventDesc.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
     event.location_name.toLowerCase().includes(searchQuery.value.toLowerCase())
   )
 })
@@ -383,9 +379,9 @@ const filteredOngoingEvents = computed(() => {
   if (!searchQuery.value) {
     return ongoingEvents.value
   }
-  return JSONEvents.value.filter(event =>
-    event.event_title.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-    event.event_description.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
+  return ongoingEvents.value.filter(event =>
+    event.eventTitle.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
+    event.eventDesc.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
     event.location_name.toLowerCase().includes(searchQuery.value.toLowerCase())
   )
 })
@@ -471,7 +467,7 @@ const filteredOngoingEvents = computed(() => {
                     </v-btn>
                   </v-col>
                   <v-col cols="12" class="errors">
-                    {{formErrors}}
+              
                   </v-col>
                 </v-row>
               </v-form>

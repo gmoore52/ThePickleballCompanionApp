@@ -1,7 +1,7 @@
 <template>
   <v-container class="d-flex justify-center align-center" fill-height>
     <v-card class="pa-6" width="600">
-      <v-card-title class="text-h5">Login</v-card-title>
+      <v-card-title class="text-h5 login-header">Login</v-card-title>
       <v-card-text>
         <v-form ref="loginForm" v-model="valid">
           <v-text-field
@@ -78,5 +78,9 @@ const submitForm = async () => {
 </script>
 
 <style scoped>
+.login-header{
+  justify-content: center;
+  text-align: center;
+}
 /* Custom styles if needed */
 </style>
