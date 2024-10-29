@@ -96,7 +96,7 @@ const triggerErrorAlert = () => {
 .alert {
   position: absolute;
   z-index: 9999;
-  margin-top: 50px;
+  margin-top: 35px;
   right: 50%;
   transform: translateX(50%);
 }

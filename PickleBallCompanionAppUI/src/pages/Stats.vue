@@ -1,11 +1,11 @@
 <template>
   <v-app>
-    <v-container fluid>
-      <v-row justify="space-between" align="stretch" class="flex-grow-1">
+    <v-container>
+      <v-row >
         <!-- Main Left Section (Welcome and Events) -->
-        <v-col cols="12" md="12" class="d-flex flex-column">
+        <v-col cols="12" md="12" class="d-flex flex-column" >
           <!-- Profile Box -->
-          <v-card class="pa-4 flex-grow-1" outlined>
+          <v-card class="pa-4 flex-grow-1 big-container" outlined >
             <v-row>
               <v-col cols="12" md="3">
                 <v-card-title class="white--text text-h4">Stats</v-card-title>
@@ -45,11 +45,11 @@
               </v-col>
 
               <v-col cols="12" md="8">
-                <v-card>
+                <v-card class="chart-options">
                   <div>
                     <v-menu offset-y>
                       <template v-slot:activator="{ props }">
-                        <v-btn v-bind="props">Chart Options</v-btn>
+                        <v-btn v-bind="props" class="chart-options">Chart Options</v-btn>
                       </template>
                       <v-list>
                         <v-list-item
@@ -108,12 +108,20 @@ function handleAction(action) {
 .v-container {
   height: 100%;
 }
+.big-container{
+  border-radius: 8px;
+}
+
+.chart-options{
+  background-color: #42424254;
+}
 
 .v-card {
   border: 1px solid white;
   padding: 0.8em;
-  margin: 0.1em;
+  
   color: #212121 !important;
+  border:none;
 }
 
 .white--text {
