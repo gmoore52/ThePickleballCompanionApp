@@ -52,7 +52,6 @@
     </v-container>
   </v-app>
 </template>
-
 <script setup>
 import { ref, onMounted, computed } from 'vue';
 import { fetchData } from "@/util/fetchData";
@@ -74,12 +73,14 @@ onMounted(() => {
   getEvents();
 });
 
-// Computed property to sort events by EVENT_START date
+// Computed property to filter and sort events by EVENT_START date
 const sortedEvents = computed(() => {
-  return JSONEvents.value.sort((a, b) => new Date(a.EVENT_START) - new Date(b.EVENT_START));
+  const now = new Date();
+  return JSONEvents.value
+    .filter(event => new Date(event.eventStart) > now) // Only future events
+    .sort((a, b) => new Date(a.eventStart) - new Date(b.eventStart)); // Sort by date
 });
 </script>
-
 <style scoped>
 .v-app {
   height: 100vh;

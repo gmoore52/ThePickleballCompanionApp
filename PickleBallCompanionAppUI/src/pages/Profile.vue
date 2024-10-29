@@ -7,6 +7,7 @@
         <v-col cols="12" md="12" class="d-flex flex-column">
           <v-card class="pa-4 flex-grow-1" outlined>
             <v-row>
+              <!-- User Information Section -->
               <v-col cols="12" md="3">
                 <v-card-title class="white--text text-h4">{{ userData.userName }}</v-card-title>
                 <v-card-subtitle class="white--text text-h6">{{ userData.userFullName }}</v-card-subtitle>
@@ -27,7 +28,7 @@
                   <v-card-title class="white--text">Account Creation Date</v-card-title>
                   <v-card-text class="white--text">{{ formatDate(userData.accCreationDate) }}</v-card-text>
                 </v-card>
-                <v-btn class="mt-5" color="red" @click="logout">Logout</v-btn>
+                <v-btn class="mt-5" color="red" @click="showLogoutConfirm = true">Logout</v-btn>
               </v-col>
             </v-row>
           </v-card>
@@ -39,7 +40,7 @@
       <!-- Render message with link to login page if user is not logged in -->
       <v-row v-else>
         <v-col class="text-center">
-          <v-card class="pa-4" outlined>
+          <v-card class="pa-4 border-dark">
             <v-card-title class="white--text text-h5">You are not logged in</v-card-title>
             <v-card-text class="white--text">
               Please <router-link to="/login" class="text-blue">click here</router-link> to log in and access your profile.
@@ -47,15 +48,27 @@
           </v-card>
         </v-col>
       </v-row>
+
+      <!-- Logout Confirmation Dialog -->
+      <v-dialog v-model="showLogoutConfirm" max-width="400">
+        <v-card>
+          <v-card-title class="white--text">Confirm Logout</v-card-title>
+          <v-card-text class="white--text">Are you sure you want to log out?</v-card-text>
+          <v-card-actions>
+            <v-btn color="green" @click="confirmLogout">Yes</v-btn>
+            <v-btn color="grey" @click="showLogoutConfirm = false">Cancel</v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
     </v-container>
   </v-app>
 </template>
 
 <script setup>
-import {ref, onMounted, computed} from 'vue';
-import {fetchData} from '@/util/fetchData.js';
-import {useStore} from 'vuex';
-import {showAlert} from "@/util/alert";
+import { ref, onMounted, computed } from 'vue';
+import { fetchData } from '@/util/fetchData.js';
+import { useStore } from 'vuex';
+import { showAlert } from "@/util/alert";
 import router from "@/router";
 
 const store = useStore();
@@ -81,6 +94,8 @@ const getSkillLevelText = (level) => {
   return skillLevels[level] || "Unknown";
 };
 
+const showLogoutConfirm = ref(false); // State for logout confirmation dialog
+
 // Computed property to determine if the user is logged in
 const isLoggedIn = computed(() => store.state.isAuthenticated);
 
@@ -100,13 +115,14 @@ const formatDate = (date) => {
 };
 
 onMounted(() => {
-  if (isLoggedIn.value){
+  if (isLoggedIn.value) {
     fetchUserData(store.state.user.userName);
   }
 });
 
-// Logout method
-const logout = async () => {
+// Confirm logout action
+const confirmLogout = async () => {
+  showLogoutConfirm.value = false; // Close the dialog
   await store.dispatch('logout');
   await router.push('/');
   showAlert('success', 'You have been successfully logged out.', 5000);
