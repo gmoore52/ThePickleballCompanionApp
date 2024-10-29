@@ -76,7 +76,6 @@ const submitForm = async () => {
   }
 };
 </script>
-
 <style scoped>
 .login-header{
   justify-content: center;
