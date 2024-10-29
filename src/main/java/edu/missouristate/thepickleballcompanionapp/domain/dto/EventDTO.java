@@ -9,7 +9,6 @@ public class EventDTO {
     private Integer eventLoc;
     private String eventTitle;
     private String eventDesc;
-    private Integer locationId;
 
     // Constructors
     public EventDTO() {
@@ -22,7 +21,6 @@ public class EventDTO {
         this.eventLoc = eventLoc;
         this.eventTitle = eventTitle;
         this.eventDesc = eventDesc;
-        this.locationId = locationId;
     }
 
     // Getters and Setters
@@ -74,14 +72,6 @@ public class EventDTO {
         this.eventDesc = eventDesc;
     }
 
-    public Integer getLocationId() {
-        return locationId;
-    }
-
-    public void setLocationId(Integer locationId) {
-        this.locationId = locationId;
-    }
-
     // toString Method
     @Override
     public String toString() {
@@ -92,7 +82,6 @@ public class EventDTO {
                 ", eventLoc=" + eventLoc +
                 ", eventTitle='" + eventTitle + '\'' +
                 ", eventDesc='" + eventDesc + '\'' +
-                ", locationId=" + locationId +
                 '}';
     }
 }

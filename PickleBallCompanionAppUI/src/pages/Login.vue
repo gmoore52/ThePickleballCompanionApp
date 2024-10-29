@@ -5,7 +5,7 @@
       <v-card-text>
         <v-form ref="loginForm" v-model="valid">
           <v-text-field
-            label="Username or Email"
+            label="Username"
             v-model="login"
             :rules="[rules.required]"
             clearable
