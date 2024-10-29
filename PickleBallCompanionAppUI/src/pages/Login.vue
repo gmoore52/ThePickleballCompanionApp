@@ -68,7 +68,7 @@ const submitForm = async () => {
       await router.push('/');
     } catch (error) {
       // Show the alert if login fails
-      showAlert('error', 'Incorrect email/username or password.', 5000); // Show error alert for 5 seconds
+      showAlert('error', 'Incorrect username or password.', 5000); // Show error alert for 5 seconds
       console.error('Login failed:', error.message);
     }
   } else {
@@ -76,7 +76,6 @@ const submitForm = async () => {
   }
 };
 </script>
-
 <style scoped>
 .login-header{
   justify-content: center;
