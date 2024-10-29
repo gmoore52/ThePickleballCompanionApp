@@ -14,7 +14,8 @@ public class EventDTO {
     public EventDTO() {
     }
 
-    public EventDTO(Integer eventId, java.sql.Timestamp eventStart, java.sql.Timestamp eventEnd, Integer eventLoc, String eventTitle, String eventDesc, Integer locationId) {
+    public EventDTO(Integer eventId, java.sql.Timestamp eventStart, java.sql.Timestamp eventEnd, Integer eventLoc,
+            String eventTitle, String eventDesc, Integer locationId) {
         this.eventId = eventId;
         this.eventStart = eventStart;
         this.eventEnd = eventEnd;

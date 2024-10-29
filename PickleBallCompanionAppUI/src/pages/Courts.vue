@@ -1,9 +1,9 @@
 <template>
-  <v-container>
+  <v-container class="big-container">
     <!-- Search and Location Toolbar -->
-    <v-row class="mb-4" no-gutters>
+    <v-row class="">
       <v-col cols="12" md="8">
-        <v-btn color="#212121" class="mr-2" @click="getUserLocation">
+        <v-btn color="#212121" id="loc-btn" class="mr-2" @click="getUserLocation">
           Click here to use your precise location
         </v-btn>
       </v-col>
@@ -12,7 +12,6 @@
           v-model="searchQuery"
           label="Search Courts"
           single-line
-          dense
           color="#212121"
           class="white--text no-padding"
           hide-details
@@ -29,9 +28,10 @@
         v-for="court in filteredCourts"
         :key="court.id"
         cols="12"
+        class="displayed-court"
       >
-        <v-card class="mb-3" outlined>
-          <v-row no-gutters>
+        <v-card class="" outlined>
+          <v-row>
             <v-col cols="8">
               <v-card-title>{{ court.courtName }}</v-card-title>
               <v-card-subtitle>Distance: {{ court.distance }} km</v-card-subtitle>
@@ -100,11 +100,29 @@ const getUserLocation = () => {
 </script>
 
 <style scoped>
+.displayed-court{
+  
+}
+
+#loc-btn{
+  background-color:#4caf50 !important;
+}
+
 .v-card {
-  color: #212121;
+  background-color: #42424254;
+  border-radius: 8px;
   padding: 0.8em;
   margin: 0.1em;
 }
+
+.big-container{
+  background-color: #212121;
+  padding-left:16px;
+  border-radius: 8px;
+  margin-bottom:16px;
+  margin-top:16px;
+}
+
 
 .search-btn {
   height: 100%;
@@ -119,7 +137,7 @@ const getUserLocation = () => {
 }
 
 .v-text-field {
-  background-color: #212121;
+  background-color: #42424254;
   padding: 0; /* Remove extra padding */
 }
 
