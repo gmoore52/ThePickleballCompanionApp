@@ -371,7 +371,7 @@ const filteredUpcomingEvents = computed(() => {
   return upcomingEvents.value.filter(event =>
     event.eventTitle.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
     event.eventDesc.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-    event.location_name.toLowerCase().includes(searchQuery.value.toLowerCase())
+    convertLocIdToName(event.eventLoc).toLowerCase().includes(searchQuery.value.toLowerCase())
   )
 })
 
@@ -382,7 +382,7 @@ const filteredOngoingEvents = computed(() => {
   return ongoingEvents.value.filter(event =>
     event.eventTitle.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
     event.eventDesc.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-    event.location_name.toLowerCase().includes(searchQuery.value.toLowerCase())
+    convertLocIdToName(event.eventLoc).toLowerCase().includes(searchQuery.value.toLowerCase())
   )
 })
 </script>
