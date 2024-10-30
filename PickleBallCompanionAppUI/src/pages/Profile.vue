@@ -21,10 +21,8 @@
                 <v-card>
                   <v-card-title class="white--text">Email</v-card-title>
                   <v-card-text class="white--text">{{ userData.emailAddress }}</v-card-text>
-                  <v-card-title class="white--text">Location (City)</v-card-title>
-                  <v-card-text class="white--text">Springfield, MO -- not currently in DB</v-card-text>
-                  <v-card-title class="white--text">Birthday</v-card-title>
-                  <v-card-text class="white--text">xx/xx/xxxx -- not currently in DB</v-card-text>
+                  <v-card-title class="white--text">Skill Level</v-card-title>
+                  <v-card-text class="white--text">{{getSkillLevelText(userData.skillLevel)}}</v-card-text>
                   <v-card-title class="white--text">Account Creation Date</v-card-title>
                   <v-card-text class="white--text">{{ formatDate(userData.accCreationDate) }}</v-card-text>
                 </v-card>
@@ -76,8 +74,22 @@ const userData = ref({
   userName: '',
   userFullName: '',
   emailAddress: '',
-  accCreationDate: ''
+  accCreationDate: '',
+  skillLevel: ''
 });
+
+// Skill level mapping to be used with getSkillLevelText to present skill level as a string on the front end
+const skillLevels = {
+  1: "Beginner",
+  2: "Intermediate",
+  3: "Advanced",
+  4: "Pro"
+};
+
+// Function to get skill level text
+const getSkillLevelText = (level) => {
+  return skillLevels[level] || "Unknown";
+};
 
 const showLogoutConfirm = ref(false); // State for logout confirmation dialog
 
