@@ -2,6 +2,7 @@
 import { ref, watch, computed} from 'vue';
 import { onMounted } from '@vue/runtime-core';
 import { fetchData } from '@/util/fetchData';
+import { showAlert } from '@/util/alert'
 
   const userScore = ref(null); 
   const oppScore = ref(null);
@@ -14,7 +15,6 @@ import { fetchData } from '@/util/fetchData';
   const JSONCourts = ref([])
 
   const isInDuosMode = ref(true);
-  const formErrors = ref(null) // delete later 
   
   const players1 = ref([]);
   const players2 = ref([]);
@@ -38,12 +38,12 @@ import { fetchData } from '@/util/fetchData';
       }
       return true
     },
-    value => {
-      if(value > 11){
-         return 'Score cannot be greater than 11';
-      }
-      return true
-    }, 
+    // value => {
+    //   if(value > 11){
+    //      return 'Score cannot be greater than 11';
+    //   }
+    //   return true
+    // }, 
   ];
 
   const oppScoreRules = [
@@ -57,12 +57,12 @@ import { fetchData } from '@/util/fetchData';
       };
       return true;
     },
-    value => {
-      if(value > 11){
-         return 'Score cannot be greater than 11';
-      }
-      return true
-    }, 
+    // value => {
+    //   if(value > 11){
+    //      return 'Score cannot be greater than 11';
+    //   }
+    //   return true
+    // }, 
   ];
  
   const locationRules = [
@@ -205,23 +205,18 @@ const getCourts = async () => {
     // let yourUserErr = verifyYourUserSelected();
     let dateErr = verifyDate();
 
-    if(dateErr !== false){
-      //debugErrors.value = `${dateErr}`;
+    if(nullsErr !== false){
+      showAlert('error', `Error: First error found in field: '${nullsErr}'`)
     }
-    else if(nullsErr !== false){
-      //debugErrors.value = `Null(s) found, first at ${nullsErr}`;
+    else if(dateErr !== false){
+      showAlert('error', dateErr)
     }
     else if(scoreErr !== false){
-      formErrors.value = `${scoreErr}`;
-      //console.log(`Score error found, ${scoreErr}`);
+      showAlert('error', scoreErr)
     }
-    // else if(yourUserErr !== false){
-    //   formErrors.value = `${yourUserErr}`;
-    //   //console.log(`Player selection error, ${yourUserErr}`)
-    // }
     else{ // no nulls and no score err condition, send the data here to backend later 
-      formErrors.value = ''; // delete this later
-      console.log(jsonGame); 
+ 
+      // console.log(jsonGame); 
 
     try {
         const response = fetchData("/game/logGame", {                  
@@ -234,6 +229,7 @@ const getCourts = async () => {
 
     console.log('Success - game added :', response);
     clearForm()
+    showAlert('success', 'Game successfully posted')
     } catch (error){
       console.error('Error adding game:', error);
     }
@@ -244,9 +240,15 @@ const getCourts = async () => {
     if ((userScore.value == 11) && (oppScore.value == 11)){
       return 'Only one team may score 11 points, no ties allowed'
     }
-    else if((userScore.value!= 11 ) && (oppScore.value != 11)){ 
-      return 'One score of 11 must be reached'
+    else if((userScore.value < 11) && (oppScore.value < 11)){ 
+      return 'One score of at least 11 must be reached'
       } 
+    else if((userScore.value == 11 && oppScore.value == 10) || (userScore.value == 10 && oppScore.value == 11)){
+      return 'The winning team must win by 2 points'
+    }
+    else if ((userScore.value > 11 || oppScore.value > 11) && (Math.abs(userScore.value - oppScore.value) !== 2)) { // case where a win needs to occur by at least 2 points in OT (ie 10-11 can't work)
+      return `To have a score of over 11, the winning team must win by exactly 2 points`; 
+    }
     else{
       return false 
     }
@@ -286,18 +288,20 @@ const getCourts = async () => {
   // }
 
   function clearForm(){
-    // oppScore.value = null
+    // form.value.reset()
     // userScore.value = null
     // gameDate.value = null
-    // player1.value = null
+    // player1.value = yourUserNameDisplayString.value
     // player2.value = null
     // player3.value = null
     // player4.value = null
     // location.value = null
-    // isInDuosMode.value = true
 
-    // formErrors.value = null
-    //window.location.reload()
+    // form.value.reset()
+    // isInDuosMode.value = true
+    
+
+    // window.location.reload()
   }
 
   function checkForNulls(){
@@ -381,7 +385,7 @@ const getCourts = async () => {
   <v-container class="container">
     <v-row>
     <!-- <h1>Log Game</h1> -->
-    <v-form validate-on="submit lazy" @submit.prevent="handleSubmit">
+    <v-form validate-on="submit lazy" @submit.prevent="handleSubmit" ref="form">
       <v-layout>
         <v-row class="no-styling px-3-xm row-container">
         <v-col cols="12" sm="6" id="left-pannel" class="pr-xs-5">
@@ -419,7 +423,7 @@ const getCourts = async () => {
               </v-col>
               
               <v-col cols="12" class="left-pannel-col">
-                <v-text-field v-model="gameDate" label="Date" type="date" class="text left-pannel" required :rules="dateRules"></v-text-field>
+                <v-text-field v-model="gameDate" label="Date" type="date" class="text left-pannel" required :rules="dateRules" ref="gd"></v-text-field>
               </v-col>
               <v-col cols="12" class="left-pannel-col no-margins">
                 <v-autocomplete v-model="location" clearable label="Location"type="text" class="text left-pannel" required :items=locations :rules="locationRules"></v-autocomplete>
@@ -469,7 +473,6 @@ const getCourts = async () => {
                 <v-btn type="submit" variant="tonal" class="w-100 submit"> Submit Game</v-btn>
             </v-col>
             <v-col cols="12" class="errors">
-                {{formErrors}}
               </v-col>
           </v-row>
         </v-card> 

@@ -1,5 +1,5 @@
 <template>
-  <v-container class="fill-height d-flex justify-center align-center">
+  <v-container class="big-container d-flex">
     <v-card elevation="10" width="600" class="pa-6">
       <v-card-title class="text-center">Create Pickleball Companion Account</v-card-title>
       <v-card-text>
@@ -270,7 +270,12 @@
 
 <style scoped>
 .fill-height {
-  min-height: 100vh;
+  
+}
+.big-container{
+  margin-top: 0px;
+  margin-bottom: 0px;
+  justify-content: center;
 }
 
 .v-card-title {

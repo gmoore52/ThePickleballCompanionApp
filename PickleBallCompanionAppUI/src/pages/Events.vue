@@ -1,23 +1,22 @@
 <script setup>
-import { ref, computed} from 'vue'
+import { ref, computed, onMounted} from 'vue'
 import { VTimePicker } from 'vuetify/labs/VTimePicker'
-import { onMounted } from '@vue/runtime-core';
 import { fetchData } from '@/util/fetchData';
+import { showAlert } from '@/util/alert'
 
 // Search query reactive variable
 const searchQuery = ref(null)
 const showDialog = ref(false);
-const formErrors = ref(null) // delete later 
 
 const eventTitle = ref(null);  // todo fix REALLY weird off by 5 hours glitch on sending to the backend, frontent looks fine I dont know whats going wrong
-const eventLocation = ref(null); 
+const eventLocation = ref(null);
 const startDate = ref(null);
 const endDate = ref(null);
 const startTime = ref(null);
 const endTime = ref(null);
 const startAMPM = ref(null)
 const endAMPM = ref(null)
-const eventDescription = ref(null); 
+const eventDescription = ref(null);
 
 const JSONCourts = ref([])
 const JSONEvents = ref([])
@@ -34,13 +33,13 @@ const ongoingEvents = ref([]);
 const upcomingEvents = ref([]);
 const pastEvents = ref([]);
 
-const frontendStartTime = computed({ // cleans selected time for frontend 
+const frontendStartTime = computed({ // cleans selected time for frontend
   get(){
     return frontendTime(startTime.value)
   }
 })
 
-const frontendEndTime = computed({ // cleans selected time for frontend 
+const frontendEndTime = computed({ // cleans selected time for frontend
   get(){
     return frontendTime(endTime.value)
   }
@@ -102,7 +101,7 @@ const endTimeRules = [
 const endAMPMRules = [
   value => {
     if (value) return true;
-    return 'Must choose AM / PM';
+    return 'Select AM / PM';
   },
 ];
 
@@ -118,15 +117,15 @@ function filterTimeOfEvents(){
 
   for (const event of JSONEvents.value){
     // console.log(event)
-    if (event.eventStart > now){ // future events 
+    if (event.eventStart > now){ // future events
       // console.log(event.eventStart)
       // console.log(now)
       upcomingEvents.value.push(event)
     }
-    else if ((event.eventStart <= now) && (event.eventEnd > now)){ // events occuring now 
+    else if ((event.eventStart <= now) && (event.eventEnd > now)){ // events occuring now
       ongoingEvents.value.push(event)
     }
-    else if (event.eventEnd < now){ // past events 
+    else if (event.eventEnd < now){ // past events
       pastEvents.value.push(event)
     }
   }
@@ -141,7 +140,7 @@ onMounted(async () => {
 
 const formatEvents = async () => {
   for (let event of JSONEvents.value){
-    event.eventStart = new    Date(event.eventStart)
+    event.eventStart = new Date(event.eventStart)
     event.eventEnd = new Date(event.eventEnd)
   }
 }
@@ -151,7 +150,7 @@ const getEvents = async () => {
   try {
     const url = '/event/events';
     JSONEvents.value = await fetchData(url);
-    // console.log(JSONEvents.value)
+    console.log(JSONEvents.value)
   } catch (error) {
     console.error(error);
   }
@@ -178,7 +177,7 @@ const parseData = async () =>{
   locations.value = allLocationNames;
 }
 
-  // potentially going to be used to skirt around the 00 issue on the time picker 
+  // potentially going to be used to skirt around the 00 issue on the time picker
 function frontendTime(time){
   if (time != undefined){
     let hours = time.split(':')[0]
@@ -194,7 +193,7 @@ function frontendTime(time){
   else{
     return null
   }
-  
+
 }
 
 // function to format the date for the date object
@@ -203,7 +202,7 @@ function convertTo24HourTime(time, ampm) {
   if (ampm === 'PM' && hours < 12) hours += 12;
   if (ampm === 'AM' && hours === 12) hours = 0;
   if (hours.toString().length === 1){
-    hours = '0' + hours 
+    hours = '0' + hours
   }
   if (minutes.toString().length === 1){ // singular digits, like 1 minute
     minutes = '0' + minutes
@@ -230,30 +229,27 @@ function handleSubmit(){
   for (let i = 0; i < dataNames.length; i++){
     jsonEvent[dataNames[i]] = dataValues[i];
     //console.log(dataValues[i])
-  } 
+  }
 
   let nullsErr = checkForNulls();
   let timeAndDateLogic = checkForTimeAndDateLogic(nullsErr);
 
   if(nullsErr !== false){
-    // console.log(`Nulls Error detected ${nullsErr}`)
+    showAlert('error', `Error: First error found in field: '${nullsErr}'`)
   }
   else if(timeAndDateLogic !== false){
-    formErrors.value = `${timeAndDateLogic}`;
-    console.log(formErrors.value)
+    showAlert('error', timeAndDateLogic)
   }
   else{ // no errors, everything should go through here
     
     // date objects are getting created once the time logic is completed 
     jsonEvent['eventStart'] = convertToDateString(startDate.value, startTime.value, startAMPM.value);
     jsonEvent['eventEnd'] = convertToDateString(endDate.value, endTime.value, endAMPM.value);
-
-    formErrors.value = ''; // delete this later
-    console.log(jsonEvent); 
+    console.log(jsonEvent);
 
 
     try {
-        const response = fetchData("/event/logEvent", {                  
+        const response = fetchData("/event/logEvent", {
         method: 'POST', // (or 'GET')
         body: JSON.stringify(jsonEvent),
         headers: {
@@ -266,7 +262,7 @@ function handleSubmit(){
       console.error('Error adding Event:', error);
     }
 
-    // post event will occur here 
+    // post event will occur here
 
     closeModal()
   }
@@ -274,7 +270,7 @@ function handleSubmit(){
 
 function checkForTimeAndDateLogic(nullsErr){
   if (nullsErr !== false){
-    return null // short circuit to prevent errors trying to create dates with bad data 
+    return null // short circuit to prevent errors trying to create dates with bad data
   }
 
   let startObj = new Date(convertToDateString(startDate.value, startTime.value, startAMPM.value));
@@ -294,13 +290,13 @@ function checkForTimeAndDateLogic(nullsErr){
     return 'Event Start and Event End cannot be at the same time'
   }
   else if((endObj - startObj) < msIn30Mins){ // case to make sure the event lasts for at least 30 minutes
-    return 'Event must last for at least 30 minutes' 
+    return 'Event must last for at least 30 minutes'
   }
   else if(startObj > oneYearAhead){
     return 'Events cannot be logged more than a year in advance'
   }
   else{
-    return false; // case where there are no issues 
+    return false; // case where there are no issues
   }
 }
 
@@ -320,13 +316,13 @@ function checkForNulls(){
     else if(startTime.value == null){
       return 'Start Time';
     }
-    else if(startAMPM.value == null){  
+    else if(startAMPM.value == null){
       return 'Start AM / PM';
     }
-    else if(endTime.value == null){ 
+    else if(endTime.value == null){
       return 'End Time';
     }
-    else if(endAMPM.value == null){  
+    else if(endAMPM.value == null){
       return 'End AM / PM';
     }
     else if(eventDescription.value == null){
@@ -338,8 +334,7 @@ function checkForNulls(){
 }
 
 function closeModal(){
-  showDialog.value = false 
-  formErrors.value = null
+  showDialog.value = false
 
   eventTitle.value = null;
   eventLocation.value = null;
@@ -374,9 +369,9 @@ const filteredUpcomingEvents = computed(() => {
     return upcomingEvents.value
   }
   return upcomingEvents.value.filter(event =>
-    event.event_title.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-    event.event_description.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-    event.location_name.toLowerCase().includes(searchQuery.value.toLowerCase())
+    event.eventTitle.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
+    event.eventDesc.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
+    convertLocIdToName(event.eventLoc).toLowerCase().includes(searchQuery.value.toLowerCase())
   )
 })
 
@@ -384,10 +379,10 @@ const filteredOngoingEvents = computed(() => {
   if (!searchQuery.value) {
     return ongoingEvents.value
   }
-  return JSONEvents.value.filter(event =>
-    event.event_title.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-    event.event_description.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-    event.location_name.toLowerCase().includes(searchQuery.value.toLowerCase())
+  return ongoingEvents.value.filter(event =>
+    event.eventTitle.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
+    event.eventDesc.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
+    convertLocIdToName(event.eventLoc).toLowerCase().includes(searchQuery.value.toLowerCase())
   )
 })
 </script>
@@ -410,7 +405,7 @@ const filteredOngoingEvents = computed(() => {
                     </h2>
                   </v-col>
                   <v-col cols="1" class="close-container">
-                   
+
                     <v-btn class="close-btn" color="red" @click="closeModal()" density="compact" icon="$close"></v-btn>
                   </v-col>
 
@@ -465,14 +460,14 @@ const filteredOngoingEvents = computed(() => {
                   <v-col cols="3" class="container right-time">
                     <v-select v-model="endAMPM" :items="timeStamps" required label="AM / PM" :rules="endAMPMRules"></v-select>
                   </v-col>
-          
+
                   <v-col cols="12" class="">
                     <v-btn class="submit" type="submit">
                       Add Event
                     </v-btn>
                   </v-col>
                   <v-col cols="12" class="errors">
-                    {{formErrors}}
+              
                   </v-col>
                 </v-row>
               </v-form>
@@ -481,9 +476,9 @@ const filteredOngoingEvents = computed(() => {
             <!-- END MODAL -->
         </v-col>
         <v-col cols="12" md="4">
-          <v-text-field 
-            v-model="searchQuery" 
-            label="Search" 
+          <v-text-field
+            v-model="searchQuery"
+            label="Search"
             append-icon="mdi-magnify"
             single-line
             dense
@@ -575,7 +570,7 @@ const filteredOngoingEvents = computed(() => {
     padding-bottom:0;
     font-size: 14px;
     height: 0px
-  }  
+  }
   .submit{
     background-color: #4caf50;
     width: 100%;
@@ -601,7 +596,7 @@ const filteredOngoingEvents = computed(() => {
     padding-left: 6px;
   }
   .test{
-    
+
   }
   .modal-container{
     max-width: 800px;
