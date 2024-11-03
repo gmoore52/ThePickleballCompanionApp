@@ -105,6 +105,19 @@ const userData = ref({
 });
 
 const friends = ref([]); // State for user's friends
+// Skill level mapping to be used with getSkillLevelText to present skill level as a string on the front end
+const skillLevels = {
+  1: "Beginner",
+  2: "Intermediate",
+  3: "Advanced",
+  4: "Pro"
+};
+
+// Function to get skill level text
+const getSkillLevelText = (level) => {
+  return skillLevels[level] || "Unknown";
+};
+
 const showLogoutConfirm = ref(false); // State for logout confirmation dialog
 const showAddFriendModal = ref(false); // State for add friend modal
 
