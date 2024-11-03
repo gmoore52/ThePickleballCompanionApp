@@ -18,6 +18,7 @@
         <v-form ref="form" v-model="valid">
           <!-- Autocomplete for Usernames -->
           <v-autocomplete
+            lazy
             v-model="selectedUser"
             class="mt-6"
             :items="userOptions"
