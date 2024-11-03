@@ -3,6 +3,8 @@ import { ref, computed, onMounted} from 'vue'
 import { VTimePicker } from 'vuetify/labs/VTimePicker'
 import { fetchData } from '@/util/fetchData';
 import { showAlert } from '@/util/alert'
+import { useStore } from 'vuex';
+
 
 // Search query reactive variable
 const searchQuery = ref(null)
@@ -33,11 +35,15 @@ const ongoingEvents = ref([]);
 const upcomingEvents = ref([]);
 const pastEvents = ref([]);
 
+const store = useStore();
+
 const frontendStartTime = computed({ // cleans selected time for frontend
   get(){
     return frontendTime(startTime.value)
   }
 })
+
+const isLoggedIn = computed(() => store.state.isAuthenticated);
 
 const frontendEndTime = computed({ // cleans selected time for frontend
   get(){
@@ -241,8 +247,8 @@ function handleSubmit(){
     showAlert('error', timeAndDateLogic)
   }
   else{ // no errors, everything should go through here
-    
-    // date objects are getting created once the time logic is completed 
+
+    // date objects are getting created once the time logic is completed
     jsonEvent['eventStart'] = convertToDateString(startDate.value, startTime.value, startAMPM.value);
     jsonEvent['eventEnd'] = convertToDateString(endDate.value, endTime.value, endAMPM.value);
     console.log(jsonEvent);
@@ -393,7 +399,7 @@ const filteredOngoingEvents = computed(() => {
       <v-row>
         <v-col cols="12" md="8">
             <!-- Button to open the modal -->
-            <v-btn id='event-btn' class="btn mr-2" @click="showDialog = true">Add New Event</v-btn>
+            <v-btn v-if="isLoggedIn" id='event-btn' class="btn mr-2" @click="showDialog = true">Add New Event</v-btn>
             <!-- START MODAL -->
             <v-dialog class ="modal-container" persistent v-model="showDialog">
               <v-card class="modal-card">
@@ -467,7 +473,7 @@ const filteredOngoingEvents = computed(() => {
                     </v-btn>
                   </v-col>
                   <v-col cols="12" class="errors">
-              
+
                   </v-col>
                 </v-row>
               </v-form>

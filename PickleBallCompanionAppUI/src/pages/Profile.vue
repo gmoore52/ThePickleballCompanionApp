@@ -7,7 +7,7 @@
             <v-row>
               <!-- User Information Section -->
               <v-col cols="12" md="3">
-                <v-card-title class="white--text text-h4">{{ userData.userName }}</v-card-title>
+                <v-card-title class="white--text text-h5">{{ userData.userName }}</v-card-title>
                 <v-card-subtitle class="white--text text-h6">{{ userData.userFullName }}</v-card-subtitle>
                 <v-img
                   :width="300"
@@ -34,7 +34,24 @@
           </v-card>
         </v-col>
 
-        <v-card-title class="white--text text-h4">Friends</v-card-title>
+        <!-- Friends Section -->
+        <v-col cols="12" md="12" class="mt-4">
+          <v-card class="pa-4" outlined>
+            <v-card-title class="white--text text-h4 d-flex justify-space-between">
+              Friends
+              <v-btn color="green" @click="showAddFriendModal = true">Add Friend +</v-btn>
+            </v-card-title>
+            <v-list v-if="friends.length">
+              <v-list-item v-for="friend in friends" :key="friend.id">
+                <v-list-item-content>
+                  <v-list-item-title class="white--text">{{ friend.name }}</v-list-item-title>
+                  <v-list-item-subtitle class="white--text">{{ friend.email }}</v-list-item-subtitle>
+                </v-list-item-content>
+              </v-list-item>
+            </v-list>
+            <v-card-text v-else class="white--text">You have no friends added yet.</v-card-text>
+          </v-card>
+        </v-col>
       </v-row>
 
       <v-row v-else>
@@ -47,6 +64,13 @@
           </v-card>
         </v-col>
       </v-row>
+
+      <!-- Add Friend Modal -->
+      <AddFriendModal
+        :model-value="showAddFriendModal"
+        :currentUser="loggedInUserName"
+        @close="showAddFriendModal = false"
+      />
 
       <!-- Logout Confirmation Dialog -->
       <v-dialog v-model="showLogoutConfirm" max-width="400">
@@ -64,11 +88,12 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue';
+import {ref, onMounted, computed, watch} from 'vue';
 import { fetchData } from '@/util/fetchData.js';
 import { useStore } from 'vuex';
 import { showAlert } from "@/util/alert";
 import router from "@/router";
+import AddFriendModal from '@/components/sub-components/AddFriendModal.vue'; // Import the AddFriendModal component
 
 const store = useStore();
 
@@ -79,20 +104,37 @@ const userData = ref({
   accCreationDate: ''
 });
 
+const friends = ref([]); // State for user's friends
 const showLogoutConfirm = ref(false); // State for logout confirmation dialog
+const showAddFriendModal = ref(false); // State for add friend modal
 
 // Computed property to determine if the user is logged in
 const isLoggedIn = computed(() => store.state.isAuthenticated);
+const loggedInUserName = computed(() => {
+  if (isLoggedIn.value) {
+    return store.state.user.userName;
+  }
+  return null; // Or you can return an empty string or some default value if not logged in
+});
 
 // Function to fetch user data from the database
-async function fetchUserData(username) {
+async function fetchUserData() {
   try {
-    const json = await fetchData(`/users/find?username=${username}`);
+    const json = await fetchData(`/users/find?username=${loggedInUserName.value}`);
     Object.assign(userData.value, json); // Merging user data
   } catch (err) {
     console.error('Error fetching user data:', err);
   }
 }
+
+// Function to fetch friends data from the database
+// async function fetchFriends() {
+//   try {
+//     friends.value = await fetchData(`/users/${route.params.username}/friends`); // Fetch friends based on the route parameter
+//   } catch (err) {
+//     console.error('Error fetching friends:', err);
+//   }
+// }
 
 // Date formatting utility
 const formatDate = (date) => {
@@ -101,45 +143,21 @@ const formatDate = (date) => {
 
 onMounted(() => {
   if (isLoggedIn.value) {
-    fetchUserData(store.state.user.userName);
+    fetchUserData(); // Fetch the user data for the selected profile
+    // fetchFriends(); // Fetch the friends of the selected profile
   }
 });
+
 
 // Confirm logout action
 const confirmLogout = async () => {
   showLogoutConfirm.value = false; // Close the dialog
   await store.dispatch('logout');
-  await router.push('/');
   showAlert('success', 'You have been successfully logged out.', 5000);
+  await router.push('/');
 };
 </script>
 
 <style scoped>
-div.v-card{
-  border:none;
-}
-
-.v-app {
-  height: 100vh;
-}
-
-.v-container {
-  height: 100%;
-}
-
-.v-card {
-  border: 1px solid white;
-  padding: 0.8em;
-  
-  color: #212121 !important;
-  border-radius: 8px;
-}
-
-.white--text {
-  color: white !important;
-}
-
-.v-row {
-  margin-bottom: 20px;
-}
+/* Add styles as needed */
 </style>

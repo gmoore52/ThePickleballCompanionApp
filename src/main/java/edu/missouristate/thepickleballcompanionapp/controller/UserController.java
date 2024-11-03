@@ -21,6 +21,12 @@ public class UserController {
         return userService.getUserByUserName(username);
     }
 
+    @RequestMapping(value = "/all/users", method = RequestMethod.GET)
+    @ResponseBody
+    public List<UserDTO> getAllUsers() {
+        return userService.getUsers();
+    }
+
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     @ResponseBody
     public Boolean addUser(@RequestBody UserDTO userDTO) {
