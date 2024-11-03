@@ -72,10 +72,8 @@ const filteredTabs = computed(() => {
     return tabs.value; // Show all tabs
   }
   // If the user is not logged in, only show specific tabs
-  return tabs.value.filter(tab => tab.title !== 'Log game' && tab.title !== 'Stats' && tab.title !== 'Profile');
+  return tabs.value.filter(tab => tab.title !== 'Log game' && tab.title !== 'Stats' && tab.title !== 'Profile' && tab.title !== 'Game History');
 });
-
-
 
 // Tabs data for navigation
 const tab = ref(null);
@@ -85,7 +83,9 @@ const tabs = ref([
   { title: 'Events', route: '/events' },
   { title: 'Log game', route: '/log-game' },
   { title: 'Stats', route: '/stats' },
-  { title: 'Profile', route: isLoggedIn.value ? `/profile/${user.value}` : '/profile' }
+  { title: 'Game History', route: `/game-history` }, ///${user.value}
+  { title: 'Profile', route:  '/profile' },//isLoggedIn.value ? `/profile/${user.value}` :
+  
 ]);
 
 // Use alert state and methods
@@ -101,7 +101,7 @@ const goToRegister = () => {
 }
 
 const goToProfile = () => {
-  router.push(`/profile/${user.value}`);
+  router.push(`/profile`); // /${user.value}
 }
 
 // Example of triggering an alert (you can call this from anywhere)

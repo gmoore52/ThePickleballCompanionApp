@@ -1,5 +1,5 @@
 import { createStore } from 'vuex';
-import {fetchData} from "@/util/fetchData";
+import { fetchData } from "@/util/fetchData";
 
 const store = createStore({
   state: {
@@ -23,7 +23,7 @@ const store = createStore({
   },
   actions: {
     async login({ commit }, credentials) {
-      const loginDTO = { username: credentials.login, password: credentials.password,}
+      const loginDTO = { username: credentials.login, password: credentials.password, }
       const response = await fetchData('/user/login', {
         method: 'POST',
         body: JSON.stringify(loginDTO),

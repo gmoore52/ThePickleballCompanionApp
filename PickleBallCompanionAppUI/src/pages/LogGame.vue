@@ -3,6 +3,9 @@ import { ref, watch, computed} from 'vue';
 import { onMounted } from '@vue/runtime-core';
 import { fetchData } from '@/util/fetchData';
 import { showAlert } from '@/util/alert'
+import { useStore } from 'vuex';
+
+  const store = useStore();
 
   const userScore = ref(null); 
   const oppScore = ref(null);
@@ -24,8 +27,9 @@ import { showAlert } from '@/util/alert'
   const locationDict = ref({}); // used to index between loc_id and location_name
 
   // THIS MUST LATER BE SET DYNAMICALLY AFTER THE USER IS LOGGED IN
-  const yourUserName = ref('must_select');
-  const yourUserNameDisplayString = ref('Must Select - (must_select)');
+  const yourFullName = ref(store.state.user.userFullName)
+  const yourUserName = ref(store.state.user.userName)
+  const yourUserNameDisplayString = ref(`${yourFullName.value} - (${yourUserName.value})`);
 
   const yourScoreRules = [
     value => {

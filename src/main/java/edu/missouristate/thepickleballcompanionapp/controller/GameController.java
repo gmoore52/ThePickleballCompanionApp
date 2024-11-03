@@ -1,16 +1,11 @@
 package edu.missouristate.thepickleballcompanionapp.controller;
 
+import edu.missouristate.thepickleballcompanionapp.domain.Game;
 import edu.missouristate.thepickleballcompanionapp.domain.User;
-import edu.missouristate.thepickleballcompanionapp.dto.LoggedGame;
+import edu.missouristate.thepickleballcompanionapp.domain.dto.GameDTO;
 import edu.missouristate.thepickleballcompanionapp.service.GameService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -26,14 +21,20 @@ public class GameController {
         return gameService.getUsers();
     }
 
-    @GetMapping("game/userById")
+    @GetMapping("/userById")
     public User getUserById(@RequestBody String username) {
         return gameService.getUserById(username);
     }
 
+    @RequestMapping(value = "/games", method = RequestMethod.GET)
+    @ResponseBody
+    public List<GameDTO> getUserGames(@RequestParam("username") String username) {
+        return gameService.getUserGames(username);
+    }
+
     @RequestMapping(value = "/logGame", method = RequestMethod.POST)
     @ResponseBody
-    public Boolean logGame(@RequestBody LoggedGame game) {
+    public Boolean logGame(@RequestBody GameDTO game) {
         return gameService.logGame(game);
     }
 
