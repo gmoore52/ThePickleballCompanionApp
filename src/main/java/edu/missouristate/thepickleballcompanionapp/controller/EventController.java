@@ -2,7 +2,6 @@ package edu.missouristate.thepickleballcompanionapp.controller;
 
 import edu.missouristate.thepickleballcompanionapp.domain.Event;
 import edu.missouristate.thepickleballcompanionapp.domain.dto.EventDTO;
-import edu.missouristate.thepickleballcompanionapp.dto.LoggedGame;
 import edu.missouristate.thepickleballcompanionapp.service.EventService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;

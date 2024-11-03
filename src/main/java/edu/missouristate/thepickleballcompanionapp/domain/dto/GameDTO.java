@@ -1,6 +1,6 @@
-package edu.missouristate.thepickleballcompanionapp.dto;
+package edu.missouristate.thepickleballcompanionapp.domain.dto;
 
-public class LoggedGame{
+public class GameDTO {
     private String gameDate;
 
     private Long location;
@@ -19,8 +19,8 @@ public class LoggedGame{
 
     private String player4;
 
-    public LoggedGame(String gameDate, Long location, String notes, Integer userScore, Integer oppScore, String player1,
-            String player2, String player3, String player4) {
+    public GameDTO(String gameDate, Long location, String notes, Integer userScore, Integer oppScore, String player1,
+                   String player2, String player3, String player4) {
         this.gameDate = gameDate;
         this.location = location;
         this.notes = notes;
@@ -32,7 +32,7 @@ public class LoggedGame{
         this.player4 = player4;
     }
 
-    public LoggedGame() {
+    public GameDTO() {
 
     }
 

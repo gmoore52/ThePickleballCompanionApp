@@ -18,7 +18,7 @@
               </v-col>
 
               <v-col cols="12" md="8">
-                <v-card>
+                <v-card class="info-card">
                   <v-card-title class="white--text">Email</v-card-title>
                   <v-card-text class="white--text">{{ userData.emailAddress }}</v-card-text>
                   <v-card-title class="white--text">Location (City)</v-card-title>
@@ -172,5 +172,9 @@ const confirmLogout = async () => {
 </script>
 
 <style scoped>
+.info-card{
+  background-color: #42424254;
+}
+
 /* Add styles as needed */
 </style>

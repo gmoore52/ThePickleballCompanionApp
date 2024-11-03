@@ -23,7 +23,7 @@
                   <v-card-title class="white--text">{{ event.eventTitle }}</v-card-title>
                   <v-card-text class="white--text">{{ event.eventDesc }}</v-card-text>
                   <v-card-subtitle class="white--text">
-                    {{ new Date(event.eventStart).toLocaleString() }}
+                    {{ formatDateTime(new Date(event.eventStart).toLocaleString()) }}
                   </v-card-subtitle>
                 </v-card>
               </v-col>
@@ -55,6 +55,7 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue';
 import { fetchData } from "@/util/fetchData";
+import { formatDateTime } from '@/util/formatDate.js'
 
 const JSONEvents = ref([]);
 

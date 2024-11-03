@@ -4,6 +4,7 @@ import { VTimePicker } from 'vuetify/labs/VTimePicker'
 import { fetchData } from '@/util/fetchData';
 import { showAlert } from '@/util/alert'
 import { useStore } from 'vuex';
+import { formatDateTime } from '@/util/formatDate.js'
 
 
 // Search query reactive variable
@@ -354,6 +355,8 @@ function closeModal(){
 }
 
   function convertDateObjToFrontendDate(date){
+  console.log(date.toLocaleString())
+ 
   let newDate = new Date(date);
   let fullDate = newDate.toDateString();
   let hours = newDate.getHours();
@@ -509,8 +512,8 @@ const filteredOngoingEvents = computed(() => {
                     <v-col cols="8">
                       <v-card-title>{{ event.eventTitle }}</v-card-title>
                       <!-- <v-card-subtitle>Event ID: {{ event.event_id }}</v-card-subtitle> -->
-                      <v-card-subtitle>Start: {{ convertDateObjToFrontendDate(event.eventStart) }}</v-card-subtitle>
-                      <v-card-subtitle>End: {{ convertDateObjToFrontendDate(event.eventEnd) }}</v-card-subtitle>
+                      <v-card-subtitle>Start: {{ formatDateTime(event.eventStart.toLocaleString()) }}</v-card-subtitle>
+                      <v-card-subtitle>End: {{ formatDateTime(event.eventEnd.toLocaleString()) }}</v-card-subtitle>
                       <v-card-text>{{ event.eventDesc }} </v-card-text>
                       <v-card-subtitle>Hosted at {{ convertLocIdToName(event.eventLoc) }}</v-card-subtitle>
                     </v-col>
@@ -538,8 +541,8 @@ const filteredOngoingEvents = computed(() => {
                     <v-col cols="8">
                       <v-card-title>{{ event.eventTitle }}</v-card-title>
                       <!-- <v-card-subtitle>Event ID: {{ event.eventId }}</v-card-subtitle> -->
-                      <v-card-subtitle>Start: {{ convertDateObjToFrontendDate(event.eventStart) }}</v-card-subtitle>
-                      <v-card-subtitle>End: {{ convertDateObjToFrontendDate(event.eventEnd)}}</v-card-subtitle>
+                      <v-card-subtitle>Start: {{ formatDateTime(event.eventStart.toLocaleString()) }}</v-card-subtitle>
+                      <v-card-subtitle>End: {{ formatDateTime(event.eventEnd.toLocaleString())}}</v-card-subtitle>
                       <v-card-text>Description: {{ event.eventDesc }} </v-card-text>
                       <v-card-subtitle>Hosted at {{ convertLocIdToName(event.eventLoc) }}</v-card-subtitle>
                     </v-col>
