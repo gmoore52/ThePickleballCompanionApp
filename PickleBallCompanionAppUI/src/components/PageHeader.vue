@@ -9,7 +9,7 @@
 
     <v-toolbar-items>
       <template v-if="isLoggedIn">
-        <v-btn color="white" @click="goToProfile">{{ user.userName }}</v-btn>
+        <v-btn color="white" @click="goToProfile">{{ user }}</v-btn>
       </template>
       <template v-else>
         <v-btn color="white" @click="goToLogin">Login</v-btn>
@@ -36,7 +36,7 @@
   <!-- Tabs Section -->
   <v-tabs v-model="tab" background-color="grey lighten-2" centered>
     <v-tab
-      v-for="item in tabs"
+      v-for="item in filteredTabs"
       :key="item.title"
       :to="item.route"
       ripple
@@ -44,6 +44,7 @@
       {{ item.title }}
     </v-tab>
   </v-tabs>
+
 </template>
 
 <script setup>
@@ -58,7 +59,23 @@ const store = useStore();
 
 // Computed properties to access Vuex state
 const isLoggedIn = computed(() => store.state.isAuthenticated);
-const user = computed(() => store.state.user);
+const user = computed(() => {
+  if (isLoggedIn.value) {
+    return store.state.user.userName;
+  }
+  return ''; // Or you can return an empty string or some default value if not logged in
+});
+// Filter tabs based on user login status
+const filteredTabs = computed(() => {
+  // If the user is logged in, show all tabs including "Profile"
+  if (isLoggedIn.value) {
+    return tabs.value; // Show all tabs
+  }
+  // If the user is not logged in, only show specific tabs
+  return tabs.value.filter(tab => tab.title !== 'Log game' && tab.title !== 'Stats' && tab.title !== 'Profile');
+});
+
+
 
 // Tabs data for navigation
 const tab = ref(null);
@@ -68,7 +85,7 @@ const tabs = ref([
   { title: 'Events', route: '/events' },
   { title: 'Log game', route: '/log-game' },
   { title: 'Stats', route: '/stats' },
-  { title: 'Profile', route: '/profile' }
+  { title: 'Profile', route: isLoggedIn.value ? `/profile/${user.value}` : '/profile' }
 ]);
 
 // Use alert state and methods
@@ -84,7 +101,7 @@ const goToRegister = () => {
 }
 
 const goToProfile = () => {
-  router.push(`/profile`);
+  router.push(`/profile/${user.value}`);
 }
 
 // Example of triggering an alert (you can call this from anywhere)
