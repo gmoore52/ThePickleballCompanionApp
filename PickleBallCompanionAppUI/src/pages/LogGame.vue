@@ -220,7 +220,7 @@ const getCourts = async () => {
     }
     else{ // no nulls and no score err condition, send the data here to backend later 
  
-      // console.log(jsonGame); 
+      console.log(jsonGame); 
 
     try {
         const response = fetchData("/game/logGame", {                  
@@ -405,10 +405,10 @@ const getCourts = async () => {
                   v-model="isInDuosMode"
                   mandatory
                   class="left-pannel">
-                  <v-btn :value="false" class="duos-toggle">
+                  <v-btn prepend-icon="mdi-account":value="false" class="duos-toggle">
                     Singles
                   </v-btn>
-                  <v-btn :value="true" class="duos-toggle">
+                  <v-btn prepend-icon="mdi-account-multiple":value="true" class="duos-toggle">
                     Duos
                   </v-btn>
                 </v-btn-toggle>
@@ -474,7 +474,7 @@ const getCourts = async () => {
               </div>
             </v-col>
             <v-col cols="12" class="btn-col">
-                <v-btn type="submit" variant="tonal" class="w-100 submit"> Submit Game</v-btn>
+                <v-btn prepend-icon="mdi-archive-check"type="submit" variant="tonal" class="w-100 submit"> Submit Game</v-btn>
             </v-col>
             <v-col cols="12" class="errors">
               </v-col>

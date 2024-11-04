@@ -28,7 +28,7 @@
                   <v-card-title class="white--text">Account Creation Date</v-card-title>
                   <v-card-text class="white--text">{{ formatDate(userData.accCreationDate) }}</v-card-text>
                 </v-card>
-                <v-btn class="mt-5" color="red" @click="showLogoutConfirm = true">Logout</v-btn>
+                <v-btn prepend-icon="mdi-logout" class="mt-5" color="red" @click="showLogoutConfirm = true">Logout</v-btn>
               </v-col>
             </v-row>
           </v-card>
@@ -39,7 +39,7 @@
           <v-card class="pa-4" outlined>
             <v-card-title class="white--text text-h4 d-flex justify-space-between">
               Friends
-              <v-btn color="green" @click="showAddFriendModal = true">Add Friend +</v-btn>
+              <v-btn prepend-icon="mdi-account-multiple-plus" color="green" @click="showAddFriendModal = true">Add Friend</v-btn>
             </v-card-title>
             <v-list v-if="friends.length">
               <v-list-item v-for="friend in friends" :key="friend.id">
