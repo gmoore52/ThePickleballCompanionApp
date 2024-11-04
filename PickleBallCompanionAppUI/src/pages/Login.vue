@@ -24,7 +24,7 @@
           <v-card-actions>
             <v-row>
               <v-col>
-                <v-btn color="green" @click="submitForm">Login</v-btn>
+                <v-btn prepend-icon="mdi-login"color="green" @click="submitForm">Login</v-btn>
               </v-col>
               <v-col class="text-center">
                 <v-btn to="/register">

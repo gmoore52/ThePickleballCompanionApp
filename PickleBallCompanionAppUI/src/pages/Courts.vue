@@ -3,7 +3,7 @@
     <!-- Search and Location Toolbar -->
     <v-row class="">
       <v-col cols="12" md="8">
-        <v-btn color="#212121" id="loc-btn" class="mr-2" @click="getUserLocation">
+        <v-btn prepend-icon="mdi-map-marker-account"color="#212121" id="loc-btn" class="mr-2" @click="getUserLocation">
           Click here to use your precise location
         </v-btn>
       </v-col>
