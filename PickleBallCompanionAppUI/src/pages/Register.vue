@@ -76,7 +76,7 @@
       <v-card-actions>
         <v-row>
           <v-col>
-            <v-btn color="green" @click="register" :disabled="!formValid">
+            <v-btn prepend-icon="mdi-account-plus" color="green" @click="register" :disabled="!formValid">
               Register
             </v-btn>
           </v-col>
