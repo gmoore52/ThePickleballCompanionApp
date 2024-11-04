@@ -8,6 +8,8 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
+import static org.hibernate.query.results.Builders.fetch;
+
 @Repository
 public class GameRepositoryImpl extends QuerydslRepositorySupport implements GameRepositoryCustom {
     QGame game = QGame.game;
@@ -19,14 +21,10 @@ public class GameRepositoryImpl extends QuerydslRepositorySupport implements Gam
     @Override
     public List<Game> getUserGames(String username){
         return from(game)
+                .where(game.player1.userName.eq(username)
+                .or(game.player2.userName.eq(username))
+                .or(game.player3.userName.eq(username))
+                .or(game.player4.userName.eq(username)))
                 .fetch();
-// todo fix this
-        //        return from(game)
-//                .where(game.player1.userName.eq(username)
-//                        .or(game.player2.userName).eq(username))
-//                        .or(game.player2.userName).eq(username))
-//                        .or(game.player3.userName).eq(username))
-//                        .or(game.player4.userName).eq(username)))
-//                .fetch();
     }
 }

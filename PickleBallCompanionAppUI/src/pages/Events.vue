@@ -402,7 +402,7 @@ const filteredOngoingEvents = computed(() => {
       <v-row>
         <v-col cols="12" md="8">
             <!-- Button to open the modal -->
-            <v-btn v-if="isLoggedIn" id='event-btn' class="btn mr-2" @click="showDialog = true">Add New Event</v-btn>
+            <v-btn prepend-icon="mdi-calendar-edit" v-if="isLoggedIn" id='event-btn' class="btn mr-2" @click="showDialog = true">Add New Event</v-btn>
             <!-- START MODAL -->
             <v-dialog class ="modal-container" persistent v-model="showDialog">
               <v-card class="modal-card">
@@ -471,7 +471,7 @@ const filteredOngoingEvents = computed(() => {
                   </v-col>
 
                   <v-col cols="12" class="">
-                    <v-btn class="submit" type="submit">
+                    <v-btn prepend-icon="mdi-calendar-plus" class="submit" type="submit">
                       Add Event
                     </v-btn>
                   </v-col>

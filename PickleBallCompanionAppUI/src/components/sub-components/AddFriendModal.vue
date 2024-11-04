@@ -34,10 +34,11 @@
 
       <v-card-actions class="pt-0">
         <v-spacer></v-spacer>
-        <v-btn color="blue darken-1" @click="viewProfile" :disabled="!selectedUser">
+        <v-btn prepend-icon="mdi-account-eye" color="blue darken-1" @click="viewProfile" :disabled="!selectedUser">
           View Profile
         </v-btn>
         <v-btn
+        prepend-icon="mdi-account-plus"
           color="green darken-1"
           @click="addFriend"
           :disabled="!selectedUser"
