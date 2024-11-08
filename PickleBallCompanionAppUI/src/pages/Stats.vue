@@ -9,7 +9,10 @@
             <v-row>
               <v-col cols="12" md="3">
                 <v-card-title class="white--text text-h4">Stats</v-card-title>
-                <v-card-subtitle class="white--text text-h6">Username</v-card-subtitle>
+
+                <v-card-subtitle class="white--text text-h6">{{ store.state.selectedUsername }}</v-card-subtitle>
+                <v-btn v-if="store.state.user?.userName !== store.state.selectedUsername" prepend-icon="mdi-account-arrow-left-outline" class="mt-2 mx-2" color="blue" @click="returnToOtherProfile(store.state.selectedUsername)">return</v-btn>
+
 
                 <v-card-title class="white--text">Total Wins:</v-card-title>
                 <v-card-text class="white--text">##</v-card-text>
@@ -85,6 +88,13 @@
 
 <script setup>
 import { ref } from 'vue';
+import { useRouter } from 'vue-router'; // Import useRouter from vue-router
+import { useStore } from 'vuex';
+
+const store = useStore();
+const router = useRouter();
+
+
 
 const actions = ref([
   { title: 'Bar Chart', image: 'https://chartexpo.com/Content/Images/charts/Clustered-Column-Graph.jpg' },
@@ -97,6 +107,11 @@ const selectedImage = ref(null); // Reactive variable to hold the selected image
 function handleAction(action) {
   selectedImage.value = action.image; // Update the selected image
   console.log(`Action selected: ${action.title}`);
+}
+
+function returnToOtherProfile(userName){
+  // store.commit('SET_SELECTED_USERNAME', "Peter_Dinklage3");
+  router.push(`/profile/${userName}`); // /${user.value} 
 }
 </script>
 

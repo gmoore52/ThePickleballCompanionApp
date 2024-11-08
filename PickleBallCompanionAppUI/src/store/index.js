@@ -4,22 +4,34 @@ import { fetchData } from "@/util/fetchData";
 const store = createStore({
   state: {
     user: null,
+    selectedUsername: null,
     isAuthenticated: false,
   },
   mutations: {
     SET_USER(state, user) {
       state.user = user;
+      state.selectedUsername = user.userName; // new will addition here 
       state.isAuthenticated = !!user;
       // Persist the user information to localStorage
       localStorage.setItem('user', JSON.stringify(user));
       localStorage.setItem('isAuthenticated', state.isAuthenticated);
+      localStorage.setItem('selectedUsername', user.userName);
     },
     LOGOUT(state) {
       state.user = null;
       state.isAuthenticated = false;
       localStorage.removeItem('user');
       localStorage.removeItem('isAuthenticated');
+      localStorage.removeItem('selectedUsername', state.selectedUsername);
     },
+    SET_SELECTED_USERNAME(state, userName) {
+      state.selectedUsername = userName
+      localStorage.setItem('selectedUsername', userName);
+    },
+    UNSET_SELECTED_USERNAME(state) {
+      state.selectedUsername = state.user.userName
+      localStorage.setItem('selectedUsername', state.user.userName);
+    }
   },
   actions: {
     async login({ commit }, credentials) {
@@ -44,6 +56,7 @@ const store = createStore({
       // Initialize state from localStorage
       const user = JSON.parse(localStorage.getItem('user'));
       const isAuthenticated = localStorage.getItem('isAuthenticated') === 'true';
+      const selectedUsername = localStorage.getItem('selectedUsername')
 
       if (user) {
         commit('SET_USER', user);
@@ -51,7 +64,10 @@ const store = createStore({
       if (isAuthenticated) {
         commit('SET_USER', user); // Set the user if authenticated
       }
-    },
+      if (selectedUsername) {
+        commit('SET_SELECTED_USERNAME', selectedUsername);
+      }
+    }
   }
 });
 
@@ -59,4 +75,5 @@ const store = createStore({
 store.dispatch('initializeStore').catch(error => {
   console.error('Failed to initialize store:', error);
 });
+
 export default store;
