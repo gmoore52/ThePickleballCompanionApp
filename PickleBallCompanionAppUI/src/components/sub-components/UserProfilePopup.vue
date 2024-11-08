@@ -1,16 +1,15 @@
-<!-- UserProfilePopup.vue -->
 <template>
   <v-dialog :model-value="dialog" max-width="500px">
     <v-card>
-      <v-card-title class="headline">{{ props.userInfo.userName }}</v-card-title>
-      <v-card-subtitle>{{ props.userInfo.userFullName }}</v-card-subtitle>
+      <!-- Make the username larger with a custom class -->
+      <v-card-title><h2>{{ props.userInfo.userName }}</h2></v-card-title>
+      <v-card-subtitle><h2>{{ props.userInfo.userFullName }}</h2></v-card-subtitle>
 
-      <v-card-text>
-        <p>Account Creation Date: {{ props.userInfo.accCreationDate }}</p>
-      </v-card-text>
+      <v-card-text><b>Skill Level:</b> {{ skillLevels[props.userInfo.skillLevel] }}</v-card-text>
+      <v-card-text><b>Account Created:</b> {{ props.userInfo.accCreationDate }}</v-card-text>
+
 
       <v-card-actions>
-        <v-spacer></v-spacer>
         <v-btn color="green" @click="close">Close</v-btn>
       </v-card-actions>
     </v-card>
@@ -19,6 +18,13 @@
 
 <script setup>
 import { defineProps, defineEmits } from 'vue';
+
+const skillLevels = {
+  1: "Beginner",
+  2: "Intermediate",
+  3: "Advanced",
+  4: "Pro"
+};
 
 const props = defineProps({
   userInfo: Object,
@@ -33,5 +39,5 @@ function close() {
 </script>
 
 <style scoped>
-/* Add styles as needed */
+/* Custom styling for the username */
 </style>
