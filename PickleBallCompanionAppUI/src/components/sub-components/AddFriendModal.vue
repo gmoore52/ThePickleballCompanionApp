@@ -35,7 +35,7 @@
       <v-card-actions class="pt-0">
         <v-spacer></v-spacer>
         <v-btn prepend-icon="mdi-account-eye" color="blue darken-1" @click="viewProfile" :disabled="!selectedUser">
-          View Profile
+          Preview Profile
         </v-btn>
         <v-btn
         prepend-icon="mdi-account-plus"
@@ -61,7 +61,8 @@
 import { ref, defineEmits, defineProps, onMounted } from 'vue';
 import { fetchData } from "@/util/fetchData";
 import { useRouter } from 'vue-router'; // Import useRouter from vue-router
-import UserProfilePopup from './UserProfilePopup.vue'; // Import the UserProfilePopup
+import UserProfilePopup from './UserProfilePopup.vue';
+import {showAlert} from "@/util/alert"; // Import the UserProfilePopup
 
 const dialog = ref(false);
 const userOptions = ref([]); // Holds all users for autocomplete
@@ -108,6 +109,7 @@ function close() {
 function addFriend() {
   if (selectedUser.value) {
     console.log(`Sending friend request to: ${selectedUser.value}`);
+    showAlert('success','Friend Request Sent',2500);
     close();
   }
 }

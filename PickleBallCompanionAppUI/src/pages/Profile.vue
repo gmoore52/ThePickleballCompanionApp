@@ -21,10 +21,8 @@
                 <v-card class="info-card">
                   <v-card-title class="white--text">Email</v-card-title>
                   <v-card-text class="white--text">{{ userData.emailAddress }}</v-card-text>
-                  <v-card-title class="white--text">Location (City)</v-card-title>
-                  <v-card-text class="white--text">Springfield, MO -- not currently in DB</v-card-text>
-                  <v-card-title class="white--text">Birthday</v-card-title>
-                  <v-card-text class="white--text">xx/xx/xxxx -- not currently in DB</v-card-text>
+                  <v-card-title class="white--text">Skill Level</v-card-title>
+                  <v-card-text class="white--text">{{ skillLevels[userData.skillLevel] }}</v-card-text>
                   <v-card-title class="white--text">Account Creation Date</v-card-title>
                   <v-card-text class="white--text">{{ formatDate(userData.accCreationDate) }}</v-card-text>
                 </v-card>
@@ -88,7 +86,7 @@
 </template>
 
 <script setup>
-import {ref, onMounted, computed, watch} from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import { fetchData } from '@/util/fetchData.js';
 import { useStore } from 'vuex';
 import { showAlert } from "@/util/alert";
@@ -101,7 +99,8 @@ const userData = ref({
   userName: '',
   userFullName: '',
   emailAddress: '',
-  accCreationDate: ''
+  accCreationDate: '',
+  skillLevel: ''
 });
 
 const friends = ref([]); // State for user's friends
@@ -134,6 +133,7 @@ const loggedInUserName = computed(() => {
 async function fetchUserData() {
   try {
     const json = await fetchData(`/users/find?username=${loggedInUserName.value}`);
+    console.log(json);
     Object.assign(userData.value, json); // Merging user data
   } catch (err) {
     console.error('Error fetching user data:', err);
