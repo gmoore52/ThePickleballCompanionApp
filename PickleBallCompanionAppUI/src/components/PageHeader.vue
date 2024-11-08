@@ -8,13 +8,15 @@
     <v-spacer></v-spacer>
 
     <v-toolbar-items>
-      <template v-if="isLoggedIn">
-        <v-btn color="white" @click="goToProfile">{{ user }}</v-btn>
-      </template>
-      <template v-else>
-        <v-btn color="white" @click="goToLogin">Login</v-btn>
-        <v-btn color="white" @click="goToRegister">Register</v-btn>
-      </template>
+   
+          <template v-if="isLoggedIn">
+            <v-btn :disabled="store.state.user?.userName !== store.state.selectedUsername" color="white" @click="goToProfile">{{ user }}</v-btn>
+          </template>
+          <template v-else>
+            <v-btn color="white" @click="goToLogin">Login</v-btn>
+            <v-btn color="white" @click="goToRegister">Register</v-btn>
+          </template>
+ 
     </v-toolbar-items>
   </v-app-bar>
 
@@ -68,11 +70,15 @@ const user = computed(() => {
 // Filter tabs based on user login status
 const filteredTabs = computed(() => {
   // If the user is logged in, show all tabs including "Profile"
-  if (isLoggedIn.value) {
+  if (isLoggedIn.value && store.state.user.userName === store.state.selectedUsername) {
     return tabs.value; // Show all tabs
   }
-  // If the user is not logged in, only show specific tabs
-  return tabs.value.filter(tab => tab.title !== 'Log game' && tab.title !== 'Stats' && tab.title !== 'Profile' && tab.title !== 'Game History');
+  else if(store.state.user?.userName !== store.state.selectedUsername){
+    // occurs when you are not logged in at all
+    return tabs.value.filter(tab => tab.title !== 'Log game' && tab.title !== 'Stats' && tab.title !== 'Profile' && tab.title !== 'Game History');
+  }
+  // If the user is logged in, but viewing someone elses page 
+  return tabs.value.filter(tab => tab.title !== 'Stats' && tab.title !== 'Profile' && tab.title !== 'Game History');
 });
 
 // Tabs data for navigation
@@ -82,11 +88,12 @@ const tabs = ref([
   { title: 'Courts', route: '/courts' },
   { title: 'Events', route: '/events' },
   { title: 'Log game', route: '/log-game' },
-  { title: 'Stats', route: '/stats' },
-  { title: 'Game History', route: `/game-history` }, ///${user.value}
-  { title: 'Profile', route:  '/profile' },//isLoggedIn.value ? `/profile/${user.value}` :
-  
+  { title: 'Stats', route: `/stats/${store.state.selectedUsername}`},
+  { title: 'Game History', route: `/game-history/${store.state.selectedUsername}`}, ///${user.value}
+  { title: 'Profile', route:  `/profile/${store.state.selectedUsername}`},//isLoggedIn.value ? `/profile/${user.value}` :
 ]);
+
+////profile/${store.state.selectedUsername}
 
 // Use alert state and methods
 const { alert, showAlert, closeAlert } = useAlert();
@@ -97,11 +104,12 @@ const goToLogin = () => {
 }
 
 const goToRegister = () => {
-  router.push('/register');
+  router.push(`/register/${user.userName}`);
 }
 
 const goToProfile = () => {
-  router.push(`/profile`); // /${user.value}
+  store.commit('UNSET_SELECTED_USERNAME');
+  router.push(`/profile/${user.userName}`); // /${user.value}
 }
 
 // Example of triggering an alert (you can call this from anywhere)
