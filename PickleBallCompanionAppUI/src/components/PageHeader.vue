@@ -4,13 +4,13 @@
     <v-toolbar-title class="text-center">
       <span class="text-h4 font-italic">Pickleball Companion</span>
     </v-toolbar-title>
-
+    
     <v-spacer></v-spacer>
 
     <v-toolbar-items>
    
           <template v-if="isLoggedIn">
-            <v-btn :disabled="store.state.user?.userName !== store.state.selectedUsername" color="white" @click="goToProfile">{{ user }}</v-btn>
+            <v-btn color="white" @click="goToProfile">{{ user }}</v-btn>
           </template>
           <template v-else>
             <v-btn color="white" @click="goToLogin">Login</v-btn>
@@ -41,6 +41,7 @@
       v-for="item in filteredTabs"
       :key="item.title"
       :to="item.route"
+      @click="returnToYourView(item.title)"
       ripple
     >
       {{ item.title }}
@@ -70,15 +71,14 @@ const user = computed(() => {
 // Filter tabs based on user login status
 const filteredTabs = computed(() => {
   // If the user is logged in, show all tabs including "Profile"
-  if (isLoggedIn.value && store.state.user.userName === store.state.selectedUsername) {
+  if (isLoggedIn.value) {
     return tabs.value; // Show all tabs
   }
-  else if(store.state.user?.userName !== store.state.selectedUsername){
+  else{
     // occurs when you are not logged in at all
     return tabs.value.filter(tab => tab.title !== 'Log game' && tab.title !== 'Stats' && tab.title !== 'Profile' && tab.title !== 'Game History');
   }
-  // If the user is logged in, but viewing someone elses page 
-  return tabs.value.filter(tab => tab.title !== 'Stats' && tab.title !== 'Profile' && tab.title !== 'Game History');
+
 });
 
 // Tabs data for navigation
@@ -104,12 +104,16 @@ const goToLogin = () => {
 }
 
 const goToRegister = () => {
-  router.push(`/register/${user.userName}`);
+  router.push(`/register`);
 }
 
 const goToProfile = () => {
   store.commit('UNSET_SELECTED_USERNAME');
-  router.push(`/profile/${user.userName}`); // /${user.value}
+  router.push(`/profile/:userId`); // /${user.value}
+}
+
+function returnToYourView(tabName){
+  store.commit('UNSET_SELECTED_USERNAME');
 }
 
 // Example of triggering an alert (you can call this from anywhere)

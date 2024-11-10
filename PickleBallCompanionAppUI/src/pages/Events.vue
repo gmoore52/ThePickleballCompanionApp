@@ -157,7 +157,7 @@ const getEvents = async () => {
   try {
     const url = '/event/events';
     JSONEvents.value = await fetchData(url);
-    console.log(JSONEvents.value)
+    // console.log(JSONEvents.value)
   } catch (error) {
     console.error(error);
   }

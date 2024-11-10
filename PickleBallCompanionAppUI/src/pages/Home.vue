@@ -63,7 +63,7 @@ const getEvents = async () => {
   JSONEvents.value = [];
   try {
     JSONEvents.value = await fetchData("/event/events");
-    console.log(JSONEvents.value)
+    // console.log(JSONEvents.value)
   } catch (error) {
     console.error(error);
   }

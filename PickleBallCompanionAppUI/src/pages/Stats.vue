@@ -87,14 +87,12 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted, watch } from 'vue';
 import { useRouter } from 'vue-router'; // Import useRouter from vue-router
 import { useStore } from 'vuex';
 
 const store = useStore();
 const router = useRouter();
-
-
 
 const actions = ref([
   { title: 'Bar Chart', image: 'https://chartexpo.com/Content/Images/charts/Clustered-Column-Graph.jpg' },
@@ -108,6 +106,20 @@ function handleAction(action) {
   selectedImage.value = action.image; // Update the selected image
   console.log(`Action selected: ${action.title}`);
 }
+
+onMounted(async () => {
+  // put fetch function here (also see the watch function below)
+});
+
+// this will be a function that will re-populate the stats page if you navigate there from someone else's page 
+watch(
+  () => store.state.selectedUsername,
+  (newUsername, oldUsername) => {
+    if (newUsername !== oldUsername) {
+      // TODO: pls put the function you use to fetch data here, which will be re ran once you reload the page
+    }
+  }
+);
 
 function returnToOtherProfile(userName){
   // store.commit('SET_SELECTED_USERNAME', "Peter_Dinklage3");

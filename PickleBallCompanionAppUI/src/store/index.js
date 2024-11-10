@@ -1,4 +1,5 @@
 import { createStore } from 'vuex';
+import { reactive } from 'vue';
 import { fetchData } from "@/util/fetchData";
 
 const store = createStore({
@@ -29,8 +30,10 @@ const store = createStore({
       localStorage.setItem('selectedUsername', userName);
     },
     UNSET_SELECTED_USERNAME(state) {
-      state.selectedUsername = state.user.userName
-      localStorage.setItem('selectedUsername', state.user.userName);
+      if (state.isAuthenticated) {
+        state.selectedUsername = state.user.userName
+        localStorage.setItem('selectedUsername', state.user.userName);
+      }
     }
   },
   actions: {

@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import { fetchData } from '@/util/fetchData.js'
 import { useStore } from 'vuex';
 import { formatDateTime } from '@/util/formatDate.js'
@@ -75,28 +75,14 @@ function formatCourt(courtNum){
   return locationDict.value[courtNum]
 }
 
-function temp1(){
-  store.commit('SET_SELECTED_USERNAME', "olivia_brown");
-  console.log("olivia_brown")
-}
-
-function temp2(){
-  store.commit('SET_SELECTED_USERNAME', "Peter_Dinklage3");
-  console.log("Peter_Dinklage3")
-}
-
-function unset(){
-  store.commit('UNSET_SELECTED_USERNAME')
-}
-
 function visitProfile(userName){
   store.commit('SET_SELECTED_USERNAME', "Peter_Dinklage3");
-  router.push(`/profile/${userName}`); // /${user.value} 
+  router.push(`/profile/:userId`); // /${user.value} 
 }
 
 function returnToOtherProfile(userName){
   // store.commit('SET_SELECTED_USERNAME', "Peter_Dinklage3");
-  router.push(`/profile/${userName}`); // /${user.value} 
+  router.push(`/profile/:userId`); // /${user.value} 
 }
 
 
@@ -150,6 +136,20 @@ onMounted(async () => {
   await parseData();
   await sortGames()
 });
+
+watch(
+  () => store.state.selectedUsername,
+  (newUsername, oldUsername) => {
+    if (newUsername !== oldUsername) {
+      getGames();
+      getCourts();
+      parseData();
+      sortGames();
+    }
+  }
+);
+
+
 
 </script>
 
