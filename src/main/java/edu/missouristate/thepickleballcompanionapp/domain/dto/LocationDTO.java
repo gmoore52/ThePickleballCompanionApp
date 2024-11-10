@@ -7,18 +7,20 @@ public class LocationDTO {
     private String address;
     private String coordinates;
     private Long metaId;  // Assuming you only want to transfer the ID of LocationMeta
+    private String courtPic;
 
     // Default constructor
     public LocationDTO() {}
 
     // Parameterized constructor
-    public LocationDTO(Long id, String courtName, Integer numOfCourts, String address, String coordinates, Long metaId) {
+    public LocationDTO(Long id, String courtName, Integer numOfCourts, String address, String coordinates, Long metaId, String courtPic) {
         this.id = id;
         this.courtName = courtName;
         this.numOfCourts = numOfCourts;
         this.address = address;
         this.coordinates = coordinates;
         this.metaId = metaId;
+        this.courtPic = courtPic;
     }
 
     // Getters and setters
@@ -36,6 +38,14 @@ public class LocationDTO {
 
     public void setCourtName(String courtName) {
         this.courtName = courtName;
+    }
+
+    public String getCourtPic() {
+        return courtPic;
+    }
+
+    public void setCourtPic(String courtPic) {
+        this.courtPic = courtPic;
     }
 
     public Integer getNumOfCourts() {

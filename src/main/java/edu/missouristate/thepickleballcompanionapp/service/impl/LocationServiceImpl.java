@@ -32,7 +32,8 @@ public class LocationServiceImpl implements LocationService {
                     location.getNumOfCourts(),
                     location.getAddress(),
                     location.getCoordinates(),
-                    location.getMeta() != null ? location.getMeta().getId().longValue() : null  // Handling possible null for meta
+                    location.getMeta() != null ? location.getMeta().getId().longValue() : null,  // Handling possible null for meta
+                    location.getCourtPic()
             );
             locationDTOs.add(locationDTO);
         }
