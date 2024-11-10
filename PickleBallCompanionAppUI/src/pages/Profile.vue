@@ -152,7 +152,7 @@ async function fetchUserData() {
 
 function returnHome(){
   store.commit('UNSET_SELECTED_USERNAME');
-  router.push('/'); // /${user.value} 
+  router.push(`/profile/:userId`); // /${user.value} 
 }
 
 // Function to fetch friends data from the database
@@ -170,12 +170,12 @@ function addSelectedFriend(userName){
 
 function visitStats(userName){
   store.commit('SET_SELECTED_USERNAME', userName);
-  router.push(`/stats/${userName}`); // /${user.value} 
+  router.push(`/stats/:userId`); // /${user.value} 
 }
 
 function visitGameHistory(userName){
   store.commit('SET_SELECTED_USERNAME', userName);
-  router.push(`/game-history/${userName}`); // /${user.value} 
+  router.push(`/game-history/:userId`); // /${user.value} 
 }
 
 // Date formatting utility
@@ -189,6 +189,16 @@ onMounted(() => {
     // fetchFriends(); // Fetch the friends of the selected profile
   }
 });
+
+watch(
+  () => store.state.selectedUsername,
+  (newUsername, oldUsername) => {
+    if (newUsername !== oldUsername) {
+      fetchUserData();
+      // fetchFriends(); // Fetch the friends of the selected profile TODO: pls put whatever function you do here to populate friends, here
+    }
+  }
+);
 
 
 // Confirm logout action
