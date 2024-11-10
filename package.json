@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "i": "^0.3.7",
     "vee-validate": "^4.13.2"
   }
 }

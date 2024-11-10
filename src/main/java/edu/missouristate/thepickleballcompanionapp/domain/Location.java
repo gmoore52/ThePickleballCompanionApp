@@ -13,6 +13,9 @@ public class Location {
     @Column(name="court_name")
     private String courtName;
 
+    @Column(name="court_pic")
+    private String courtPic;
+
     @Column(name="num_of_courts")
     private Integer numOfCourts;
 
@@ -40,6 +43,14 @@ public class Location {
 
     public void setCourtName(String courtName) {
         this.courtName = courtName;
+    }
+
+    public String getCourtPic() {
+        return courtPic;
+    }
+
+    public void setCourtPic(String courtPic) {
+        this.courtPic = courtPic;
     }
 
     public Integer getNumOfCourts() {
@@ -85,4 +96,5 @@ public class Location {
                 ", meta=" + meta +
                 '}';
     }
+
 }

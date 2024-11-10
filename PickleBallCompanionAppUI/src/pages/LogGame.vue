@@ -1,24 +1,35 @@
 <script setup>
-import { ref, watch} from 'vue';
+import { ref, watch, computed} from 'vue';
 import { onMounted } from '@vue/runtime-core';
+import { fetchData } from '@/util/fetchData';
+import { showAlert } from '@/util/alert'
+import { useStore } from 'vuex';
 
-  const userScore = ref(null);
+  const store = useStore();
+
+  const userScore = ref(null); 
   const oppScore = ref(null);
   const gameDate = ref(null);
-  const locations = ref(["loc1","loc2","loc3","loc4"]); // todo: make some sort of thing where if you put an input that already exists, like with a watcher doing it on the players, itll move the old player 
+  const locations = ref([]); // todo: make some sort of thing where if you put an input that already exists, like with a watcher doing it on the players, itll move the old player 
   const location = ref(null);
   const notes = ref(null);
 
+  const users = ref(null)
+  const JSONCourts = ref([])
+
   const isInDuosMode = ref(true);
-  const debugErrors = ref(null) // delete later 
   
-  const players1 = ref(["bob1","sue1","ron1","jon1"]);
-  const players2 = ref(["bob2","sue2","ron2","jon2"]);
-  const players3 = ref(["bob3","sue3","ron3","jon3"]);
-  const players4 = ref(["bob4","sue4","ron4","jon4"]);
+  const players1 = ref([]);
+  const players2 = ref([]);
+  const players3 = ref([]);
+  const players4 = ref([]);
+  const userDict = ref({}); // used to index between 'username' and 'firstname lastname - (username)' format
+  const locationDict = ref({}); // used to index between loc_id and location_name
 
   // THIS MUST LATER BE SET DYNAMICALLY AFTER THE USER IS LOGGED IN
-  const yourUserString = ref('Your User - (must_select)');
+  const yourFullName = ref(store.state.user.userFullName)
+  const yourUserName = ref(store.state.user.userName)
+  const yourUserNameDisplayString = ref(`${yourFullName.value} - (${yourUserName.value})`);
 
   const yourScoreRules = [
     value => {
@@ -31,12 +42,12 @@ import { onMounted } from '@vue/runtime-core';
       }
       return true
     },
-    value => {
-      if(value > 11){
-         return 'Score cannot be greater than 11';
-      }
-      return true
-    }, 
+    // value => {
+    //   if(value > 11){
+    //      return 'Score cannot be greater than 11';
+    //   }
+    //   return true
+    // }, 
   ];
 
   const oppScoreRules = [
@@ -50,12 +61,12 @@ import { onMounted } from '@vue/runtime-core';
       };
       return true;
     },
-    value => {
-      if(value > 11){
-         return 'Score cannot be greater than 11';
-      }
-      return true
-    }, 
+    // value => {
+    //   if(value > 11){
+    //      return 'Score cannot be greater than 11';
+    //   }
+    //   return true
+    // }, 
   ];
  
   const locationRules = [
@@ -88,12 +99,12 @@ import { onMounted } from '@vue/runtime-core';
     }
   ];
 
-  const player1Rules = [
-    value => {
-      if (value) return true;
-      return 'Select player 1';
-    },
-  ];
+  // const .Rules = [
+  //   value => {
+  //     if (value) return true;
+  //     return 'Select player 1';
+  //   },
+  // ];
 
   const player2Rules = [
     value => {
@@ -123,88 +134,178 @@ import { onMounted } from '@vue/runtime-core';
 
   // vee validate stuff
   
-  function getData(){
-    // unused currently, will connect to the backend
-    
-  }
 
-  function parseData(){
+  onMounted(async () => {
+    player1.value = yourUserNameDisplayString.value
+    await getCourts();
+    await getUsers();
+    await parseData();
+  })
+
+
+const getUsers = async () => {
+  users.value = [];
+  try {
+    const url = '/game/users';
+    users.value = await fetchData(url);
+    // console.log(users.value)
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+const getCourts = async () => {
+  JSONCourts.value = [];
+  try {
+    const url = '/data/locations';
+    JSONCourts.value = await fetchData(url);
+    // console.log(JSONCourts.value);
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+  const parseData = async () =>{
     let allPlayerStrings = [];
     let allLocationNames = [];
-    for (const user of usersJSON) {
-      const userString = `${user.firstname} ${user.lastname} - (${user.username})`;
-      allPlayerStrings.push(userString);
+    userDict.value = {}
+    for (const user of users.value) {
+      if (user.userName !== yourUserName.value){
+        const userString = `${user.userFullName} - (${user.userName})`;
+        userDict.value[userString] = user.userName
+        allPlayerStrings.push(userString);
+      }
     }
-    for (const loc of locationJSON) {
-      const locName = `${loc.court_name}`;
+    for (const loc of JSONCourts.value) {
+      const locName = `${loc.courtName}`;
+      locationDict.value[locName] = loc.id
       allLocationNames.push(locName);
     }
 
-    console.log(allPlayerStrings);
+    //console.log(allPlayerStrings);
     players1.value = allPlayerStrings;
     players2.value = allPlayerStrings;
     players3.value = allPlayerStrings;
     players4.value = allPlayerStrings;
 
-    console.log(allLocationNames);
+    //console.log(allLocationNames);
     locations.value = allLocationNames;
   }
 
   function handleSubmit(){
+    // console.log(gameDate.value)
     var jsonGame = {};
     var dataNames = ['userScore','oppScore','gameDate','location','notes','player1','player2','player3','player4'];
-    var dataValues = [userScore.value, oppScore.value, gameDate.value, location.value, notes.value, player1.value, player2.value, player3.value, player4.value];
+    var dataValues = [parseInt(userScore.value), parseInt(oppScore.value), `${gameDate.value} 00:00:00`, Number(locationDict.value[location.value]), notes.value, yourUserName.value, userDict.value[player2.value], userDict.value[player3.value], userDict.value[player4.value]];
 
     // making the JSON object here 
-    for (let i = 0; i< dataNames.length; i++){
-     jsonGame[dataNames[i]] = dataValues[i];
+    for (let i = 0; i < dataNames.length; i++){
+      jsonGame[dataNames[i]] = dataValues[i];
+      //console.log(dataValues[i])
     }
 
     let nullsErr = checkForNulls();
-    let scoreErr = verifyScoreLogic();
-    let yourUserErr = verifyYourUserSelected();
+    let scoreErr = verifyScore();
+    // let yourUserErr = verifyYourUserSelected();
+    let dateErr = verifyDate();
 
     if(nullsErr !== false){
-      //debugErrors.value = `Null(s) found, first at ${nullsErr}`;
+      showAlert('error', `Error: First error found in field: '${nullsErr}'`)
+    }
+    else if(dateErr !== false){
+      showAlert('error', dateErr)
     }
     else if(scoreErr !== false){
-      debugErrors.value = `${scoreErr}`;
-      //console.log(`Score error found, ${scoreErr}`);
-    }
-    else if(yourUserErr !== false){
-      debugErrors.value = `${yourUserErr}`;
-      //console.log(`Player selection error, ${yourUserErr}`)
+      showAlert('error', scoreErr)
     }
     else{ // no nulls and no score err condition, send the data here to backend later 
-      debugErrors.value = ''; // delete this later
+ 
       console.log(jsonGame); 
+
+    try {
+        const response = fetchData("/game/logGame", {                  
+        method: 'POST', // (or 'GET')
+        body: JSON.stringify(jsonGame),
+        headers: {
+            'Content-type':'application/json',
+        }
+      });
+
+    console.log('Success - game added :', response);
+    clearForm()
+    showAlert('success', 'Game successfully posted')
+    } catch (error){
+      console.error('Error adding game:', error);
     }
   }
-  
-  function verifyScoreLogic(){
+  }
+
+  function verifyScore(){
     if ((userScore.value == 11) && (oppScore.value == 11)){
       return 'Only one team may score 11 points, no ties allowed'
     }
-    else if((userScore.value!= 11 ) && (oppScore.value != 11)){ 
-      return 'One score of 11 must be reached'
+    else if((userScore.value < 11) && (oppScore.value < 11)){ 
+      return 'One score of at least 11 must be reached'
       } 
+    else if((userScore.value == 11 && oppScore.value == 10) || (userScore.value == 10 && oppScore.value == 11)){
+      return 'The winning team must win by 2 points'
+    }
+    else if ((userScore.value > 11 || oppScore.value > 11) && (Math.abs(userScore.value - oppScore.value) !== 2)) { // case where a win needs to occur by at least 2 points in OT (ie 10-11 can't work)
+      return `To have a score of over 11, the winning team must win by exactly 2 points`; 
+    }
     else{
       return false 
     }
   }
 
-  function verifyYourUserSelected(){
-    if (isInDuosMode.value && ((player1.value !== yourUserString.value) && (player2.value !== yourUserString.value) &&  // todo, fix this logic, we need to render more or less players with v if
-    (player3.value !== yourUserString.value) && (player4.value !== yourUserString.value))){
-      return 'You must select yourself as a player in the game (duos)'
-    }
-    else if(!isInDuosMode.value && ((player1.value !== yourUserString.value) && (player2.value !== yourUserString.value))){
-      return 'You must select yourself as a player in the game (singles)'
-    }  
+  function verifyDate(){
+    // note that we are returning empty string here because the date picker already lets you know what the error is 
+    const today = new Date();
+    const now = new Date();
+    const oneYearAgo = new Date(now);
+    oneYearAgo.setFullYear(now.getFullYear() - 1);
 
-    else{
-      return false;
+    if(new Date(gameDate.value) > today){
+      return 'Cannot select a date in the future' // date is in the future
     }
+    else if(new Date(gameDate.value) < oneYearAgo){
+      return 'Cannot input a game over a year old' // date was over a year ago
+    }
+    else{
+      return false 
+    }
+  }
+
+  // function verifyYourUserSelected(){
+  //   if (isInDuosMode.value && ((userDict.value[player1.value] !== yourUserName.value) && (userDict.value[player2.value] !== yourUserName.value) &&  // todo, fix this logic, we need to render more or less players with v if
+  //   (userDict.value[player3.value] !== yourUserName.value) && (userDict.value[player4.value] !== yourUserName.value))){
+  //     //console.log(player1.value, player2.value, player3.value, player4.value)
+  //     return 'You must select yourself as a player in the game (duos)'
+  //   }
+  //   else if(!isInDuosMode.value && ((userDict.value[player1.value] !== yourUserName.value) && (userDict.value[player2.value] !== yourUserName.value))){
+  //     return 'You must select yourself as a player in the game (singles)'
+  //   }  
+
+  //   else{
+  //     return false;
+  //   }
+  // }
+
+  function clearForm(){
+    // form.value.reset()
+    // userScore.value = null
+    // gameDate.value = null
+    // player1.value = yourUserNameDisplayString.value
+    // player2.value = null
+    // player3.value = null
+    // player4.value = null
+    // location.value = null
+
+    // form.value.reset()
+    // isInDuosMode.value = true
+    
+
+    // window.location.reload()
   }
 
   function checkForNulls(){
@@ -219,9 +320,6 @@ import { onMounted } from '@vue/runtime-core';
     }
     else if(location.value == null){
       return 'location';
-    }
-    else if(userScore.value == null){
-      return 'userscore';
     }
     else if(player1.value == null){ 
       return 'player1';
@@ -240,15 +338,11 @@ import { onMounted } from '@vue/runtime-core';
     }
   }
 
-  onMounted(() => {
-    getData();
-    parseData();
-  })
-
   // todo: add all the functionality LOL
   // todo: seems that we are onto form validation, resizing for phone screen, and some sort of option for singles v doubles 
   // todo: make the watchers replace the value if it exists somehwere else already
   // todo: make it so that the player names also have their username listed Name Name - (Username)
+  //todo: Lol you cant enter a game over 11 points for some reason haha 
 
   function checkForPlayerNameListed(name, originNum){
     if ((originNum!= 1) && (name === player1.value)){ // todo 
@@ -290,157 +384,16 @@ import { onMounted } from '@vue/runtime-core';
     }
   });
 
-  const usersJSON = 
-  [{
-    username: "must_select",
-    firstname: "Your",
-    lastname: "User",
-    email_address: "user1@example.com",
-    password: "password123",
-    profile_img: "profile_img_1.png",
-    skill_level: 5,
-    acc_creation_date: "2023-01-10"
-  },
-  {
-    username: "jane_smith",
-    firstname: "Jane",
-    lastname: "Smith",
-    email_address: "user2@example.com",
-    password: "mypassword456",
-    profile_img: "profile_img_2.png",
-    skill_level: 7,
-    acc_creation_date: "2023-02-15"
-  },
-  {
-    username: "michael_johnson",
-    firstname: "Michael",
-    lastname: "Johnson",
-    email_address: "user3@example.com",
-    password: "password789",
-    profile_img: "profile_img_3.png",
-    skill_level: 4,
-    acc_creation_date: "2023-03-20"
-  },
-  {
-    username: "emily_davis",
-    firstname: "Emily",
-    lastname: "Davis",
-    email_address: "user4@example.com",
-    password: "securepass987",
-    profile_img: "profile_img_4.png",
-    skill_level: 6,
-    acc_creation_date: "2023-04-25"
-  },
-  {
-    username: "james_wilson",
-    firstname: "James",
-    lastname: "Wilson",
-    email_address: "user5@example.com",
-    password: "user5pass",
-    profile_img: "profile_img_5.png",
-    skill_level: 8,
-    acc_creation_date: "2023-05-30"
-  },
-  {
-    username: "olivia_brown",
-    firstname: "Olivia",
-    lastname: "Brown",
-    email_address: "user6@example.com",
-    password: "mypassword123",
-    profile_img: "profile_img_6.png",
-    skill_level: 5,
-    acc_creation_date: "2023-06-14"
-  },
-  {
-    username: "william_taylor",
-    firstname: "William",
-    lastname: "Taylor",
-    email_address: "user7@example.com",
-    password: "userpass789",
-    profile_img: "profile_img_7.png",
-    skill_level: 9,
-    acc_creation_date: "2023-07-19"
-  },
-  {
-    username: "sophia_moore",
-    firstname: "Sophia",
-    lastname: "Moore",
-    email_address: "user8@example.com",
-    password: "pass456user",
-    profile_img: "profile_img_8.png",
-    skill_level: 6,
-    acc_creation_date: "2023-08-24"
-  },
-  {
-    username: "benjamin_martinez",
-    firstname: "Benjamin",
-    lastname: "Martinez",
-    email_address: "user9@example.com",
-    password: "9userpass321",
-    profile_img: "profile_img_9.png",
-    skill_level: 3,
-    acc_creation_date: "2023-09-29"
-  },
-  {
-    username: "amelia_garcia",
-    firstname: "Amelia",
-    lastname: "Garcia",
-    email_address: "user10@example.com",
-    password: "10userpass654",
-    profile_img: "profile_img_10.png",
-    skill_level: 7,
-    acc_creation_date: "2023-10-04"
-  }];
-  const locationJSON = [
-  {
-    "loc_id": 1,
-    "court_name": "Downtown Court",
-    "number_of_courts": 4,
-    "address": "123 Main St, Cityville",
-    "coordinates": "40.7128,-74.0060",
-    "court_meta_id": 101
-  },
-  {
-    "loc_id": 2,
-    "court_name": "Westside Park",
-    "number_of_courts": 6,
-    "address": "456 West St, Townsville",
-    "coordinates": "34.0522,-118.2437",
-    "court_meta_id": 102
-  },
-  {
-    "loc_id": 3,
-    "court_name": "Eastwood Courts",
-    "number_of_courts": 3,
-    "address": "789 East Ave, Villageton",
-    "coordinates": "51.5074,-0.1278",
-    "court_meta_id": 103
-  },
-  {
-    "loc_id": 4,
-    "court_name": "Riverside Court",
-    "number_of_courts": 2,
-    "address": "101 River Rd, Waterbury",
-    "coordinates": "35.6895,139.6917",
-    "court_meta_id": 104
-  },
-  {
-    "loc_id": 5,
-    "court_name": "Central Park Courts",
-    "number_of_courts": 8,
-    "address": "202",
-    "coordinates": "31.6895,14.6917",
-    "court_meta_id": 105
-  }];
 </script>
 <template>
   <v-container class="container">
     <v-row>
     <!-- <h1>Log Game</h1> -->
-    <v-form validate-on="submit lazy" @submit.prevent="handleSubmit">
+    <v-form validate-on="submit lazy" @submit.prevent="handleSubmit" ref="form">
       <v-layout>
-        <v-col cols="12" sm="6" id="left-pannel">
-          <v-card id= "card-1" class="w-100 card">
+        <v-row class="no-styling px-3-xm row-container">
+        <v-col cols="12" sm="6" id="left-pannel" class="pr-xs-5">
+          <v-card id= "card-1" class="w-100 card m-sm-0">
             <v-row id="row1">
               <v-col cols="12" class="left-pannel-col left-pannel-col-header">
                 <h2>Game Summary</h2>
@@ -452,10 +405,10 @@ import { onMounted } from '@vue/runtime-core';
                   v-model="isInDuosMode"
                   mandatory
                   class="left-pannel">
-                  <v-btn :value="false" class="duos-toggle">
+                  <v-btn prepend-icon="mdi-account":value="false" class="duos-toggle">
                     Singles
                   </v-btn>
-                  <v-btn :value="true" class="duos-toggle">
+                  <v-btn prepend-icon="mdi-account-multiple":value="true" class="duos-toggle">
                     Duos
                   </v-btn>
                 </v-btn-toggle>
@@ -474,7 +427,7 @@ import { onMounted } from '@vue/runtime-core';
               </v-col>
               
               <v-col cols="12" class="left-pannel-col">
-                <v-text-field v-model="gameDate" label="Date" type="date" class="text left-pannel" required :rules="dateRules"></v-text-field>
+                <v-text-field v-model="gameDate" label="Date" type="date" class="text left-pannel" required :rules="dateRules" ref="gd"></v-text-field>
               </v-col>
               <v-col cols="12" class="left-pannel-col no-margins">
                 <v-autocomplete v-model="location" clearable label="Location"type="text" class="text left-pannel" required :items=locations :rules="locationRules"></v-autocomplete>
@@ -485,20 +438,20 @@ import { onMounted } from '@vue/runtime-core';
               </v-col>
             </v-row>
         </v-card>  
+        
       </v-col>
-      <v-col cols="12" sm="6" id="right-pannel">
+        <v-col cols="12" sm="6" id="right-pannel" class="">
         <v-card id="card2" class="card">
           <v-row id="row2 w-100">
             <v-col cols="">
               <div class="player-container-1">
-                <h2 class="team-heading center left-pannel-col-header">Team 1 Players</h2> 
+                <h2 class="team-heading center left-pannel-col-header">Your Team Players</h2> 
                 <div class="court">
-                  
-                  <v-autocomplete v-model="player1" class="player-search" clearable required label="Player 1" :items="players1" :rules="player1Rules">
-                  </v-autocomplete>
+                  <v-text-field v-model="player1" class="player-search" readonly required label="You (selected)" :items="players1">
+                  </v-text-field> 
                 </div> 
                 <div class="court">                  
-                  <v-autocomplete v-model="player3" :disabled=!isInDuosMode class="player-search" clearable required label="Player 3" :items="players3" :rules="player3Rules">
+                  <v-autocomplete v-model="player3" :disabled=!isInDuosMode class="player-search" auto-select-first clearable required label="Player 3" :items="players3" :rules="player3Rules">
                   </v-autocomplete>
                 </div>
               </div>
@@ -506,7 +459,7 @@ import { onMounted } from '@vue/runtime-core';
                 
               </div>
               <div class="player-container-2">  
-                <h2 class="team-heading left-pannel-col-header">Team 2 Players</h2>
+                <h2 class="team-heading left-pannel-col-header">Opposing Team Players</h2>
                 <div class="court">
                 
                   <v-autocomplete v-model="player2" class="player-search" clearable required label="Player 2" :items="players2" :rules="player2Rules">
@@ -521,14 +474,14 @@ import { onMounted } from '@vue/runtime-core';
               </div>
             </v-col>
             <v-col cols="12" class="btn-col">
-                <v-btn type="submit" variant="tonal" class="w-100 submit"> Submit Game</v-btn>
+                <v-btn prepend-icon="mdi-archive-check"type="submit" variant="tonal" class="w-100 submit"> Submit Game</v-btn>
             </v-col>
             <v-col cols="12" class="errors">
-                {{debugErrors}}
               </v-col>
           </v-row>
         </v-card> 
-      </v-col>
+        </v-col>
+      </v-row>
       </v-layout>
     </v-form>
   </v-row>
@@ -536,12 +489,15 @@ import { onMounted } from '@vue/runtime-core';
 </template>
 
 <style scoped>
-  #card1{
+  .no-styling{
+    margin:0px;
+  }
+  /* #card1{
     margin-right: 0.1em;
   }
   #card2{
     margin-left: 0.1em;
-  }
+  } */
   .card{
     border-radius: 8px;
     padding: 16px;
@@ -594,6 +550,21 @@ import { onMounted } from '@vue/runtime-core';
     padding-left: 1px;
     display:block !important;
   }
+  
+  @media (max-width: 599px) {
+    #left-pannel {
+      padding-left: 2px;
+      padding-bottom: 2px;
+    }
+    #right-pannel{
+      padding-right: 2px;
+      padding-top: 2px;
+    }
+    .container{
+      padding-right: 25px; 
+      padding-left: 25px; 
+    }
+  }
   .btn-col{
     padding-top: 0;
   }
@@ -601,7 +572,7 @@ import { onMounted } from '@vue/runtime-core';
     height:3rem;
   }
   #notes{ 
-    height:200px;
+    height:100px;
   }
   #row2{
     width: 50% !important;

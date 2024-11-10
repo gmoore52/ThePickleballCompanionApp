@@ -8,7 +8,8 @@ const routes = [
   { path: '/stats', component: () => import('@/pages/Stats.vue') },
   { path: '/profile', component: () => import('@/pages/Profile.vue') },
   { path: '/register', component: () => import('@/pages/Register.vue') },
-  { path: '/login', component: () => import('@/pages/Login.vue') }
+  { path: '/login', component: () => import('@/pages/Login.vue') },
+  { path: '/game-history', component: () => import('@/pages/GameHistory.vue') }
   // Add any other routes here
 ];
 

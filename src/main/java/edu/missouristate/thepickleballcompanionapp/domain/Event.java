@@ -8,18 +8,26 @@ import java.sql.Timestamp;
 @Table(name="EVENTS")
 public class Event {
     @Id
-    @Column(name="event_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "event_id")
     private Integer eventId;
 
-    @Column(name="event_start")
+    @Column(name = "event_start")
     private Timestamp eventStart;
 
-    @Column(name="event_end")
+    @Column(name = "event_end")
     private Timestamp eventEnd;
 
-    @Column(name="event_desc")
+    @Column(name = "event_loc")
+    private Integer eventLoc;
+
+    @Column(name = "event_title")
+    private String eventTitle;
+
+    @Column(name = "event_desc")
     private String eventDesc;
+
+    // Getters and Setters
 
     public Integer getEventId() {
         return eventId;
@@ -45,6 +53,22 @@ public class Event {
         this.eventEnd = eventEnd;
     }
 
+    public Integer getEventLoc() {
+        return eventLoc;
+    }
+
+    public void setEventLoc(Integer eventLoc) {
+        this.eventLoc = eventLoc;
+    }
+
+    public String getEventTitle() {
+        return eventTitle;
+    }
+
+    public void setEventTitle(String eventTitle) {
+        this.eventTitle = eventTitle;
+    }
+
     public String getEventDesc() {
         return eventDesc;
     }
@@ -59,6 +83,8 @@ public class Event {
                 "eventId=" + eventId +
                 ", eventStart=" + eventStart +
                 ", eventEnd=" + eventEnd +
+                ", eventLoc=" + eventLoc +
+                ", eventTitle='" + eventTitle + '\'' +
                 ", eventDesc='" + eventDesc + '\'' +
                 '}';
     }
