@@ -13,7 +13,8 @@ VALUES
     (2, 'Westside Park', '/images/westside_park.jpg', 6, '456 West St, Townsville', '34.0522,-118.2437', 2),
     (3, 'Eastwood Courts', '/images/eastwood_courts.jpg', 3, '789 East Ave, Villageton', '51.5074,-0.1278', 3),
     (4, 'Riverside Court', '/images/riverside_court.jpg', 2, '101 River Rd, Waterbury', '35.6895,139.6917', 4),
-    (5, 'Central Park Courts', '/images/central_park_courts.jpg', 8, '202 Central Ave, Cityville', '31.6895,14.6917', 5);
+    (5, 'Central Park Courts', '/images/central_park_courts.jpg', 8, '202 Central Ave, Cityville', '31.6895,14.6917', 5),
+    (6, 'Meador Park', '/images/meador_park.jpg', 10, '2600 S Fremont Ave Springfield', '37.1672,-93.271689', 6);
 
 INSERT INTO EVENTS (EVENT_START, EVENT_END, EVENT_LOC, EVENT_TITLE, EVENT_DESC)
 VALUES
