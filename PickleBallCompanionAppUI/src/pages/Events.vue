@@ -265,6 +265,12 @@ function handleSubmit(){
       });
 
     console.log('Success - game added :', response);
+
+    // this is the re-fetch that occurs when you add the game to be able to display it 
+    // getEvents();
+    // formatEvents();
+    // parseData();
+
     } catch (error){
       console.error('Error adding Event:', error);
     }

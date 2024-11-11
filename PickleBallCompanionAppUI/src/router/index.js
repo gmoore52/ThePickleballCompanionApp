@@ -22,25 +22,21 @@ router.beforeEach(async (to, from, next) => {
   const store = useStore();
   const dynamicRoutes = ['/game-history', '/stats', '/profile'];
 
-  // Check if the route requires a dynamic userId parameter
   const isDynamicRoute = dynamicRoutes.some(route => to.path.includes(route));
 
-  if (isDynamicRoute) {
-    // Fetch user data if `selectedUsername` is not set
-    if (!store.state.selectedUsername) {
-      await store.dispatch('initializeStore');
-    }
+  // Wait for the store to initialize
+  if (!store.state.isInitialized) {
+    await store.dispatch('initializeStore');
+  }
 
-    // Check if `selectedUsername` is now loaded
+  if (isDynamicRoute) {
     if (store.state.selectedUsername) {
-      // Redirect only if the `userId` parameter does not match `selectedUsername`
       if (to.params.userId !== store.state.selectedUsername) {
         return next(`/${to.path.split('/')[1]}/${store.state.selectedUsername}`);
       }
     }
   }
 
-  // If no redirection is needed, proceed to the next route
   next();
 });
 
