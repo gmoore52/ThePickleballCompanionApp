@@ -23,7 +23,7 @@
                   <v-card-title class="white--text">{{ event.eventTitle }}</v-card-title>
                   <v-card-text class="white--text">{{ event.eventDesc }}</v-card-text>
                   <v-card-subtitle class="white--text">
-                    {{ new Date(event.eventStart).toLocaleString() }}
+                    {{ formatDateTime(new Date(event.eventStart).toLocaleString()) }}
                   </v-card-subtitle>
                 </v-card>
               </v-col>
@@ -34,17 +34,25 @@
         <!-- Recent Games Section -->
         <v-col cols="12" md="4" class="d-flex flex-column">
           <v-card class="pa-4 flex-grow-1" outlined>
-            <v-card-title class="white--text text-h5">Recent Games</v-card-title>
+            <v-card-title class="white--text text-h5 games-title">Recent Games</v-card-title>
             <v-card-text>
-              <v-card outlined>
-                <v-card-title class="white--text">Game summary</v-card-title>
-              </v-card>
-              <v-card outlined class="mt-2">
-                <v-card-title class="white--text">Game summary</v-card-title>
-              </v-card>
-              <v-card outlined class="mt-2">
-                <v-card-title class="white--text">Game summary</v-card-title>
-              </v-card>
+              
+                <!-- Games that are loaded from the database -->
+
+                <div class="mb-3"
+              v-for="(game, index) in JSONGames"
+              :key="game.id">
+                <game-history-card 
+                :game="game"
+                :index="index"
+                :expandedView="expandedView"
+                :modalStates="modalStates"
+                :dialog="modalStates[index]"
+                :location="formatCourt(game.location)"
+                @close="modalStates[index] = false">
+                </game-history-card>
+              </div>
+
             </v-card-text>
           </v-card>
         </v-col>
@@ -55,22 +63,76 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue';
 import { fetchData } from "@/util/fetchData";
+import { formatDateTime } from '@/util/formatDate.js'
+import { useStore } from 'vuex';
+import { useRouter } from 'vue-router';
 
 const JSONEvents = ref([]);
+const JSONGames = ref()
+const JSONCourts = ref({});
+const locationDict = ref({}); // used to index between loc_id and location_name
+const limitedGames = computed(() => {
+  // Check if JSONGames has items, and slice if so
+  return Array.isArray(JSONGames.value) ? JSONGames.value.slice(0, 5) : [];
+});
+
+const modalStates = ref([]); // This will hold refs initialized to false
+const expandedView = ref(false)
+
+const store = useStore();
+const router = useRouter();
 
 const getEvents = async () => {
   JSONEvents.value = [];
   try {
     JSONEvents.value = await fetchData("/event/events");
-    console.log(JSONEvents.value)
+    // console.log(JSONEvents.value)
   } catch (error) {
     console.error(error);
   }
 };
 
+const getGames = async () => {
+  JSONGames.value = [];
+  try {
+    JSONGames.value = await fetchData(`/game/games?username=${store.state.selectedUsername}`); // 
+    modalStates.value = new Array(JSONGames.value.length).fill(false); // Initialize modal states
+    // console.log(JSONGames.value)
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+const getCourts = async () => {
+  JSONCourts.value = [];
+  try {
+    const url = '/data/locations';
+    JSONCourts.value = await fetchData(url);
+    // console.log(JSONCourts.value);
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+const parseData = async () =>{
+  for (const loc of JSONCourts.value) {
+    const locName = `${loc.courtName}`;
+    locationDict.value[loc.id] = locName    
+  }
+}
+
+const sortGames = async () => {
+  JSONGames.value = JSONGames.value
+    .sort((b, a) => new Date(a.gameDate) - new Date(b.gameDate));
+}
+
 // Fetch events when the component is mounted
-onMounted(() => {
-  getEvents();
+onMounted(async () => {
+  await getEvents();
+  await getGames();
+  await sortGames();
+  await getCourts();
+  await parseData();
 });
 
 // Computed property to filter and sort events by EVENT_START date
@@ -80,6 +142,11 @@ const sortedEvents = computed(() => {
     .filter(event => new Date(event.eventStart) > now) // Only future events
     .sort((a, b) => new Date(a.eventStart) - new Date(b.eventStart)); // Sort by date
 });
+
+function formatCourt(courtNum){
+  return locationDict.value[courtNum]
+}
+
 </script>
 <style scoped>
 .v-app {
@@ -109,6 +176,11 @@ const sortedEvents = computed(() => {
   margin: 0.1em;
   color: #212121 !important;
   border:none;
+}
+
+.games-title{
+  justify-content: center;
+  text-align:center
 }
 
 .white--text {

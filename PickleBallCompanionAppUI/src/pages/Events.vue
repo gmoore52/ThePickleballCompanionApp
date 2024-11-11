@@ -3,6 +3,9 @@ import { ref, computed, onMounted} from 'vue'
 import { VTimePicker } from 'vuetify/labs/VTimePicker'
 import { fetchData } from '@/util/fetchData';
 import { showAlert } from '@/util/alert'
+import { useStore } from 'vuex';
+import { formatDateTime } from '@/util/formatDate.js'
+
 
 // Search query reactive variable
 const searchQuery = ref(null)
@@ -33,11 +36,15 @@ const ongoingEvents = ref([]);
 const upcomingEvents = ref([]);
 const pastEvents = ref([]);
 
+const store = useStore();
+
 const frontendStartTime = computed({ // cleans selected time for frontend
   get(){
     return frontendTime(startTime.value)
   }
 })
+
+const isLoggedIn = computed(() => store.state.isAuthenticated);
 
 const frontendEndTime = computed({ // cleans selected time for frontend
   get(){
@@ -150,7 +157,7 @@ const getEvents = async () => {
   try {
     const url = '/event/events';
     JSONEvents.value = await fetchData(url);
-    console.log(JSONEvents.value)
+    // console.log(JSONEvents.value)
   } catch (error) {
     console.error(error);
   }
@@ -241,8 +248,8 @@ function handleSubmit(){
     showAlert('error', timeAndDateLogic)
   }
   else{ // no errors, everything should go through here
-    
-    // date objects are getting created once the time logic is completed 
+
+    // date objects are getting created once the time logic is completed
     jsonEvent['eventStart'] = convertToDateString(startDate.value, startTime.value, startAMPM.value);
     jsonEvent['eventEnd'] = convertToDateString(endDate.value, endTime.value, endAMPM.value);
     console.log(jsonEvent);
@@ -258,6 +265,12 @@ function handleSubmit(){
       });
 
     console.log('Success - game added :', response);
+
+    // this is the re-fetch that occurs when you add the game to be able to display it 
+    // getEvents();
+    // formatEvents();
+    // parseData();
+
     } catch (error){
       console.error('Error adding Event:', error);
     }
@@ -348,6 +361,8 @@ function closeModal(){
 }
 
   function convertDateObjToFrontendDate(date){
+  console.log(date.toLocaleString())
+ 
   let newDate = new Date(date);
   let fullDate = newDate.toDateString();
   let hours = newDate.getHours();
@@ -393,7 +408,7 @@ const filteredOngoingEvents = computed(() => {
       <v-row>
         <v-col cols="12" md="8">
             <!-- Button to open the modal -->
-            <v-btn id='event-btn' class="btn mr-2" @click="showDialog = true">Add New Event</v-btn>
+            <v-btn prepend-icon="mdi-calendar-edit" v-if="isLoggedIn" id='event-btn' class="btn mr-2" @click="showDialog = true">Add New Event</v-btn>
             <!-- START MODAL -->
             <v-dialog class ="modal-container" persistent v-model="showDialog">
               <v-card class="modal-card">
@@ -462,12 +477,12 @@ const filteredOngoingEvents = computed(() => {
                   </v-col>
 
                   <v-col cols="12" class="">
-                    <v-btn class="submit" type="submit">
+                    <v-btn prepend-icon="mdi-calendar-plus" class="submit" type="submit">
                       Add Event
                     </v-btn>
                   </v-col>
                   <v-col cols="12" class="errors">
-              
+
                   </v-col>
                 </v-row>
               </v-form>
@@ -503,8 +518,8 @@ const filteredOngoingEvents = computed(() => {
                     <v-col cols="8">
                       <v-card-title>{{ event.eventTitle }}</v-card-title>
                       <!-- <v-card-subtitle>Event ID: {{ event.event_id }}</v-card-subtitle> -->
-                      <v-card-subtitle>Start: {{ convertDateObjToFrontendDate(event.eventStart) }}</v-card-subtitle>
-                      <v-card-subtitle>End: {{ convertDateObjToFrontendDate(event.eventEnd) }}</v-card-subtitle>
+                      <v-card-subtitle>Start: {{ formatDateTime(event.eventStart.toLocaleString()) }}</v-card-subtitle>
+                      <v-card-subtitle>End: {{ formatDateTime(event.eventEnd.toLocaleString()) }}</v-card-subtitle>
                       <v-card-text>{{ event.eventDesc }} </v-card-text>
                       <v-card-subtitle>Hosted at {{ convertLocIdToName(event.eventLoc) }}</v-card-subtitle>
                     </v-col>
@@ -532,8 +547,8 @@ const filteredOngoingEvents = computed(() => {
                     <v-col cols="8">
                       <v-card-title>{{ event.eventTitle }}</v-card-title>
                       <!-- <v-card-subtitle>Event ID: {{ event.eventId }}</v-card-subtitle> -->
-                      <v-card-subtitle>Start: {{ convertDateObjToFrontendDate(event.eventStart) }}</v-card-subtitle>
-                      <v-card-subtitle>End: {{ convertDateObjToFrontendDate(event.eventEnd)}}</v-card-subtitle>
+                      <v-card-subtitle>Start: {{ formatDateTime(event.eventStart.toLocaleString()) }}</v-card-subtitle>
+                      <v-card-subtitle>End: {{ formatDateTime(event.eventEnd.toLocaleString())}}</v-card-subtitle>
                       <v-card-text>Description: {{ event.eventDesc }} </v-card-text>
                       <v-card-subtitle>Hosted at {{ convertLocIdToName(event.eventLoc) }}</v-card-subtitle>
                     </v-col>

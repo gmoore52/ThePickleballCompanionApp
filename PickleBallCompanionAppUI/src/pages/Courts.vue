@@ -3,7 +3,7 @@
     <!-- Search and Location Toolbar -->
     <v-row class="">
       <v-col cols="12" md="8">
-        <v-btn color="#212121" id="loc-btn" class="mr-2" @click="getUserLocation">
+        <v-btn prepend-icon="mdi-map-marker-account" color="#212121" id="loc-btn" class="mr-2" @click="getUserLocation">
           Click here to use your precise location
         </v-btn>
       </v-col>
@@ -34,12 +34,14 @@
           <v-row>
             <v-col cols="8">
               <v-card-title>{{ court.courtName }}</v-card-title>
-              <v-card-subtitle>Distance: {{ court.distance }} km</v-card-subtitle>
+              <v-card-subtitle>
+                <strong>Distance: {{ court.distance ? `~${court.distance}` : 'Please enable location by clicking the button above.' }}</strong>
+              </v-card-subtitle>
               <v-card-text>Location: {{ court.address }}</v-card-text>
               <v-card-text>Number of courts: {{ court.numOfCourts }}</v-card-text>
             </v-col>
             <v-col cols="4">
-              <v-img :src="court.image" alt="Court Image" />
+              <v-img :src="court.courtPic || '/images/default.jpg'" alt="Court Image" />
             </v-col>
           </v-row>
         </v-card>
@@ -55,6 +57,7 @@ import { fetchData } from '@/util/fetchData.js'
 // search bar string
 const searchQuery = ref('')
 const courts = ref([])
+const userLocation = ref({latitude: null, longitude: null})
 
 onMounted(()=>{
   getCourts();
@@ -86,10 +89,11 @@ const filteredCourts = computed(() => {
 const getUserLocation = () => {
   if (navigator.geolocation) {
     navigator.geolocation.getCurrentPosition(position => {
-      const latitude = position.coords.latitude;
-      const longitude = position.coords.longitude;
-      alert(`Your location is Latitude: ${latitude}, Longitude: ${longitude}`);
-      // Add functionality to use this location (e.g., filter courts by proximity)
+      userLocation.value.latitude = position.coords.latitude;
+      userLocation.value.longitude = position.coords.longitude;
+      // Display current location to the user and calculate distance from user's current location to all courts displayed on the page.
+      calculateDistances();
+      alert(`Location data turned on! \nYour location is Latitude: ${userLocation.value.latitude}, Longitude: ${userLocation.value.longitude}`);
     }, error => {
       alert('Unable to retrieve your location.');
     });
@@ -97,11 +101,51 @@ const getUserLocation = () => {
     alert('Geolocation is not supported by your browser.');
   }
 }
+
+// Get location from User to Court selected
+const calculateDistances = () => {
+  //If user location data not available, return
+  if (!userLocation.value.latitude || !userLocation.value.longitude) {
+    return;
+  }
+
+  //Using the Haversine formula to calculate the distance between two points on a sphere given their longitudes and latitudes
+  // Radius of Earth in miles
+  const R = 3958.8;
+
+  courts.value.forEach(court => {
+
+    // Parse court's coordinates from the table for calculation
+    const [courtLat, courtLon] = court.coordinates.split(',').map(Number);
+    const userLat = userLocation.value.latitude;
+    const userLon = userLocation.value.longitude;
+
+    // Calculate the differences for latitude and longitude, and convert to radians (pi/180)
+    // Math.toRadians did not work for some reason, so leaving it as is for this and const a
+    const dLat = (courtLat - userLat) * (Math.PI / 180);
+    const dLon = (courtLon - userLon) * (Math.PI / 180);
+
+    // The square of half the chord length between the points
+    const a =
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos(userLat * (Math.PI / 180)) * Math.cos(courtLat * (Math.PI / 180)) *
+      Math.sin(dLon / 2) * Math.sin(dLon / 2);
+
+    // Calculate angular distance in radians
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+    // Calculate Distance in miles
+    const distance = R * c;
+
+    // Update the court's distance in miles rounded to two decimal places
+    court.distance = `${distance.toFixed(2)} miles`;
+  });
+}
 </script>
 
 <style scoped>
 .displayed-court{
-  
+
 }
 
 #loc-btn{

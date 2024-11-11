@@ -3,6 +3,9 @@ import { ref, watch, computed} from 'vue';
 import { onMounted } from '@vue/runtime-core';
 import { fetchData } from '@/util/fetchData';
 import { showAlert } from '@/util/alert'
+import { useStore } from 'vuex';
+
+  const store = useStore();
 
   const userScore = ref(null); 
   const oppScore = ref(null);
@@ -24,8 +27,9 @@ import { showAlert } from '@/util/alert'
   const locationDict = ref({}); // used to index between loc_id and location_name
 
   // THIS MUST LATER BE SET DYNAMICALLY AFTER THE USER IS LOGGED IN
-  const yourUserName = ref('must_select');
-  const yourUserNameDisplayString = ref('Must Select - (must_select)');
+  const yourFullName = ref(store.state.user.userFullName)
+  const yourUserName = ref(store.state.user.userName)
+  const yourUserNameDisplayString = ref(`${yourFullName.value} - (${yourUserName.value})`);
 
   const yourScoreRules = [
     value => {
@@ -216,7 +220,7 @@ const getCourts = async () => {
     }
     else{ // no nulls and no score err condition, send the data here to backend later 
  
-      // console.log(jsonGame); 
+      console.log(jsonGame); 
 
     try {
         const response = fetchData("/game/logGame", {                  
@@ -401,10 +405,10 @@ const getCourts = async () => {
                   v-model="isInDuosMode"
                   mandatory
                   class="left-pannel">
-                  <v-btn :value="false" class="duos-toggle">
+                  <v-btn prepend-icon="mdi-account":value="false" class="duos-toggle">
                     Singles
                   </v-btn>
-                  <v-btn :value="true" class="duos-toggle">
+                  <v-btn prepend-icon="mdi-account-multiple":value="true" class="duos-toggle">
                     Duos
                   </v-btn>
                 </v-btn-toggle>
@@ -470,7 +474,7 @@ const getCourts = async () => {
               </div>
             </v-col>
             <v-col cols="12" class="btn-col">
-                <v-btn type="submit" variant="tonal" class="w-100 submit"> Submit Game</v-btn>
+                <v-btn prepend-icon="mdi-archive-check"type="submit" variant="tonal" class="w-100 submit"> Submit Game</v-btn>
             </v-col>
             <v-col cols="12" class="errors">
               </v-col>
