@@ -122,9 +122,8 @@ const parseData = async () =>{
 }
 
 const sortGames = async () => {
-
-JSONGames.value = JSONGames.value
-  .sort((b, a) => new Date(a.gameDate) - new Date(b.gameDate));
+  JSONGames.value = JSONGames.value
+    .sort((b, a) => new Date(a.gameDate) - new Date(b.gameDate));
 }
 
 // Fetch events when the component is mounted
