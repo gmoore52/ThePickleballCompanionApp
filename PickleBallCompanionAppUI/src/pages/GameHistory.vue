@@ -5,6 +5,7 @@ import { useStore } from 'vuex';
 import { formatDateTime } from '@/util/formatDate.js'
 import { useRouter } from 'vue-router';
 import GameHistoryModal from '@/components/sub-components/GameHistoryModal.vue'; 
+import GameHistoryCard from '@/components/sub-components/GameHistoryCard.vue'; 
 
 
 const JSONGames = ref()
@@ -53,24 +54,6 @@ const sortGames = async () => {
     .sort((b,a) => new Date(a.gameDate) - new Date(b.gameDate));
 }
 
-function calcWinLoss(userScore, oppScore){
-  if(parseInt(userScore) < parseInt(oppScore)){
-    return "Loss"
-  }
-  else if(parseInt(userScore) > parseInt(oppScore)){
-    return "Win"
-  }
-}
-
-function formatNotes(notes){
-  if (notes === null){
-    return 'None'
-  }
-  else{
-    return notes
-  }
-}
-
 function formatCourt(courtNum){
   return locationDict.value[courtNum]
 }
@@ -85,49 +68,16 @@ function returnToOtherProfile(userName){
   router.push(`/profile/:userId`); // /${user.value} 
 }
 
-
-
-// function displayWinLossBasedOnUser(game){
-//   console.log(game.player1);
-//   if (game.player1 === loggedInUserName.value || game.player3 === loggedInUserName.value){
-//     // means you logged the game OR were on the team of the person that did 
-//     return calcWinLoss(game.userScore, game.oppScore)
-//   }
-//   if (game.player2 === loggedInUserName.value || game.player4 === loggedInUserName.value){
-//     // means your opponent logged the game, scores must be swapped
-//     return calcWinLoss(game.oppScore, game.userScore)
-//   }
-
-// }
-
-// function displayScoresBasedOnUser(game){
-//   let newGame = game
-
 const parseData = async () =>{
   for (const loc of JSONCourts.value) {
     const locName = `${loc.courtName}`;
-    locationDict.value[loc.id] = locName
-
-  for (const game of JSONGames.value){
-    if (game.player1 === loggedInUserName.value || game.player3 === loggedInUserName.value){
-    // means you logged the game OR were on the team of the person that did, do nothing
-    }
-    if (game.player2 === loggedInUserName.value || game.player4 === loggedInUserName.value){
-    // means your opponent logged the game, scores must be swapped between yourScore and oppScore
-    let tempUserScore = game.userScore
-
-    game.userScore = game.oppScore
-    game.oppScore = tempUserScore
-    }
+    locationDict.value[loc.id] = locName    
   }
-    
-  }
-
 }
 
 // defined here so that
 function checkJSONLength(){
-  return JSONGames.length > 0
+  return JSONGames.length === 0
 }
 
 onMounted(async () => {
@@ -175,91 +125,15 @@ watch(
       <v-col class=""
               v-for="(game, index) in JSONGames"
               :key="game.id" sm="6" md="4" xs="12">
-        <v-card link @click="modalStates[index] = !modalStates[index]">
-          <v-row>
-              <v-col cols="1" class="game-card">
-                <v-icon v-if="calcWinLoss(game.userScore, game.oppScore) === 'Win'" icon="mdi-flag" color="green" size="large" class="icons"></v-icon>
-                <v-icon v-if="calcWinLoss(game.userScore, game.oppScore) === 'Loss'" icon="mdi-flag-off" color="red" size="large" class="icons"></v-icon>
-              </v-col>
-            <v-col cols="10" class="game-card">
-              
-              <!-- medium view -->
-              <div v-if="!expandedView">
-                <v-card-title class="card-header main-header">{{calcWinLoss(game.userScore, game.oppScore)}}</v-card-title>
-                <v-card-title class="card-header">{{game.userScore}} - {{game.oppScore}}</v-card-title>
-                <v-card-subtitle class="subtitle">{{formatCourt(game.location)}}</v-card-subtitle>
-                <v-card-subtitle class="subtitle">{{formatDateTime(game.gameDate)}}</v-card-subtitle>
-              </div>
-
-              <!-- large view -->
-              <div v-if="expandedView" class="large-card">
-                <v-col cols="12">
-                <v-card-title class="card-header">Results</v-card-title>
-                  <v-card-subtitle>Outcome: <strong>{{calcWinLoss(game.userScore, game.oppScore)}}</strong></v-card-subtitle>
-                  <v-card-subtitle>Your team's score: <strong>{{game.userScore}}</strong></v-card-subtitle>
-                  <v-card-subtitle>Opponent team's score: <strong>{{game.oppScore}}</strong></v-card-subtitle>
-                </v-col>  
-                <v-col cols="12">
-                  <v-card-title class="card-header">Game Info</v-card-title>
-                  <v-card-subtitle>Location: {{formatCourt(game.location)}}</v-card-subtitle>
-                  <v-card-subtitle>Date: {{formatDateTime(game.gameDate)}}</v-card-subtitle>
-                  <v-card-subtitle>Logged by: {{game.player1}}</v-card-subtitle>
-                </v-col> 
-                <v-col cols="12">
-                  <v-card-title class="card-header">Players</v-card-title>
-                  <v-card-subtitle>Team 1: {{game.player1}} {{game.player3}}</v-card-subtitle>
-                  <v-card-subtitle>Team 2: {{game.player2}} {{game.player4}}</v-card-subtitle>
-                </v-col>
-
-                <v-col cols="12">
-                  <v-card-title class="card-header">Notes</v-card-title>
-                  <v-card-subtitle class="notes">{{formatNotes(game.notes)}}</v-card-subtitle>
-                </v-col> 
-              </div>
-             
-            </v-col>
-
-            <v-col cols="1" class="game-card">
-              <v-btn variant="tonal" rounded="lg" icon="mdi-information-outline" class="pop-out-btn"></v-btn>
-            </v-col>
-            <game-history-modal
-            :game="game"
-            :dialog="modalStates[index]"
-            @close="modalStates[index] = false"
-            :locationDict="locationDict.value"
-            :formattedDate="formatDateTime(game.gameDate)"
-            :formattedCourt="formatCourt(game.location)"
-            >
-            </game-history-modal>
-
-            <!-- <v-col cols="12">
-
-            </v-col>
-            <v-col cols="12">
-
-            </v-col> -->
-            <!-- <v-col cols="3">
-              <v-card-title class="card-header">{{calcWinLoss(game.userScore, game.oppScore)}}</v-card-title>
-              <v-card-title>{{game.userScore}} - {{game.oppScore}}</v-card-title>
-            </v-col>  -->
-            <!-- <v-col cols="2">
-              <v-card-title class="card-header">Info</v-card-title>
-              <v-card-subtitle>{{formatCourt(game.location)}}</v-card-subtitle>
-              <v-card-subtitle>{{formatDateTime(game.gameDate)}}</v-card-subtitle>
-            </v-col> -->
-            <!-- <v-col cols="2">
-              <v-card-title class="card-header">Notes</v-card-title>
-              <v-card-subtitle>{{formatNotes(game.notes)}}</v-card-subtitle>
-            </v-col> -->
-            <!-- <v-col cols="3">
-              <v-card-title class="card-header">Players</v-card-title>
-              <v-card-subtitle>{{game.player1}}</v-card-subtitle>
-              <v-card-subtitle>{{game.player2}}</v-card-subtitle>
-              <v-card-subtitle>{{game.player3}}</v-card-subtitle>
-              <v-card-subtitle>{{game.player4}}</v-card-subtitle>
-            </v-col> -->
-          </v-row>
-        </v-card>
+        <game-history-card 
+        :game="game"
+        :index="index"
+        :modalStates="modalStates"
+        :dialog="modalStates[index]"
+        :location="formatCourt(game.location)"
+        :expandedView="expandedView"
+        @close="modalStates[index] = false">
+        </game-history-card>
       </v-col>
     </v-row>
   </v-container>
@@ -295,14 +169,14 @@ watch(
     white-space: unset;
 }
 
-.game-card{
+.med-card{
   justify-content: center;
   text-align:center
 }
 
 .large-card{
-  /* justify-content: center;
-  text-align:left */
+  justify-content: center;
+  text-align:left
 }
 
 .pop-out-btn{

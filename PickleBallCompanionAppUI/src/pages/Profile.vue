@@ -96,7 +96,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue';
+import { ref, onMounted, computed, watch } from 'vue';
 import { fetchData } from '@/util/fetchData.js';
 import { useStore } from 'vuex';
 import { showAlert } from "@/util/alert";
