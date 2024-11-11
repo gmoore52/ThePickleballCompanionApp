@@ -46,7 +46,7 @@ function formatNotes(notes){
 
 function visitProfile(userName){
   store.commit('SET_SELECTED_USERNAME', userName);
-  router.push(`/profile/:userId`); // /${user.value} 
+  router.push(`/profile/${userName}`); // /${user.value} 
 }
 
 </script>
