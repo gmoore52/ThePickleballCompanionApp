@@ -89,7 +89,7 @@ onMounted(() => {
 async function loadUsers() {
   try {
     const response = await fetchData('/users/all/users'); // Fetch all users
-    console.log(response);
+    // console.log(response);
     // Filter out the logged-in user
     userOptions.value = response.filter(user => user.userName !== props.currentUser);
   } catch (error) {

@@ -2,15 +2,24 @@
 
 import { ref, defineEmits, defineProps, onMounted } from 'vue';
 import { fetchData } from "@/util/fetchData";
+import { formatDateTime } from '@/util/formatDate.js'
 import { useRouter } from 'vue-router'; // Import useRouter from vue-router
+import { useStore } from 'vuex';
 
 const props = defineProps({
   game: Object,
   dialog: Boolean,
-  locationDict: Object,
   formattedDate: String, 
   formattedCourt: String,
+  winOrLoss: String, 
+  selectedTeamScore: Number, 
+  otherTeamScore: Number, 
+  team1WinLoss: String, 
+  team2WinLoss: String, 
 });
+
+const store = useStore();
+const router = useRouter();
 
 const emit = defineEmits(['close']);
 
@@ -26,14 +35,6 @@ function calcWinLoss(userScore, oppScore){
   }
 }
 
-function team1DisplayLogic(p1, p3){
-    
-}
-
-function team2DisplayLogic(p2, p4){
-    
-}
-
 function formatNotes(notes){
   if (notes === null){
     return 'None'
@@ -41,6 +42,11 @@ function formatNotes(notes){
   else{
     return notes
   }
+}
+
+function visitProfile(userName){
+  store.commit('SET_SELECTED_USERNAME', userName);
+  router.push(`/profile/${userName}`); // /${user.value} 
 }
 
 </script>
@@ -53,22 +59,25 @@ function formatNotes(notes){
 
              <v-col cols="12">
             <v-card-title class="card-header">Results</v-card-title>
-              <v-card-subtitle>Outcome: <strong>{{calcWinLoss(game.userScore, game.oppScore)}}</strong></v-card-subtitle>
-              <v-card-subtitle>Your team's score: <strong>{{game.userScore}}</strong></v-card-subtitle>
-              <v-card-subtitle>Opponent team's score: <strong>{{game.oppScore}}</strong></v-card-subtitle>
+              <v-card-subtitle>Outcome: <strong>{{winOrLoss}}</strong></v-card-subtitle>
+              <v-card-subtitle>{{store.state.selectedUsername}}'s score: <strong>{{selectedTeamScore}}</strong></v-card-subtitle>
+              <v-card-subtitle>Opponent's score: <strong>{{otherTeamScore}}</strong></v-card-subtitle>
             </v-col>  
              <v-col cols="12">
               <v-card-title class="card-header">Game Info</v-card-title>
               <v-card-subtitle>Location: {{formattedCourt}}</v-card-subtitle>
-              <v-card-subtitle>Date: {{game.gameDate.split(" ")[0]}}</v-card-subtitle>
+              <v-card-subtitle>Date: {{formatDateTime(game.gameDate)}}</v-card-subtitle>
+              <v-card-subtitle>Logged by: {{game.player1}}</v-card-subtitle>
             </v-col> 
-             <v-col cols="12">
-              <v-card-title class="card-header">Players</v-card-title>
-              <v-card-subtitle>Team 1: {{game.player1}} {{game.player3}}</v-card-subtitle>
-              <v-card-subtitle>Team 2: {{game.player2}} {{game.player4}}</v-card-subtitle>
-              <v-card-subtitle>Game logged by: {{game.player1}}</v-card-subtitle>
-            </v-col>
-
+            <v-col cols="12">
+                <v-card-title class="card-header">Players</v-card-title>
+                <v-card-subtitle> {{team1WinLoss}} team with <strong>{{game.userScore}}</strong> point(s)</v-card-subtitle>
+                <v-btn prepend-icon="mdi-account" color="green" class="player-btns" @click="visitProfile(game.player1)">{{game.player1}}</v-btn>
+                <v-btn prepend-icon="mdi-account" color="green" class="player-btns" v-if="game.player3" @click="visitProfile(game.player3)">{{game.player3}}</v-btn>
+                <v-card-subtitle> {{team2WinLoss}} team with  <strong>{{game.oppScore}}</strong> point(s)</v-card-subtitle>
+                <v-btn prepend-icon="mdi-account" color="green"class="player-btns" @click="visitProfile(game.player2)">{{game.player2}}</v-btn>
+              <v-btn prepend-icon="mdi-account" color="green" class="player-btns" v-if="game.player4" @click="visitProfile(game.player4)">{{game.player4}}</v-btn>
+              </v-col>
             <v-col cols="12">
               <v-card-title class="card-header">Notes</v-card-title>
               <v-card-subtitle class="notes">{{formatNotes(game.notes)}}</v-card-subtitle>
@@ -82,6 +91,18 @@ function formatNotes(notes){
 
 
 <style scoped>
+.v-row{
+  margin: 12px;
+}
+
+.player-btns{
+  margin-left: 16px;
+  margin-top: 5px;
+  margin-bottom: 5px;
+  /* background-color: */
+
+}
+
 .close-btn{
     float: right;
     margin-right: 5px;

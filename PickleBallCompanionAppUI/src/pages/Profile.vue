@@ -26,7 +26,17 @@
                   <v-card-title class="white--text">Account Creation Date</v-card-title>
                   <v-card-text class="white--text">{{ formatDate(userData.accCreationDate) }}</v-card-text>
                 </v-card>
-                <v-btn prepend-icon="mdi-logout" class="mt-5" color="red" @click="showLogoutConfirm = true">Logout</v-btn>
+
+                <v-btn v-if="loggedInUserName === store.state.selectedUsername" prepend-icon="mdi-logout" class="mt-5" color="red" @click="showLogoutConfirm = true">Logout</v-btn>
+                
+                <!-- Displays if you are looking at a profile other than your own -->
+
+                 <!-- NOTE: THIS BUTTON GOTTA BE DISABLED AND SAY "Friend Added" ONCE WE FINISH FRIEND REQUESTS IF YOU ARE ALREADY THEIR FRIEND-->
+                 <v-btn v-if="loggedInUserName !== store.state.selectedUsername" prepend-icon="mdi-exit-run" class="mt-5 mr-10" color="white" @click="returnHome()">Return</v-btn>
+                <v-btn v-if="loggedInUserName !== store.state.selectedUsername" prepend-icon="mdi-account-arrow-right-outline" class="mt-5" color="blue" @click="visitStats(store.state.selectedUsername)">View Stats</v-btn>
+                <v-btn v-if="loggedInUserName !== store.state.selectedUsername" prepend-icon="mdi-account-arrow-right-outline" class="mt-5 mx-2" color="blue" @click="visitGameHistory(store.state.selectedUsername)">View Game History</v-btn>
+                <v-btn v-if="loggedInUserName !== store.state.selectedUsername" prepend-icon="mdi-account-multiple-plus" class="mt-5" color="green" @click="addSelectedFriend(store.state.selectedUsername)">Add Friend</v-btn>
+
               </v-col>
             </v-row>
           </v-card>
@@ -37,7 +47,7 @@
           <v-card class="pa-4" outlined>
             <v-card-title class="white--text text-h4 d-flex justify-space-between">
               Friends
-              <v-btn prepend-icon="mdi-account-multiple-plus" color="green" @click="showAddFriendModal = true">Add Friend</v-btn>
+              <v-btn v-if="loggedInUserName === store.state.selectedUsername" prepend-icon="mdi-account-multiple-plus" color="green" @click="showAddFriendModal = true">Add Friend</v-btn>
             </v-card-title>
             <v-list v-if="friends.length">
               <v-list-item v-for="friend in friends" :key="friend.id">
@@ -66,7 +76,7 @@
       <!-- Add Friend Modal -->
       <AddFriendModal
         :model-value="showAddFriendModal"
-        :currentUser="loggedInUserName"
+        :currentUser="store.state.selectedUsername"
         @close="showAddFriendModal = false"
       />
 
@@ -86,7 +96,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue';
+import { ref, onMounted, computed, watch } from 'vue';
 import { fetchData } from '@/util/fetchData.js';
 import { useStore } from 'vuex';
 import { showAlert } from "@/util/alert";
@@ -132,12 +142,16 @@ const loggedInUserName = computed(() => {
 // Function to fetch user data from the database
 async function fetchUserData() {
   try {
-    const json = await fetchData(`/users/find?username=${loggedInUserName.value}`);
-    console.log(json);
+    const json = await fetchData(`/users/find?username=${store.state.selectedUsername}`);
     Object.assign(userData.value, json); // Merging user data
   } catch (err) {
     console.error('Error fetching user data:', err);
   }
+}
+
+function returnHome(){
+  store.commit('UNSET_SELECTED_USERNAME');
+  router.push(`/profile/:userId`); // /${user.value} 
 }
 
 // Function to fetch friends data from the database
@@ -148,6 +162,20 @@ async function fetchUserData() {
 //     console.error('Error fetching friends:', err);
 //   }
 // }
+
+function addSelectedFriend(userName){
+  // function is not complete yet, we will be calling to the database here
+}
+
+function visitStats(userName){
+  store.commit('SET_SELECTED_USERNAME', userName);
+  router.push(`/stats/:userId`); // /${user.value} 
+}
+
+function visitGameHistory(userName){
+  store.commit('SET_SELECTED_USERNAME', userName);
+  router.push(`/game-history/:userId`); // /${user.value} 
+}
 
 // Date formatting utility
 const formatDate = (date) => {
@@ -160,6 +188,16 @@ onMounted(() => {
     // fetchFriends(); // Fetch the friends of the selected profile
   }
 });
+
+watch(
+  () => store.state.selectedUsername,
+  (newUsername, oldUsername) => {
+    if (newUsername !== oldUsername) {
+      fetchUserData();
+      // fetchFriends(); // Fetch the friends of the selected profile TODO: pls put whatever function you do here to populate friends, here
+    }
+  }
+);
 
 
 // Confirm logout action
