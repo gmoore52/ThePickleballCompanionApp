@@ -11,12 +11,13 @@ const store = createStore({
   mutations: {
     SET_USER(state, user) {
       state.user = user;
-      state.selectedUsername = user.userName; // new will addition here 
+      state.selectedUsername = user.userName; // new will addition here
       state.isAuthenticated = !!user;
       // Persist the user information to localStorage
       localStorage.setItem('user', JSON.stringify(user));
       localStorage.setItem('isAuthenticated', state.isAuthenticated);
       localStorage.setItem('selectedUsername', user.userName);
+      fetchData(`/statistics/stageUserStatsHst?username=${store.state.selectedUsername}`)
     },
     LOGOUT(state) {
       state.user = null;

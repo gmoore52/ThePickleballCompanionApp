@@ -17,14 +17,18 @@ public class StatisticsController {
     private StatisticsService statisticsService;
 
     @GetMapping("/getUserStatsHst")
-    public List<UserStatisticsHistoricalDTO> getUserStatisticsHistoric(@RequestBody String username){
-        return statisticsService.getUserStatisticsHistoric(username);
+    public List<UserStatisticsHistoricalDTO> getUserStatisticsHistoric(@RequestParam List<String> username,
+                                                                       @RequestParam String stat) {
+        return statisticsService.getUserStatisticsHistoric(username, stat);
+    }
+
+    @GetMapping("/stageUserStatsHst")
+    public boolean stageUserStatisticsHistoric(@RequestParam List<String> username){
+        return statisticsService.stageUserStatisticsHistoric(username);
     }
 
     @GetMapping("/getUserStats")
-    public UserStatisticsDTO getUserStatistics(@RequestBody String username){
+    public UserStatisticsDTO getUserStatistics(@RequestParam String username){
         return statisticsService.getUserStatistics(username);
     }
-
-
 }

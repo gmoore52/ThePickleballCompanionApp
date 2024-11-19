@@ -7,5 +7,6 @@ import java.util.List;
 
 public interface StatisticsService {
     UserStatisticsDTO getUserStatistics(String username);
-    List<UserStatisticsHistoricalDTO> getUserStatisticsHistoric(String username);
+    List<UserStatisticsHistoricalDTO> getUserStatisticsHistoric(List<String> username, String stat);
+    boolean stageUserStatisticsHistoric(List<String> username);
 }

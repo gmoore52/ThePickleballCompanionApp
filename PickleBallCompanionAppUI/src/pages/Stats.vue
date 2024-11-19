@@ -14,19 +14,21 @@
                 <v-btn v-if="store.state.user?.userName !== store.state.selectedUsername" prepend-icon="mdi-account-arrow-left-outline" class="mt-2 mx-2" color="blue" @click="returnToOtherProfile(store.state.selectedUsername)">return</v-btn>
 
 
+                <v-card-title class="white--text">Total Games:</v-card-title>
+                <v-card-text class="white--text">{{userStatsAcc.totalGames}}</v-card-text>
                 <v-card-title class="white--text">Total Wins:</v-card-title>
-                <v-card-text class="white--text">##</v-card-text>
+                <v-card-text class="white--text">{{userStatsAcc.totalWins}}</v-card-text>
                 <v-card-title class="white--text">Total Losses:</v-card-title>
-                <v-card-text class="white--text">##</v-card-text>
+                <v-card-text class="white--text">{{userStatsAcc.totalLosses}}</v-card-text>
                 <v-card-title class="white--text">W/L Ratio:</v-card-title>
-                <v-card-text class="white--text">##</v-card-text>
-                
+                <v-card-text class="white--text">{{userStatsAcc.winLossRatio}}</v-card-text>
+
                 <v-card-title class="white--text">Most Frequented Court:</v-card-title>
-                <v-card-text class="white--text">Location Court</v-card-text>
+                <v-card-text class="white--text">{{userStatsAcc.mostFrequentLocationID}}</v-card-text>
 
                 <v-card-title class="white--text">Top Teammate:</v-card-title>
                 <v-card-text class="d-flex align-center">
-                  <v-card-text class = "white--text">Top Teammate</v-card-text>
+                  <v-card-text class = "white--text">{{userStatsAcc.mostFrequentTeammateUsername}}</v-card-text>
                           <v-img
                             src="https://static.vecteezy.com/system/resources/previews/046/300/541/non_2x/avatar-user-profile-person-icon-gender-neutral-silhouette-profile-picture-suitable-for-social-media-profiles-icons-screensavers-free-png.png"
                             max-width="50"
@@ -36,7 +38,7 @@
                 </v-card-text>
                 <v-card-title class="white--text">Strongest Opponent</v-card-title>
                 <v-card-text class="d-flex align-center">
-                  <v-card-text class = "white--text">Strongest Oppponent</v-card-text>
+                  <v-card-text class = "white--text">{{userStatsAcc.strongestOpponentUsername}}</v-card-text>
                           <v-img
                             src="https://static.vecteezy.com/system/resources/previews/046/300/541/non_2x/avatar-user-profile-person-icon-gender-neutral-silhouette-profile-picture-suitable-for-social-media-profiles-icons-screensavers-free-png.png"
                             max-width="50"
@@ -48,6 +50,7 @@
               </v-col>
 
               <v-col cols="12" md="8">
+                <apexchart height="500" :options="chartOptions" :series="chartData"></apexchart>
                 <v-card class="chart-options">
                   <div>
                     <v-menu offset-y>
@@ -66,7 +69,7 @@
                     </v-menu>
                   </div>
 
-                 
+
                   <!-- Conditionally Render the Selected Image -->
                   <div v-if="selectedImage">
                     <v-img
@@ -87,12 +90,15 @@
 </template>
 
 <script setup>
-import { ref, onMounted, watch } from 'vue';
+import {ref, onMounted, watch, computed} from 'vue';
 import { useRouter } from 'vue-router'; // Import useRouter from vue-router
 import { useStore } from 'vuex';
+import {fetchData} from "@/util/fetchData";
 
 const store = useStore();
 const router = useRouter();
+
+const isLoggedIn = computed(() => store.state.isAuthenticated);
 
 const actions = ref([
   { title: 'Bar Chart', image: 'https://chartexpo.com/Content/Images/charts/Clustered-Column-Graph.jpg' },
@@ -100,18 +106,148 @@ const actions = ref([
   { title: 'Pie Chart', image: 'https://images.wondershare.com/edrawmax/article2023/pie-chart-examples/edrawmax-pie-chart-example-10.jpg' },
 ]);
 
+const isChartDataLoading = ref(true);
+
+const chartData = ref([
+  {
+    name: "High - 2013",
+    data: [28, 29, 33, 36, 32, 32, 33]
+    // data: []
+  },
+  // {
+  //   name: "Low - 2013",
+  //   data: [12, 11, 14, 18, 17, 13, 13]
+  //   // data: []
+  // }
+]);
+// const chartData = ref([]);
+const chartOptions = ref({
+  chart: {
+    height: 350,
+    type: 'line',
+    dropShadow: {
+      enabled: true,
+      color: '#000',
+      top: 18,
+      left: 7,
+      blur: 10,
+      opacity: 0.2
+    },
+    zoom: {
+      enabled: false
+    },
+    toolbar: {
+      show: false
+    }
+  },
+  colors: ['#77B6EA', '#545454'],
+  dataLabels: {
+    enabled: true,
+  },
+  stroke: {
+    curve: 'smooth'
+  },
+  title: {
+    text: 'Average High & Low Temperature',
+    align: 'left'
+  },
+  grid: {
+    borderColor: '#e7e7e7',
+    row: {
+      colors: ['#f3f3f3', 'transparent'], // takes an array which will be repeated on columns
+      opacity: 0.5
+    },
+  },markers: {
+    size: 1
+  },
+  xaxis: {
+    type: 'datetime'
+    // {
+    //
+    // categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'],
+    // title: {
+    //   text: 'Month'
+    // }
+  },
+  yaxis: {
+    title: {
+      text: 'Temperature'
+    },
+    min: 5,
+    max: 40
+  },
+  legend: {
+    position: 'top',
+    horizontalAlign: 'right',
+    floating: true,
+    offsetY: -25,
+    offsetX: -5
+  },
+  noData: {
+    text: isChartDataLoading.value ? "Loading...":"No Data present in the graph!",
+    align: 'center',
+    verticalAlign: 'middle',
+    offsetX: 0,
+    offsetY: 0,
+    style: {
+      color: "#000000",
+      fontSize: '14px',
+      fontFamily: "Helvetica"
+    }
+  }
+});
+
 const selectedImage = ref(null); // Reactive variable to hold the selected image
+const userStatsHst = ref({});
+const userStatsAcc = ref({
+  totalGames: 0,
+  totalWins: 0,
+  totalLosses: 0,
+  winLossRatio: 0,
+  mostFrequentLocationID: 0,
+  mostFrequentTeammateUsername: "",
+  strongestOpponentUsername: "",
+  mostLossesToStrongestOpponent: 0
+});
 
 function handleAction(action) {
   selectedImage.value = action.image; // Update the selected image
   console.log(`Action selected: ${action.title}`);
 }
 
+async function fetchUserStatsHst(username, ref) {
+  try {
+    isChartDataLoading.value = true;
+    const json = await fetchData(`/statistics/getUserStatsHst?username=${username}`);
+    Object.assign(ref.value, json); // Merging user data
+    isChartDataLoading.value = false;
+  } catch (err) {
+    console.error('Error fetching user data:', err);
+    isChartDataLoading.value = false;
+  }
+}
+
+async function fetchUserStatsAcc() {
+  try {
+    const json = await fetchData(`/statistics/getUserStats?username=${store.state.selectedUsername}`);
+    Object.assign(userStatsAcc.value, json); // Merging user data
+  } catch (err) {
+    console.error('Error fetching user data:', err);
+  }
+}
+
 onMounted(async () => {
   // put fetch function here (also see the watch function below)
+  if (isLoggedIn.value) {
+    fetchData(``)
+    fetchUserStatsAcc();
+    fetchUserStatsHst(store.state.selectedUsername, userStatsHst); // Fetch the user data for the selected profile
+    // fetchFriends(); // Fetch the friends of the selected profile
+    // generateDataSeries(null, null, "winLossRatio");
+  }
 });
 
-// this will be a function that will re-populate the stats page if you navigate there from someone else's page 
+// this will be a function that will re-populate the stats page if you navigate there from someone else's page
 watch(
   () => store.state.selectedUsername,
   (newUsername, oldUsername) => {
@@ -123,8 +259,9 @@ watch(
 
 function returnToOtherProfile(userName){
   // store.commit('SET_SELECTED_USERNAME', "Peter_Dinklage3");
-  router.push(`/profile/${userName}`); // /${user.value} 
+  router.push(`/profile/${userName}`); // /${user.value}
 }
+
 </script>
 
 <style scoped>
@@ -146,7 +283,7 @@ function returnToOtherProfile(userName){
 .v-card {
   border: 1px solid white;
   padding: 0.8em;
-  
+
   color: #212121 !important;
   border:none;
 }
