@@ -269,4 +269,8 @@ watch(
 .no-padding {
   padding: 0 !important;
 }
+
+.v-container {
+    max-width: 1168px;
+  }
 </style>

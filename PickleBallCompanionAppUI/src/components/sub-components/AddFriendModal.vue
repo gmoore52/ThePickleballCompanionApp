@@ -135,4 +135,8 @@ async function viewProfile() {
   max-width: 400px;
   margin: auto;
 }
+
+.v-container {
+  max-width: 1168px;
+  }
 </style>

@@ -25,4 +25,12 @@ public class RequestRepositoryImpl extends QuerydslRepositorySupport implements 
                         .and(request.origin.eq(user).or(request.destination.eq(user))))
                 .fetch();
     }
+
+    public List<Request> findByStatusOriginOnly(String status, User user) {
+        return from(request)
+                .select(request)
+                .where(request.status.eq(status)
+                        .and(request.destination.eq(user)))
+                .fetch();
+    }
 }

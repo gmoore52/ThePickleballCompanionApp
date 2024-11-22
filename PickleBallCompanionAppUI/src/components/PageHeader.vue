@@ -129,4 +129,5 @@ const triggerErrorAlert = () => {
   right: 50%;
   transform: translateX(50%);
 }
+
 </style>

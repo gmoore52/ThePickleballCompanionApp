@@ -123,4 +123,8 @@ function visitProfile(userName){
   padding-bottom: 0;
 }
 
+.v-container {
+  max-width: 1168px;
+  }
+
 </style>

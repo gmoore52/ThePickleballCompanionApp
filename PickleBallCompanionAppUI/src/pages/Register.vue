@@ -301,4 +301,8 @@ const clearUsernameError = () => {
   font-size: 16px;
   font-weight: bold;
 }
+
+.v-container {
+  max-width: 1168px;
+  }
 </style>

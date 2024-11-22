@@ -10,7 +10,6 @@ import FriendCard from '@/components/sub-components/FriendCard.vue';
 const store = useStore();
 const router = useRouter();
 
-
 const JSONFriends = ref([]); // State for user's friends
 const JSONFriendRequests = ref([]);
 
@@ -57,14 +56,14 @@ async function fetchUserData() {
 }
 
 const fetchFriendRequests = async () => {
-  JSONFriendRequests.value = JSONFriends.value.slice(0,3);
-  // try {
-  //   const url = '/game/users'; // TODO change the path and everything here so it works correctly
-  //   JSONFriendRequests.value = await fetchData(url);
-  //   console.log(JSONFriendRequests.value)
-  // } catch (error) {
-  //   console.error(error);
-  // }
+  JSONFriendRequests.value = [];
+  try {
+    const url = `/friends/getFriendRequests/${store.state.selectedUsername}`; // TODO change the path and everything here so it works correctly
+    JSONFriendRequests.value = await fetchData(url);
+    console.log(JSONFriendRequests.value)
+  } catch (error) {
+    console.error(error);
+  }
 }
 
 const getUsers = async () => {
@@ -84,13 +83,14 @@ function returnHome(){
 }
 
 // Function to fetch friends data from the database
-// async function fetchFriends() {
-//   try {
-//     friends.value = await fetchData(`/users/${route.params.username}/friends`); // Fetch friends based on the route parameter
-//   } catch (err) {
-//     console.error('Error fetching friends:', err);
-//   }
-// }
+async function fetchFriends() {
+  JSONFriends.value = [];
+  try {
+    JSONFriends.value = await fetchData(`/friends/getFriends/${store.state.selectedUsername}`); // Fetch friends based on the route parameter
+  } catch (err) {
+    console.error('Error fetching friends:', err);
+  }
+}
 
 function addSelectedFriend(userName){
   // function is not complete yet, we will be calling to the database here
@@ -118,6 +118,7 @@ function visitProfile(userName){
   router.push(`/profile/${userName}`); // /${user.value} 
   window.scrollTo(0, 0);
 
+
   // fetchUserData(); 
   // getUsers();
 }
@@ -127,7 +128,7 @@ onMounted(async () => {
     await fetchUserData(); // Fetch the user data for the selected profile
     await getUsers();
     await fetchFriendRequests()
-    // fetchFriends(); // Fetch the friends of the selected profile
+    await fetchFriends(); // Fetch the friends of the selected profile
   }
 });
 
@@ -136,7 +137,7 @@ watch(
   (newUsername, oldUsername) => {
     if (newUsername !== oldUsername) {
       fetchUserData();
-      // fetchFriends(); // Fetch the friends of the selected profile TODO: pls put whatever function you do here to populate friends, here
+      fetchFriends(); // Fetch the friends of the selected profile TODO: pls put whatever function you do here to populate friends, here
     }
   }
 );
@@ -269,7 +270,7 @@ const confirmLogout = async () => {
 
       <!-- Logout Confirmation Dialog -->
       <v-dialog v-model="showLogoutConfirm" max-width="400">
-        <v-card>  
+        <v-card>
           <v-card-title class="white--text">Confirm Logout</v-card-title>
           <v-card-text class="white--text">Are you sure you want to log out?</v-card-text>
           <v-card-actions>
@@ -309,6 +310,10 @@ const confirmLogout = async () => {
 
 .friend-card{
   background-color: #42424254;
+}
+
+.v-container {
+    max-width: 1168px;
 }
 
 /* Add styles as needed */
