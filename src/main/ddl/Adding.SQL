@@ -1,10 +1,72 @@
-INSERT INTO USERS (USER_NAME, USER_FULL_NAME, EMAIL_ADDR, PASSWORD, PROFILE_IMG_LOC, SKILL_LVL, ACC_CREATION_DATE)
-VALUES
-    ('jane_smith', 'Jane Smith', 'jane.smith@example.com', 'password123', '/images/jane_smith.jpg', 5, NOW()),
-    ('must_select', 'Must Select', 'must.select@example.com', 'password456', '/images/must_select.jpg', 4, NOW()),
-    ('olivia_brown', 'Olivia Brown', 'olivia.brown@example.com', 'password789', '/images/olivia_brown.jpg', 3, NOW()),
-    ('benjamin_martinez', 'Benjamin Martinez', 'benjamin.martinez@example.com', 'password101', '/images/benjamin_martinez.jpg', 2, NOW()),
-    ('Peter_Dinklage3', 'Peter Dinklage', 'dinkle@example.com', 'password101', '/images/benjamin_martinez.jpg', 2, NOW());
+INSERT INTO USERS (
+    USER_NAME,
+    USER_FULL_NAME,
+    EMAIL_ADDR,
+    PASSWORD,
+    PROFILE_IMG_LOC,
+    SKILL_LVL,
+    ACC_CREATION_DATE
+) VALUES
+      ('jane_smith', 'Jane Smith', 'jane.smith@example.com', '$2a$10$xx8vlZ3Mdx0sDKNiPfbM0.BDhB9Bdl8a7AzlyTHlh7OdPrncAoUnO', '/images/jane_smith.jpg', 5, '2024-11-11 03:46:07.739750'),
+      ('Elena Green', 'ImElena1004', 'elena.green@example.com', '$2a$10$xx8vlZ3Mdx0sDKNiPfbM0.BDhB9Bdl8a7AzlyTHlh7OdPrncAoUnO', '/images/elena_green.jpg', 4, '2024-11-11 03:46:07.739750'),
+      ('olivia_brown', 'Olivia Brown', 'olivia.brown@example.com', '$2a$10$xx8vlZ3Mdx0sDKNiPfbM0.BDhB9Bdl8a7AzlyTHlh7OdPrncAoUnO', '/images/olivia_brown.jpg', 3, '2024-11-11 03:46:07.739750'),
+      ('benjamin_martinez', 'Benjamin Martinez', 'benjamin.martinez@example.com', '$2a$10$xx8vlZ3Mdx0sDKNiPfbM0.BDhB9Bdl8a7AzlyTHlh7OdPrncAoUnO', '/images/benjamin_martinez.jpg', 2, '2024-11-11 03:46:07.739750'),
+      ('Garth_Dilliam2', 'Garth Dilliam', 'Garthdilliam2@gmail.com', '$2a$10$xx8vlZ3Mdx0sDKNiPfbM0.BDhB9Bdl8a7AzlyTHlh7OdPrncAoUnO', NULL, 2, '2024-11-10 21:47:12.974000'),
+      ('Andrew_Larson9', 'Andrew Larson', 'andrewlarsonlovespickle3@gmail.com', '$2a$10$xx8vlZ3Mdx0sDKNiPfbM0.BDhB9Bdl8a7AzlyTHlh7OdPrncAoUnO', NULL, 2, '2024-11-10 21:57:51.686000'),
+      ('JohnRobertson22', 'John Robertson', 'johnrobertsonwork@gmail.com', '$2a$10$xx8vlZ3Mdx0sDKNiPfbM0.BDhB9Bdl8a7AzlyTHlh7OdPrncAoUnO', NULL, 3, '2024-11-11 22:14:39.321000');
+
+-- Password for ALL accounts inserted here: Password1
+
+INSERT INTO REQUESTS (
+    REQUEST_TYPE,
+    REQUEST_DATE,
+    ORIGIN_ID,
+    EVENT_ID,
+    DESTINATION_ID,
+    REQUEST_STATUS
+) VALUES
+-- Received requests (REC) to Andrew Larson
+('FRIEND_REQUEST', '2024-11-20 10:15:00', 'jane_smith', NULL, 'Andrew_Larson9', 'REC'),
+('FRIEND_REQUEST', '2024-11-20 11:30:00', 'Elena Green', NULL, 'Andrew_Larson9', 'REC'),
+
+-- Sent requests (REC) from Andrew Larson
+('FRIEND_REQUEST', '2024-11-20 15:45:00', 'Andrew_Larson9', NULL, 'benjamin_martinez', 'REC'),
+
+-- Accepted friend requests (ACC) with Andrew Larson where it is accepted
+('FRIEND_REQUEST', '2024-11-20 16:30:00', 'Andrew_Larson9', NULL, 'JohnRobertson22', 'ACC'),
+('FRIEND_REQUEST', '2024-11-20 16:30:00', 'Andrew_Larson9', NULL, 'Garth_Dilliam2', 'ACC'),
+('FRIEND_REQUEST', '2024-11-20 14:00:00', 'olivia_brown', NULL, 'Andrew_Larson9', 'ACC');
+
+-- Requests that are occuring between other users, exclusing andrew larson
+
+INSERT INTO REQUESTS (
+    REQUEST_TYPE,
+    REQUEST_DATE,
+    ORIGIN_ID,
+    EVENT_ID,
+    DESTINATION_ID,
+    REQUEST_STATUS
+) VALUES
+-- Received requests (REC)
+('FRIEND_REQUEST', '2024-11-18 10:00:00', 'jane_smith', NULL, 'Elena Green', 'REC'),
+('FRIEND_REQUEST', '2024-11-18 12:15:00', 'Elena Green', NULL, 'jane_smith', 'REC'),
+('FRIEND_REQUEST', '2024-11-19 13:30:00', 'olivia_brown', NULL, 'benjamin_martinez', 'REC'),
+('FRIEND_REQUEST', '2024-11-19 14:00:00', 'benjamin_martinez', NULL, 'olivia_brown', 'REC'),
+('FRIEND_REQUEST', '2024-11-19 16:45:00', 'JohnRobertson22', NULL, 'benjamin_martinez', 'REC'),
+
+-- Accepted friend requests (ACC)
+('FRIEND_REQUEST', '2024-11-18 09:30:00', 'jane_smith', NULL, 'olivia_brown', 'ACC'),
+('FRIEND_REQUEST', '2024-11-18 11:00:00', 'benjamin_martinez', NULL, 'jane_smith', 'ACC'),
+('FRIEND_REQUEST', '2024-11-19 14:45:00', 'JohnRobertson22', NULL, 'olivia_brown', 'ACC'),
+('FRIEND_REQUEST', '2024-11-19 17:15:00', 'olivia_brown', NULL, 'JohnRobertson22', 'ACC'),
+('FRIEND_REQUEST', '2024-11-20 11:30:00', 'jane_smith', NULL, 'benjamin_martinez', 'ACC'),
+('FRIEND_REQUEST', '2024-11-20 12:00:00', 'Garth_Dilliam2', NULL, 'olivia_brown', 'ACC'),
+('FRIEND_REQUEST', '2024-11-20 13:30:00', 'olivia_brown', NULL, 'Garth_Dilliam2', 'ACC'),
+('FRIEND_REQUEST', '2024-11-20 14:15:00', 'Garth_Dilliam2', NULL, 'JohnRobertson22', 'ACC'),
+('FRIEND_REQUEST', '2024-11-20 15:00:00', 'JohnRobertson22', NULL, 'Garth_Dilliam2', 'ACC');
+
+
+
 
 
 INSERT INTO LOCATIONS (LOC_ID, COURT_NAME, COURT_PIC, NUM_OF_COURTS, ADDRESS, COORDINATES, COURT_META_ID)

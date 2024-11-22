@@ -617,7 +617,7 @@ const filteredOngoingEvents = computed(() => {
     max-width: 800px;
   }
   .modal-card{
-    background-color: #383737;
+    background-color: #222222;
     padding: 2.5em;
     /* max-height: 672px; */
   }

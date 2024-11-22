@@ -486,7 +486,7 @@ const getCourts = async () => {
               </div>
             </v-col>
             <v-col cols="12" class="btn-col">
-                <v-btn prepend-icon="mdi-archive-check"type="submit" variant="tonal" class="w-100 submit"> Submit Game</v-btn>
+                <v-btn prepend-icon="mdi-folder-account" type="submit" variant="tonal" class="w-100 submit"> Submit Game</v-btn>
             </v-col>
             <v-col cols="12" class="errors">
               </v-col>

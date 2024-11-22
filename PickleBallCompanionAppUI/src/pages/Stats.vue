@@ -11,7 +11,7 @@
                 <v-card-title class="white--text text-h4">Stats</v-card-title>
 
                 <v-card-subtitle class="white--text text-h6">{{ store.state.selectedUsername }}</v-card-subtitle>
-                <v-btn v-if="store.state.user?.userName !== store.state.selectedUsername" prepend-icon="mdi-account-arrow-left-outline" class="mt-2 mx-2" color="blue" @click="returnToOtherProfile(store.state.selectedUsername)">return</v-btn>
+                <v-btn v-if="store.state.user?.userName !== store.state.selectedUsername" prepend-icon="mdi-account-arrow-left" class="mt-2 mx-2" color="blue" @click="returnToOtherProfile(store.state.selectedUsername)">return</v-btn>
 
 
                 <v-card-title class="white--text">Total Games:</v-card-title>
