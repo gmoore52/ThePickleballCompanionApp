@@ -24,8 +24,9 @@ public class RequestServiceImpl implements RequestService {
 
     @Override
     public String getFriendStatusForSelectedUser(String selectedUsername, String loggedInUsername) {
-        // Fetch the relationship status between the two users from the requestRepository
-        Request request = requestRepository.findByOriginAndDestination(selectedUsername, loggedInUsername);
+        User originUser = userRepository.findByUserName(selectedUsername);
+        User destinationUser = userRepository.findByUserName(loggedInUsername);
+        Request request = requestRepository.findByOriginAndDestination(originUser, destinationUser);
 
         if (request != null) {
             switch (request.getStatus()) {
@@ -39,22 +40,22 @@ public class RequestServiceImpl implements RequestService {
                     return "Friend request rejected";
             }
         }
-
-        // If no request exists, return "No request"
+        // no request exists
         return "No request";
     }
 
     @Override
     public void createFriendRequest(String toUsername, String fromUsername) {
-        // First, ensure there's no existing request
-        if (requestRepository.existsByOriginAndDestination(fromUsername, toUsername)) {
+        User originUser = userRepository.findByUserName(toUsername);
+        User destinationUser = userRepository.findByUserName(fromUsername);
+        if (requestRepository.existsByOriginAndDestination(originUser, destinationUser)) {
             throw new IllegalStateException("Friend request already exists.");
         }
 
         // Create a new Request object and manually set its fields
         Request newRequest = new Request();
-        newRequest.setOrigin(userRepository.findByUserName(fromUsername)); // Assuming a method to find a user by username
-        newRequest.setDestination(userRepository.findByUserName(toUsername)); // Assuming a method to find a user by username
+        newRequest.setOrigin(originUser); // Assuming a method to find a user by username
+        newRequest.setDestination(destinationUser); // Assuming a method to find a user by username
         newRequest.setStatus(String.valueOf(FriendRequestStatus.REC)); // "REC" status for a received friend request
         newRequest.setRequestDate(new Timestamp(System.currentTimeMillis())); // Set the current timestamp for the request date
 
@@ -65,8 +66,9 @@ public class RequestServiceImpl implements RequestService {
 
     @Override
     public void acceptFriendRequest(String toUsername, String fromUsername) {
-        // Find the pending request
-        Request request = requestRepository.findByOriginAndDestination(toUsername, fromUsername);
+        User originUser = userRepository.findByUserName(toUsername);
+        User destinationUser = userRepository.findByUserName(fromUsername);
+        Request request = requestRepository.findByOriginAndDestination(originUser, destinationUser);
 
         if (request != null && request.getStatus().equals(String.valueOf(FriendRequestStatus.REC))) {
             // Update the status to accepted
@@ -80,8 +82,10 @@ public class RequestServiceImpl implements RequestService {
 
     @Override
     public void rejectFriendRequest(String toUsername, String fromUsername) {
+        User originUser = userRepository.findByUserName(toUsername);
+        User destinationUser = userRepository.findByUserName(fromUsername);
         // Find the pending request
-        Request request = requestRepository.findByOriginAndDestination(toUsername, fromUsername);
+        Request request = requestRepository.findByOriginAndDestination(originUser, destinationUser);
 
         if (request != null && request.getStatus().equals(String.valueOf(FriendRequestStatus.REC))) {
             // Update the status to rejected
@@ -93,7 +97,9 @@ public class RequestServiceImpl implements RequestService {
     }
 
     public void revokeFriendRequest(String toUsername, String fromUsername) {
-        Request request = requestRepository.findByOriginAndDestination(fromUsername, toUsername);
+        User originUser = userRepository.findByUserName(toUsername);
+        User destinationUser = userRepository.findByUserName(fromUsername);
+        Request request = requestRepository.findByOriginAndDestination(originUser, destinationUser);
 
         if (request != null && request.getStatus().equals(String.valueOf(FriendRequestStatus.REC))) {
             request.setStatus(String.valueOf(FriendRequestStatus.REV));
@@ -103,14 +109,11 @@ public class RequestServiceImpl implements RequestService {
         }
     }
 
-    // Get friends for the selected user by checking requests with status "ACC"
+    // get friends for the selected user by checking requests with status "ACC"
     public List<User> getFriendsForSelectedUser(String username) {
-        // Use the custom repository method to fetch accepted requests where the username is either the origin or destination
-        List<Request> requests = requestRepository.findByRequestStatusAndOriginUsernameOrDestinationUsername("ACC", username);
-
-        // Now, you can convert the requests into a list of users (for example, getting the opposite user in each request)
+        User user = userRepository.findByUserName(username);
+        List<Request> requests = requestRepository.findByStatusAndOriginOrDestination("ACC", user);
         List<User> friends = new ArrayList<>();
-
         for (Request request : requests) {
             if (request.getOrigin().getUserName().equals(username)) {
                 friends.add(request.getDestination());
