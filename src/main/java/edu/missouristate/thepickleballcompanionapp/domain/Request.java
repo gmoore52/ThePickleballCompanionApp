@@ -32,7 +32,7 @@ public class Request {
     private User destination;
 
     @Column(name="request_status")
-    private Integer requestAcceoted;
+    private String status;
 
     public Integer getRequestId() {
         return requestId;
@@ -82,12 +82,12 @@ public class Request {
         this.destination = destination;
     }
 
-    public Integer getRequestAcceoted() {
-        return requestAcceoted;
+    public String getStatus() {
+        return status;
     }
 
-    public void setRequestAcceoted(Integer requestAcceoted) {
-        this.requestAcceoted = requestAcceoted;
+    public void setStatus(String status) {
+        this.status = status;
     }
 
     @Override
@@ -99,7 +99,7 @@ public class Request {
                 ", origin=" + origin +
                 ", event=" + event +
                 ", destination=" + destination +
-                ", requestAcceoted=" + requestAcceoted +
+                ", status=" + status +
                 '}';
     }
 }

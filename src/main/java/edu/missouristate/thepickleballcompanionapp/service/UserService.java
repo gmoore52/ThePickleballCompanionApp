@@ -12,4 +12,5 @@ public interface UserService {
     public List<UserDTO> getUsers();
     public UserDTO getUserByUserName(String username);
     public Boolean addUser(UserDTO userDTO);
+    public Boolean checkUserNameAlreadyExists(String username);
 }

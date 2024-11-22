@@ -21,6 +21,12 @@ public class UserController {
         return userService.getUserByUserName(username);
     }
 
+    @RequestMapping(value = "/check/username", method = RequestMethod.GET)
+    @ResponseBody
+    public Boolean checkUserNameAlreadyExists(@RequestParam("username") String username) {
+        return userService.checkUserNameAlreadyExists(username);
+    }
+
     @RequestMapping(value = "/all/users", method = RequestMethod.GET)
     @ResponseBody
     public List<UserDTO> getAllUsers() {
