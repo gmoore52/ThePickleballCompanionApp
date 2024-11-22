@@ -4,6 +4,7 @@ import edu.missouristate.thepickleballcompanionapp.dao.RequestRepository;
 import edu.missouristate.thepickleballcompanionapp.dao.UserRepository;
 import edu.missouristate.thepickleballcompanionapp.domain.Request;
 import edu.missouristate.thepickleballcompanionapp.domain.User;
+import edu.missouristate.thepickleballcompanionapp.domain.dto.UserDTO;
 import edu.missouristate.thepickleballcompanionapp.domain.enums.FriendRequestStatus;
 import edu.missouristate.thepickleballcompanionapp.service.RequestService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -110,18 +111,72 @@ public class RequestServiceImpl implements RequestService {
     }
 
     // get friends for the selected user by checking requests with status "ACC"
-    public List<User> getFriendsForSelectedUser(String username) {
+    public List<UserDTO> getFriendsForSelectedUser(String username) {
         User user = userRepository.findByUserName(username);
         List<Request> requests = requestRepository.findByStatusAndOriginOrDestination("ACC", user);
-        List<User> friends = new ArrayList<>();
+        List<UserDTO> friends = new ArrayList<>();
+
         for (Request request : requests) {
+            User friend;
             if (request.getOrigin().getUserName().equals(username)) {
-                friends.add(request.getDestination());
+                friend = request.getDestination();
             } else {
-                friends.add(request.getOrigin());
+                friend = request.getOrigin();
+            }
+
+            // Check if the friend's username already exists in the list
+            boolean exists = friends.stream()
+                    .anyMatch(dto -> dto.getUserName().equals(friend.getUserName()));
+            if (!exists) {
+                // Map User to UserDTO
+                UserDTO friendDTO = new UserDTO(
+                        friend.getUserName(),
+                        friend.getUserFullName(),
+                        friend.getEmailAddress(),
+                        friend.getPassword(),
+                        friend.getProfileImgLoc(),
+                        friend.getSkillLevel(),
+                        friend.getAccCreationDate()
+                );
+                friends.add(friendDTO);
             }
         }
 
         return friends;
+    }
+
+    // get friends for the selected user by checking requests with status "REC"
+    public List<UserDTO> getFriendRequestsForSelectedUser(String username) {
+        User user = userRepository.findByUserName(username);
+        List<Request> requests = requestRepository.findByStatusOriginOnly("REC", user);
+        List<UserDTO> friendRequests = new ArrayList<>();
+
+        for (Request request : requests) {
+            User friend;
+            if (request.getOrigin().getUserName().equals(username)) {
+                friend = request.getDestination();
+            } else {
+                friend = request.getOrigin();
+            }
+
+            // Check if the friend's username already exists in the list
+            boolean exists = friendRequests.stream()
+                    .anyMatch(dto -> dto.getUserName().equals(friend.getUserName()));
+            if (!exists) {
+                // Map User to UserDTO
+                UserDTO friendDTO = new UserDTO(
+                        friend.getUserName(),
+                        friend.getUserFullName(),
+                        friend.getEmailAddress(),
+                        friend.getPassword(),
+                        friend.getProfileImgLoc(),
+                        friend.getSkillLevel(),
+                        friend.getAccCreationDate()
+                );
+                friendRequests.add(friendDTO);
+            }
+        }
+
+        return friendRequests;
     }
 }

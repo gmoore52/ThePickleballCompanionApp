@@ -7,4 +7,5 @@ import java.util.List;
 
 public interface RequestRepositoryCustom {
     public List<Request> findByStatusAndOriginOrDestination(String status, User user);
+    public List<Request> findByStatusOriginOnly(String status, User user);
 }

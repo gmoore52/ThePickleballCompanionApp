@@ -190,4 +190,8 @@ function formatCourt(courtNum){
 .v-row {
   margin-bottom: 20px;
 }
+
+.v-container {
+  max-width: 1168px;
+}
 </style>

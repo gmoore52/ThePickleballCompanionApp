@@ -1,6 +1,7 @@
 package edu.missouristate.thepickleballcompanionapp.controller;
 
 import edu.missouristate.thepickleballcompanionapp.domain.User;
+import edu.missouristate.thepickleballcompanionapp.domain.dto.UserDTO;
 import edu.missouristate.thepickleballcompanionapp.service.impl.RequestServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -76,9 +77,16 @@ public class RequestController {
     }
 
     // get all friends for a selected user
-    @GetMapping("/friends/{username}")
-    public ResponseEntity<List<User>> getFriendsForSelectedUser(@PathVariable("username") String username) {
-        List<User> friends = requestService.getFriendsForSelectedUser(username);
+    @GetMapping("/getFriends/{username}")
+    public ResponseEntity<List<UserDTO>> getFriendsForSelectedUser(@PathVariable("username") String username) {
+        List<UserDTO> friends = requestService.getFriendsForSelectedUser(username);
+        return ResponseEntity.ok(friends);
+    }
+
+    // get all friend requests for a selected user
+    @GetMapping("/getFriendRequests/{username}")
+    public ResponseEntity<List<UserDTO>> getFriendRequestsForSelectedUser(@PathVariable("username") String username) {
+        List<UserDTO> friends = requestService.getFriendRequestsForSelectedUser(username);
         return ResponseEntity.ok(friends);
     }
 }

@@ -1,7 +1,6 @@
 <script setup>
 import { useRouter } from 'vue-router';
 import { useStore } from 'vuex';
-import { fetchData } from '@/util/fetchData.js';
 
 const props = defineProps({
   friend: Object, // Receive current user's username as a prop
@@ -10,8 +9,6 @@ const props = defineProps({
 
 const store = useStore();
 const router = useRouter();
-
-
 
 function handleRequestDeny(otherUsername){
   // otherUsername 
@@ -112,6 +109,8 @@ function handleRequestConfirm(otherUsername){
   width: 100%;
 }
 
-
+.v-container {
+  max-width: 1168px;
+  }
 
 </style>

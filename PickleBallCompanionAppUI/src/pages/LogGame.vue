@@ -610,4 +610,8 @@ const getCourts = async () => {
     padding-top: 0;
     font-size: 14px;
   }
+
+  .v-container {
+  max-width: 1168px;
+  }
 </style>

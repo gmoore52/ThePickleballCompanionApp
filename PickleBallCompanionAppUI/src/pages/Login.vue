@@ -81,5 +81,9 @@ const submitForm = async () => {
   justify-content: center;
   text-align: center;
 }
+
+.v-container {
+  max-width: 1168px;
+  }
 /* Custom styles if needed */
 </style>
