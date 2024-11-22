@@ -132,6 +132,7 @@ function formatCourt(courtNum){
 function visitProfile(userName){
   store.commit('SET_SELECTED_USERNAME', "Peter_Dinklage3");
   router.push(`/profile/:userId`); // /${user.value} 
+  window.scrollTo(0, 0);
 }
 
 function returnToOtherProfile(userName){
