@@ -41,7 +41,7 @@
               <v-card-text>Number of courts: {{ court.numOfCourts }}</v-card-text>
             </v-col>
             <v-col cols="4">
-              <v-img :src="court.courtPic || '/images/default.jpg'" alt="Court Image" />
+              <v-img :src="court.courtPic" alt="Court Image" />
             </v-col>
           </v-row>
         </v-card>

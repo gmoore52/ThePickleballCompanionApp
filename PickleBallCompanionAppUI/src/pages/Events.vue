@@ -626,6 +626,10 @@ const filteredOngoingEvents = computed(() => {
     padding: 0.8rem;
     background-color: #42424254;
   }
+
+  .v-card{
+    border-radius: 8px !important;
+  }
   .close-container{
 
   }

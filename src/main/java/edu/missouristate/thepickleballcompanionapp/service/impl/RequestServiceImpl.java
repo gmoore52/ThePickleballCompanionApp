@@ -3,6 +3,7 @@ package edu.missouristate.thepickleballcompanionapp.service.impl;
 import edu.missouristate.thepickleballcompanionapp.dao.RequestRepository;
 import edu.missouristate.thepickleballcompanionapp.dao.UserRepository;
 import edu.missouristate.thepickleballcompanionapp.domain.Request;
+import edu.missouristate.thepickleballcompanionapp.domain.RequestType;
 import edu.missouristate.thepickleballcompanionapp.domain.User;
 import edu.missouristate.thepickleballcompanionapp.domain.dto.UserDTO;
 import edu.missouristate.thepickleballcompanionapp.domain.enums.FriendRequestStatus;
@@ -25,14 +26,24 @@ public class RequestServiceImpl implements RequestService {
 
     @Override
     public String getFriendStatusForSelectedUser(String selectedUsername, String loggedInUsername) {
-        User originUser = userRepository.findByUserName(selectedUsername);
-        User destinationUser = userRepository.findByUserName(loggedInUsername);
-        Request request = requestRepository.findByOriginAndDestination(originUser, destinationUser);
+        User originUser = userRepository.findByUserName(loggedInUsername);
+        User destinationUser = userRepository.findByUserName(selectedUsername);
 
-        if (request != null) {
-            switch (request.getStatus()) {
-                case "ACC":
-                    return "You are friends";
+        // Check for request from origin to destination
+        Request requestFromOrigin = requestRepository.findByOriginAndDestination(originUser, destinationUser);
+
+        // Check for request from destination to origin
+        Request requestFromDestination = requestRepository.findByOriginAndDestination(destinationUser, originUser);
+
+        // Check if both origin and destination have accepted the friend request
+        if (requestFromOrigin != null && requestFromDestination != null) {
+            if ("ACC".equals(requestFromOrigin.getStatus()) && "ACC".equals(requestFromDestination.getStatus())) {
+                return "You are friends";
+            }
+        }
+
+        if (requestFromOrigin != null) {
+            switch (requestFromOrigin.getStatus()) {
                 case "REV":
                     return "Friend request revoked";
                 case "REC":
@@ -47,8 +58,8 @@ public class RequestServiceImpl implements RequestService {
 
     @Override
     public void createFriendRequest(String toUsername, String fromUsername) {
-        User originUser = userRepository.findByUserName(toUsername);
-        User destinationUser = userRepository.findByUserName(fromUsername);
+        User originUser = userRepository.findByUserName(fromUsername);
+        User destinationUser = userRepository.findByUserName(toUsername);
         if (requestRepository.existsByOriginAndDestination(originUser, destinationUser)) {
             throw new IllegalStateException("Friend request already exists.");
         }
@@ -59,7 +70,7 @@ public class RequestServiceImpl implements RequestService {
         newRequest.setDestination(destinationUser); // Assuming a method to find a user by username
         newRequest.setStatus(String.valueOf(FriendRequestStatus.REC)); // "REC" status for a received friend request
         newRequest.setRequestDate(new Timestamp(System.currentTimeMillis())); // Set the current timestamp for the request date
-
+        newRequest.setRequestType(RequestType.FRIEND_REQUEST);
         // Save the new request to the repository
         requestRepository.save(newRequest);
     }
@@ -67,8 +78,8 @@ public class RequestServiceImpl implements RequestService {
 
     @Override
     public void acceptFriendRequest(String toUsername, String fromUsername) {
-        User originUser = userRepository.findByUserName(toUsername);
-        User destinationUser = userRepository.findByUserName(fromUsername);
+        User originUser = userRepository.findByUserName(fromUsername);
+        User destinationUser = userRepository.findByUserName(toUsername);
         Request request = requestRepository.findByOriginAndDestination(originUser, destinationUser);
 
         if (request != null && request.getStatus().equals(String.valueOf(FriendRequestStatus.REC))) {
@@ -83,8 +94,8 @@ public class RequestServiceImpl implements RequestService {
 
     @Override
     public void rejectFriendRequest(String toUsername, String fromUsername) {
-        User originUser = userRepository.findByUserName(toUsername);
-        User destinationUser = userRepository.findByUserName(fromUsername);
+        User originUser = userRepository.findByUserName(fromUsername);
+        User destinationUser = userRepository.findByUserName(toUsername);
         // Find the pending request
         Request request = requestRepository.findByOriginAndDestination(originUser, destinationUser);
 
@@ -98,8 +109,8 @@ public class RequestServiceImpl implements RequestService {
     }
 
     public void revokeFriendRequest(String toUsername, String fromUsername) {
-        User originUser = userRepository.findByUserName(toUsername);
-        User destinationUser = userRepository.findByUserName(fromUsername);
+        User originUser = userRepository.findByUserName(fromUsername);
+        User destinationUser = userRepository.findByUserName(toUsername);
         Request request = requestRepository.findByOriginAndDestination(originUser, destinationUser);
 
         if (request != null && request.getStatus().equals(String.valueOf(FriendRequestStatus.REC))) {

@@ -76,7 +76,7 @@ VALUES
 INSERT INTO EVENTS (EVENT_START, EVENT_END, EVENT_LOC, EVENT_TITLE, EVENT_DESC)
 VALUES
     ('2024-11-01 12:00:00', '2025-10-01 12:00:00', 1, 'Pickleball Tournament', 'Join us for an exciting pickleball tournament!'),
-    (NOW() - INTERVAL '6 days', '2025-10-05 16:00:00', 2, 'Community Game Day', 'A fun-filled day of pickleball games for everyone!'),
-    (NOW() - INTERVAL '5 days', '2025-10-10 11:00:00', 3, 'Beginner Lessons', 'Free lessons for beginners to learn the game of pickleball.'),
+    (NOW() - INTERVAL '30 days', '2025-10-05 16:00:00', 2, 'Community Game Day', 'A fun-filled day of pickleball games for everyone!'),
+    (NOW() - INTERVAL '30 days', '2025-10-10 11:00:00', 3, 'Beginner Lessons', 'Free lessons for beginners to learn the game of pickleball.'),
     (NOW(), '2025-10-15 20:00:00', 4, 'Night Play', 'Enjoy pickleball under the lights!'),
     (NOW(), '2025-10-20 21:00:00', 5, 'Pickleball Social', 'Join us for a social evening of pickleball and networking!');

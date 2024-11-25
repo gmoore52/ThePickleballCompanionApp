@@ -1,6 +1,9 @@
 <script setup>
+import { ref, defineEmits, defineProps, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useStore } from 'vuex';
+import { showAlert } from '@/util/alert'
+import { fetchData } from '@/util/fetchData.js';
 
 const props = defineProps({
   friend: Object, // Receive current user's username as a prop
@@ -10,12 +13,55 @@ const props = defineProps({
 const store = useStore();
 const router = useRouter();
 
+const emit = defineEmits(['reload']);
+
+function formatFullName(user){
+  if (user.userName == store.state.user.userName){
+    return user.userFullName + ' (You)'
+  }
+  else{
+    return user.userFullName
+  }
+}
+
 function handleRequestDeny(otherUsername){
-  // otherUsername 
+  
+  try {
+      // console.log(`/friends/reject/${store.state.selectedUsername}/${otherUsername}`)
+      const response = fetchData(`/friends/reject/${store.state.selectedUsername}/${otherUsername}`,
+      {
+        method:'POST',
+      });
+      console.log(response)
+      // showAlert('success', 'Friend request accepted')
+    }
+     catch (error){
+      // console.error('Error adding Event:', response);
+      showAlert('error', `Friend request could not be rejected`)
+    }
+
+  emit('reload');
 }
 
 function handleRequestConfirm(otherUsername){
+  try {
+      console.log(`/friends/accept/${store.state.selectedUsername}/${otherUsername}`)
+      const response = fetchData(`/friends/accept/${store.state.selectedUsername}/${otherUsername}`,
+      {
+        method:'POST',
+      });
+      showAlert('success', 'Friend request accepted')
+    }
+     catch (error){
+      console.error('Error adding Event:', response);
+      showAlert('error', `Friend request not successfully accepted`)
+    }
+
+
+  // addFriend(otherUsername)
   // otherUsername
+
+  emit('reload');
 }
 
 </script>
@@ -30,7 +76,7 @@ function handleRequestConfirm(otherUsername){
     <v-col cols="8">
       <div class="inner-container">
         <h3 class="full-name">
-          {{friend.userFullName}}
+          {{ formatFullName(friend) }}
         </h3>
         <p class="user-name">
           {{friend.userName}}
@@ -44,8 +90,8 @@ function handleRequestConfirm(otherUsername){
     <v-col v-if="isRequest" cols="12" class="btn-container">
       <v-divider></v-divider>
       <v-card-actions class="btn-actions">
-      <v-btn @click.stop="handleRequestDeny(friend.userFullName)" prepend-icon="mdi-account-remove" color="red">Deny</v-btn>
-      <v-btn @click.stop="handleRequestConfirm(friend.userFullName)" prepend-icon="mdi-account-plus" color="green">Confirm</v-btn> 
+      <v-btn @click.stop="handleRequestDeny(friend.userName)" prepend-icon="mdi-account-remove" color="red">Deny</v-btn>
+      <v-btn @click.stop="handleRequestConfirm(friend.userName)" prepend-icon="mdi-account-plus" color="green">Confirm</v-btn> 
     </v-card-actions>
     </v-col>
   </v-row>

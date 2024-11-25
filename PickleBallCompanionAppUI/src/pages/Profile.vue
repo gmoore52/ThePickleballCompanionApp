@@ -6,6 +6,7 @@ import { showAlert } from "@/util/alert";
 import { useRouter } from 'vue-router';
 import AddFriendModal from '@/components/sub-components/AddFriendModal.vue'; // Import the AddFriendModal component
 import FriendCard from '@/components/sub-components/FriendCard.vue';
+import DynamicFriendButton from '@/components/sub-components/DynamicFriendButton.vue';
 
 const store = useStore();
 const router = useRouter();
@@ -66,17 +67,6 @@ const fetchFriendRequests = async () => {
   }
 }
 
-const getUsers = async () => {
-  JSONFriends.value = [];
-  try {
-    const url = '/game/users';
-    JSONFriends.value = await fetchData(url);
-    console.log(JSONFriends.value)
-  } catch (error) {
-    console.error(error);
-  }
-}
-
 function returnHome(){
   store.commit('UNSET_SELECTED_USERNAME');
   router.push(`/profile/:userId`); // /${user.value} 
@@ -123,11 +113,17 @@ function visitProfile(userName){
   // getUsers();
 }
 
+async function loadData(){
+  // console.log("@@@@")
+  await fetchUserData(); // Fetch the user data for the selected profile
+  await fetchFriendRequests();
+  await fetchFriends(); // Fetch the friends of the selected profile
+}
+
 onMounted(async () => {
   if (isLoggedIn.value) {
     await fetchUserData(); // Fetch the user data for the selected profile
-    await getUsers();
-    await fetchFriendRequests()
+    await fetchFriendRequests();
     await fetchFriends(); // Fetch the friends of the selected profile
   }
 });
@@ -137,6 +133,7 @@ watch(
   (newUsername, oldUsername) => {
     if (newUsername !== oldUsername) {
       fetchUserData();
+      fetchFriendRequests();
       fetchFriends(); // Fetch the friends of the selected profile TODO: pls put whatever function you do here to populate friends, here
     }
   }
@@ -191,7 +188,11 @@ const confirmLogout = async () => {
                  <v-btn v-if="loggedInUserName !== store.state.selectedUsername" prepend-icon="mdi-exit-run" class="mt-5 mr-10" color="white" @click="returnHome()">Return</v-btn>
                 <v-btn v-if="loggedInUserName !== store.state.selectedUsername" prepend-icon="mdi-account-arrow-right" class="mt-5" color="blue" @click="visitStats(store.state.selectedUsername)">View Stats</v-btn>
                 <v-btn v-if="loggedInUserName !== store.state.selectedUsername" prepend-icon="mdi-account-arrow-right" class="mt-5 mx-2" color="blue" @click="visitGameHistory(store.state.selectedUsername)">View Game History</v-btn>
-                <v-btn v-if="loggedInUserName !== store.state.selectedUsername" prepend-icon="mdi-account-multiple-plus" class="mt-5" color="green" @click="addSelectedFriend(store.state.selectedUsername)">Add Friend</v-btn>
+                <!-- <v-btn v-if="loggedInUserName !== store.state.selectedUsername" prepend-icon="mdi-account-multiple-plus" class="mt-5" color="green" @click="addSelectedFriend(store.state.selectedUsername)">Add Friend</v-btn> -->
+
+                <dynamic-friend-button>
+
+                </dynamic-friend-button>
 
               </v-col>
             </v-row>
@@ -212,24 +213,21 @@ const confirmLogout = async () => {
                   @click="visitProfile(friend.userName)"
                   :friend="friend" 
                   :isRequest="true"
+                  @reload="loadData()"
                   >
-                  
                   </FriendCard>
                 </v-row>
                 </v-col>
               </v-row>
-
-              <v-card-text v-if="JSONFriends.length === 0" class="white--text">No friends added for {{ store.state.selectedUsername }}.</v-card-text>
             </v-card>
         </v-col>
       
-
         <!-- Friends Section -->
         <v-col cols="12" md="12" class="pt-3 pb-3">
           <v-card class="pa-4 border-styling" outlined>
             <v-card-title class="white--text text-h4 d-flex justify-space-between">
               Friends ({{ JSONFriends.length }})
-              <v-btn v-if="loggedInUserName === store.state.selectedUsername" prepend-icon="mdi-account-multiple-plus" color="green" @click="showAddFriendModal = true">Add New Friend</v-btn>
+              <v-btn v-if="loggedInUserName === store.state.selectedUsername" prepend-icon="mdi-account-multiple-plus" color="green" @click="showAddFriendModal = true">Search all users</v-btn>
             </v-card-title>
             <v-row class="friend-container">
               <v-col v-for="(friend, index) in JSONFriends" cols="4">
@@ -245,7 +243,7 @@ const confirmLogout = async () => {
               </v-col>
             </v-row>
 
-            <v-card-text v-if="JSONFriends.length === 0" class="white--text">No friends added for {{ store.state.selectedUsername }}.</v-card-text>
+            <!-- <v-card-text v-if="JSONFriends.length === 0" class="white--text">No friends added for {{ store.state.selectedUsername }}.</v-card-text> -->
           </v-card>
         </v-col>
       </v-row>

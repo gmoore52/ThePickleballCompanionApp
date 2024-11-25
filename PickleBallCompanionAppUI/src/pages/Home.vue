@@ -61,7 +61,7 @@
   </v-app>
 </template>
 <script setup>
-import { ref, onMounted, computed } from 'vue';
+import { ref, onMounted, computed, watch } from 'vue';
 import { fetchData } from "@/util/fetchData";
 import { formatDateTime } from '@/util/formatDate.js'
 import { useStore } from 'vuex';
@@ -134,6 +134,24 @@ onMounted(async () => {
   await getCourts();
   await parseData();
 });
+
+
+watch(
+  () => store.state.selectedUsername,
+  async (newUsername, oldUsername) => {
+    if (newUsername !== oldUsername) {
+      // Use an async function to handle the series of async tasks
+      await (async () => {
+        await getEvents();
+        await getGames();
+        await sortGames();
+        await getCourts();
+        await parseData();
+      })();
+    }
+  }
+);
+
 
 // Computed property to filter and sort events by EVENT_START date
 const sortedEvents = computed(() => {

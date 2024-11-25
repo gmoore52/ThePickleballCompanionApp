@@ -10,7 +10,7 @@
         <v-icon>mdi-close</v-icon>
       </v-btn>
       <v-card-title class="headline">
-        Add Friend
+        Search For User
         <v-spacer></v-spacer>
       </v-card-title>
 
@@ -34,17 +34,21 @@
 
       <v-card-actions class="pt-0">
         <v-spacer></v-spacer>
-        <v-btn prepend-icon="mdi-account-eye" color="blue darken-1" @click="viewProfile" :disabled="!selectedUser">
+        <!-- <v-btn prepend-icon="mdi-account-eye" color="blue darken-1" @click="viewProfile" :disabled="!selectedUser">
           Preview Profile
-        </v-btn>
-        <v-btn
+        </v-btn> -->
+        <!-- <v-btn
         prepend-icon="mdi-account-plus"
           color="green darken-1"
           @click="addFriend"
           :disabled="!selectedUser"
         >
           Send Request
-        </v-btn>
+        </v-btn> -->
+        <go-to-player-profile-button
+                @click="close()"
+                :playerUsername="selectedUser"
+                ></go-to-player-profile-button>
       </v-card-actions>
     </v-card>
 
@@ -63,6 +67,7 @@ import { fetchData } from "@/util/fetchData";
 import { useRouter } from 'vue-router'; // Import useRouter from vue-router
 import UserProfilePopup from './UserProfilePopup.vue';
 import {showAlert} from "@/util/alert"; // Import the UserProfilePopup
+import GoToPlayerProfileButton from '@/components/sub-components/GoToPlayerProfileButton.vue'; 
 
 const dialog = ref(false);
 const userOptions = ref([]); // Holds all users for autocomplete

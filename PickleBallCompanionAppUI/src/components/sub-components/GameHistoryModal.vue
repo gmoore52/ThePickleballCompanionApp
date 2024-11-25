@@ -5,6 +5,7 @@ import { fetchData } from "@/util/fetchData";
 import { formatDateTime } from '@/util/formatDate.js'
 import { useRouter } from 'vue-router'; // Import useRouter from vue-router
 import { useStore } from 'vuex';
+import GoToPlayerProfileButton from '@/components/sub-components/GoToPlayerProfileButton.vue'; 
 
 const props = defineProps({
   game: Object,
@@ -72,11 +73,26 @@ function visitProfile(userName){
             <v-col cols="12">
                 <v-card-title class="card-header">Players</v-card-title>
                 <v-card-subtitle> {{team1WinLoss}} team with <strong>{{game.userScore}}</strong> point(s)</v-card-subtitle>
-                <v-btn prepend-icon="mdi-account" color="green" class="player-btns" @click="visitProfile(game.player1)">{{game.player1}}</v-btn>
-                <v-btn prepend-icon="mdi-account" color="green" class="player-btns" v-if="game.player3" @click="visitProfile(game.player3)">{{game.player3}}</v-btn>
+                
+                <go-to-player-profile-button
+                :playerUsername="game.player1"
+                ></go-to-player-profile-button>
+
+                <go-to-player-profile-button
+                v-if="game.player3"
+                :playerUsername="game.player3"
+                ></go-to-player-profile-button>
+
                 <v-card-subtitle> {{team2WinLoss}} team with  <strong>{{game.oppScore}}</strong> point(s)</v-card-subtitle>
-                <v-btn prepend-icon="mdi-account" color="green"class="player-btns" @click="visitProfile(game.player2)">{{game.player2}}</v-btn>
-              <v-btn prepend-icon="mdi-account" color="green" class="player-btns" v-if="game.player4" @click="visitProfile(game.player4)">{{game.player4}}</v-btn>
+
+                <go-to-player-profile-button
+                :playerUsername="game.player2"
+                ></go-to-player-profile-button>
+
+                <go-to-player-profile-button
+                v-if="game.player4"
+                :playerUsername="game.player4"
+                ></go-to-player-profile-button>
               </v-col>
             <v-col cols="12">
               <v-card-title class="card-header">Notes</v-card-title>
