@@ -1,10 +1,10 @@
 <script setup>
-import { ref, computed, onMounted} from 'vue'
-import { VTimePicker } from 'vuetify/labs/VTimePicker'
-import { fetchData } from '@/util/fetchData';
-import { showAlert } from '@/util/alert'
-import { useStore } from 'vuex';
-import { formatDateTime } from '@/util/formatDate.js'
+import {ref, computed, onMounted} from 'vue'
+import {VTimePicker} from 'vuetify/labs/VTimePicker'
+import {fetchData} from '@/util/fetchData.js';
+import {showAlert} from '@/util/alert'
+import {useStore} from 'vuex';
+import {formatDateTime} from '@/util/formatDate.js'
 
 
 // Search query reactive variable
@@ -21,13 +21,13 @@ const startAMPM = ref(null)
 const endAMPM = ref(null)
 const eventDescription = ref(null);
 
-const JSONCourts = ref([])
-const JSONEvents = ref([])
+const JSONCourts = ref([]);
+const JSONEvents = ref([]);
 
 const picker1Render = ref(false);
 const picker2Render = ref(false);
 
-const timeStamps = ref(['AM','PM']);
+const timeStamps = ref(['AM', 'PM']);
 const locations = ref([]);
 const locationDict = ref({}); // used to index between loc_id and location_name
 const inverseLocationDict = ref({})
@@ -39,7 +39,7 @@ const pastEvents = ref([]);
 const store = useStore();
 
 const frontendStartTime = computed({ // cleans selected time for frontend
-  get(){
+  get() {
     return frontendTime(startTime.value)
   }
 })
@@ -47,7 +47,7 @@ const frontendStartTime = computed({ // cleans selected time for frontend
 const isLoggedIn = computed(() => store.state.isAuthenticated);
 
 const frontendEndTime = computed({ // cleans selected time for frontend
-  get(){
+  get() {
     return frontendTime(endTime.value)
   }
 })
@@ -57,11 +57,11 @@ const frontendEndTime = computed({ // cleans selected time for frontend
 // Sample data for courts (you can replace this with API data)
 
 const titleRules = [
-    value => {
-      if (value) return true;
-      return 'Must select a title';
-    },
-  ];
+  value => {
+    if (value) return true;
+    return 'Must select a title';
+  },
+];
 
 const locationRules = [
   value => {
@@ -119,34 +119,36 @@ const descriptionRules = [
   },
 ];
 
-function filterTimeOfEvents(){
+function filterTimeOfEvents() {
   const now = new Date();
 
-  for (const event of JSONEvents.value){
+  for (const event of JSONEvents.value) {
     // console.log(event)
-    if (event.eventStart > now){ // future events
+    if (event.eventStart > now) { // future events
       // console.log(event.eventStart)
       // console.log(now)
       upcomingEvents.value.push(event)
-    }
-    else if ((event.eventStart <= now) && (event.eventEnd > now)){ // events occuring now
+    } else if ((event.eventStart <= now) && (event.eventEnd > now)) { // events occuring now
       ongoingEvents.value.push(event)
-    }
-    else if (event.eventEnd < now){ // past events
+    } else if (event.eventEnd < now) { // past events
       pastEvents.value.push(event)
     }
   }
 }
 
 onMounted(async () => {
-  await getCourts();
-  await getEvents();
-  await formatEvents();
-  await parseData();
-})
+  try {
+    await getEvents();      // Fetch event data
+    await formatEvents();   // Format the events
+    await getCourts();      // Fetch courts data (independent of the above calls)
+    await parseData();      // Parse the formatted event data
+  } catch (error) {
+    console.error("Error during events page initialization:", error); // Handle any errors in setup
+  }
+});
 
 const formatEvents = async () => {
-  for (let event of JSONEvents.value){
+  for (let event of JSONEvents.value) {
     event.eventStart = new Date(event.eventStart)
     event.eventEnd = new Date(event.eventEnd)
   }
@@ -157,7 +159,6 @@ const getEvents = async () => {
   try {
     const url = '/event/events';
     JSONEvents.value = await fetchData(url);
-    // console.log(JSONEvents.value)
   } catch (error) {
     console.error(error);
   }
@@ -172,32 +173,50 @@ const getCourts = async () => {
     console.error(error);
   }
 }
-const parseData = async () =>{
-  filterTimeOfEvents();
-  let allLocationNames = [];
-  for (const loc of JSONCourts.value) {
-    const locName = `${loc.courtName}`;
-    locationDict.value[locName] = loc.id
-    inverseLocationDict.value[loc.id] = locName
-    allLocationNames.push(locName);
-  }
-  locations.value = allLocationNames;
-}
 
-  // potentially going to be used to skirt around the 00 issue on the time picker
-function frontendTime(time){
-  if (time != undefined){
+const parseData = async () => {
+  filterTimeOfEvents();
+
+  // Initialize empty arrays and dictionaries
+  let allLocationNames = [];
+  locationDict.value = {};
+  inverseLocationDict.value = {};
+
+  // Map through the courts to populate dictionaries and ensure camelCase consistency (from original parseData function)
+  for (const loc of JSONCourts.value) {
+    const locName = loc.courtName;
+    locationDict.value[locName] = loc.id;
+    inverseLocationDict.value[loc.id] = locName;
+
+  }
+
+  // Map through events and add courtPic based on eventLoc
+  for (const event of JSONEvents.value) {
+    const location = JSONCourts.value.find((loc) => loc.id === event.eventLoc);
+    if (location) {
+      event.courtName = location.courtName; // Add court name
+      event.courtPic = location.courtPic;   // Add court picture
+    }
+  }
+
+  // Populate the list of court names
+  locations.value = JSONCourts.value.map((loc) => loc.courtName);
+
+};
+
+
+// potentially going to be used to skirt around the 00 issue on the time picker
+function frontendTime(time) {
+  if (time != undefined) {
     let hours = time.split(':')[0]
     let minutes = time.split(':')[1]
-    if (hours == '00'){
+    if (hours == '00') {
       hours = '12'
-    }
-    else if(hours[0] == '0'){
+    } else if (hours[0] == '0') {
       hours = hours[1]
     }
-  return `${hours}:${minutes}`
-  }
-  else{
+    return `${hours}:${minutes}`
+  } else {
     return null
   }
 
@@ -208,10 +227,10 @@ function convertTo24HourTime(time, ampm) {
   let [hours, minutes] = time.split(':').map(Number);
   if (ampm === 'PM' && hours < 12) hours += 12;
   if (ampm === 'AM' && hours === 12) hours = 0;
-  if (hours.toString().length === 1){
+  if (hours.toString().length === 1) {
     hours = '0' + hours
   }
-  if (minutes.toString().length === 1){ // singular digits, like 1 minute
+  if (minutes.toString().length === 1) { // singular digits, like 1 minute
     minutes = '0' + minutes
   }
   return `${hours}:${minutes}`;
@@ -222,18 +241,18 @@ function convertToDateString(date, time, ampm) {
   return `${date}T${time24hr}`;
 }
 
-function convertLocIdToName(id){
+function convertLocIdToName(id) {
   return inverseLocationDict.value[id]
 }
 
-function handleSubmit(){
+function handleSubmit() {
   var jsonEvent = {};
-  var dataNames = ['eventTitle','eventLoc','eventDesc'];
+  var dataNames = ['eventTitle', 'eventLoc', 'eventDesc'];
   var dataValues = [eventTitle.value, locationDict.value[eventLocation.value], eventDescription.value];
 
   // console.log(`Event Location ID: ${locationDict.value[eventLocation.value]}`); // Check the value before submission
 
-  for (let i = 0; i < dataNames.length; i++){
+  for (let i = 0; i < dataNames.length; i++) {
     jsonEvent[dataNames[i]] = dataValues[i];
     //console.log(dataValues[i])
   }
@@ -241,13 +260,11 @@ function handleSubmit(){
   let nullsErr = checkForNulls();
   let timeAndDateLogic = checkForTimeAndDateLogic(nullsErr);
 
-  if(nullsErr !== false){
+  if (nullsErr !== false) {
     showAlert('error', `Error: First error found in field: '${nullsErr}'`)
-  }
-  else if(timeAndDateLogic !== false){
+  } else if (timeAndDateLogic !== false) {
     showAlert('error', timeAndDateLogic)
-  }
-  else{ // no errors, everything should go through here
+  } else { // no errors, everything should go through here
 
     // date objects are getting created once the time logic is completed
     jsonEvent['eventStart'] = convertToDateString(startDate.value, startTime.value, startAMPM.value);
@@ -256,22 +273,22 @@ function handleSubmit(){
 
 
     try {
-        const response = fetchData("/event/logEvent", {
+      const response = fetchData("/event/logEvent", {
         method: 'POST', // (or 'GET')
         body: JSON.stringify(jsonEvent),
         headers: {
-            'Content-type':'application/json',
+          'Content-type': 'application/json',
         }
       });
 
-    console.log('Success - game added :', response);
+      console.log('Success - game added :', response);
 
-    // this is the re-fetch that occurs when you add the game to be able to display it 
-    // getEvents();
-    // formatEvents();
-    // parseData();
+      // this is the re-fetch that occurs when you add the game to be able to display it
+      // getEvents();
+      // formatEvents();
+      // parseData();
 
-    } catch (error){
+    } catch (error) {
       console.error('Error adding Event:', error);
     }
 
@@ -281,8 +298,8 @@ function handleSubmit(){
   }
 }
 
-function checkForTimeAndDateLogic(nullsErr){
-  if (nullsErr !== false){
+function checkForTimeAndDateLogic(nullsErr) {
+  if (nullsErr !== false) {
     return null // short circuit to prevent errors trying to create dates with bad data
   }
 
@@ -293,60 +310,46 @@ function checkForTimeAndDateLogic(nullsErr){
   const oneYearAhead = new Date(now);
   oneYearAhead.setFullYear(now.getFullYear() + 1);
 
-  if(startObj > endObj){
+  if (startObj > endObj) {
     return 'Event Start cannot occur after Event End'
-  }
-  else if(startObj < now){
+  } else if (startObj < now) {
     return 'Event cannot start in the past'
-  }
-  else if(startObj.getTime() === endObj.getTime()){
+  } else if (startObj.getTime() === endObj.getTime()) {
     return 'Event Start and Event End cannot be at the same time'
-  }
-  else if((endObj - startObj) < msIn30Mins){ // case to make sure the event lasts for at least 30 minutes
+  } else if ((endObj - startObj) < msIn30Mins) { // case to make sure the event lasts for at least 30 minutes
     return 'Event must last for at least 30 minutes'
-  }
-  else if(startObj > oneYearAhead){
+  } else if (startObj > oneYearAhead) {
     return 'Events cannot be logged more than a year in advance'
-  }
-  else{
+  } else {
     return false; // case where there are no issues
   }
 }
 
-function checkForNulls(){
-  if(eventTitle.value == null){
-      return 'Event Title';
-    }
-    else if(eventLocation.value == null){
-      return 'Event Location';
-    }
-    else if(startDate.value == null){
-      return 'Start Date';
-    }
-    else if(endDate.value == null){
-      return 'End Date';
-    }
-    else if(startTime.value == null){
-      return 'Start Time';
-    }
-    else if(startAMPM.value == null){
-      return 'Start AM / PM';
-    }
-    else if(endTime.value == null){
-      return 'End Time';
-    }
-    else if(endAMPM.value == null){
-      return 'End AM / PM';
-    }
-    else if(eventDescription.value == null){
-      return 'Event Description'
-    }
-    else{
-      return false;
-    }
+function checkForNulls() {
+  if (eventTitle.value == null) {
+    return 'Event Title';
+  } else if (eventLocation.value == null) {
+    return 'Event Location';
+  } else if (startDate.value == null) {
+    return 'Start Date';
+  } else if (endDate.value == null) {
+    return 'End Date';
+  } else if (startTime.value == null) {
+    return 'Start Time';
+  } else if (startAMPM.value == null) {
+    return 'Start AM / PM';
+  } else if (endTime.value == null) {
+    return 'End Time';
+  } else if (endAMPM.value == null) {
+    return 'End AM / PM';
+  } else if (eventDescription.value == null) {
+    return 'Event Description'
+  } else {
+    return false;
+  }
 }
 
-function closeModal(){
+function closeModal() {
   showDialog.value = false
 
   eventTitle.value = null;
@@ -360,9 +363,9 @@ function closeModal(){
   eventDescription.value = null;
 }
 
-  function convertDateObjToFrontendDate(date){
+function convertDateObjToFrontendDate(date) {
   console.log(date.toLocaleString())
- 
+
   let newDate = new Date(date);
   let fullDate = newDate.toDateString();
   let hours = newDate.getHours();
@@ -371,7 +374,7 @@ function closeModal(){
   let ampm = hours >= 12 ? 'PM' : 'AM';
   hours = hours % 12 || 12;
 
-  if(minutes == 0){
+  if (minutes == 0) {
     minutes = '00'
   }
 
@@ -407,12 +410,14 @@ const filteredOngoingEvents = computed(() => {
       <!-- Search and Location Toolbar -->
       <v-row>
         <v-col cols="12" md="8">
-            <!-- Button to open the modal -->
-            <v-btn prepend-icon="mdi-calendar-edit" v-if="isLoggedIn" id='event-btn' class="btn mr-2" @click="showDialog = true">Add New Event</v-btn>
-            <!-- START MODAL -->
-            <v-dialog class ="modal-container" persistent v-model="showDialog">
-              <v-card class="modal-card">
-                <v-form validate-on="submit lazy" @submit.prevent="handleSubmit">
+          <!-- Button to open the modal -->
+          <v-btn prepend-icon="mdi-calendar-edit" v-if="isLoggedIn" id='event-btn' class="btn mr-2"
+                 @click="showDialog = true">Add New Event
+          </v-btn>
+          <!-- START MODAL -->
+          <v-dialog class="modal-container" persistent v-model="showDialog">
+            <v-card class="modal-card">
+              <v-form validate-on="submit lazy" @submit.prevent="handleSubmit">
                 <v-row>
                   <v-col cols="11" class="modal-header">
                     <h2>
@@ -430,12 +435,15 @@ const filteredOngoingEvents = computed(() => {
                     </v-text-field>
                   </v-col>
                   <v-col cols="6" class="container">
-                    <v-autocomplete :items="locations" v-model="eventLocation" clearable required label="Event Location" class="" :rules="locationRules">
+                    <v-autocomplete :items="locations" v-model="eventLocation" clearable required label="Event Location"
+                                    class="" :rules="locationRules">
 
                     </v-autocomplete>
                   </v-col>
                   <v-col cols="12" class="container">
-                    <v-textarea v-model="eventDescription" placeholder="Write a brief description of the event you are creating "  required label="Event Description" :rules="descriptionRules">
+                    <v-textarea v-model="eventDescription"
+                                placeholder="Write a brief description of the event you are creating " required
+                                label="Event Description" :rules="descriptionRules">
 
                     </v-textarea>
                   </v-col>
@@ -456,24 +464,32 @@ const filteredOngoingEvents = computed(() => {
                     </v-text-field>
                   </v-col>
                   <v-col cols="3" class="container left-time">
-                    <v-text-field  v-model="frontendStartTime" :active="picker1Render" required label="Start Time" readonly :rules="startTimeRules"> <!-- DISPLAYS 00 INSTEAD OF 12 -->
-                    <v-menu v-model="picker1Render" :close-on-content-click="false" activator="parent" transition="slide-x-transition">
-                      <v-time-picker v-if="picker1Render" scrollable v-model="startTime" full-width color="green-lighten-1"></v-time-picker>
-                    </v-menu>
-                    </v-text-field>
-                  </v-col>
-                  <v-col cols="3" class="container right-time">
-                    <v-select v-model="startAMPM":items="timeStamps" label="AM / PM" :rules="startAMPMRules"></v-select>
-                  </v-col>
-                  <v-col cols="3" class="container left-time">
-                    <v-text-field v-model="frontendEndTime" :active="picker2Render" required label="End Time" readonly :rules="endTimeRules"> <!-- DISPLAYS 00 INSTEAD OF 12 -->
-                      <v-menu v-model="picker2Render" :close-on-content-click="false" activator="parent" transition="slide-x-transition">
-                        <v-time-picker v-if="picker2Render" v-model="endTime" scrollable full-width color="green-lighten-1"></v-time-picker>
+                    <v-text-field v-model="frontendStartTime" :active="picker1Render" required label="Start Time"
+                                  readonly :rules="startTimeRules"> <!-- DISPLAYS 00 INSTEAD OF 12 -->
+                      <v-menu v-model="picker1Render" :close-on-content-click="false" activator="parent"
+                              transition="slide-x-transition">
+                        <v-time-picker v-if="picker1Render" scrollable v-model="startTime" full-width
+                                       color="green-lighten-1"></v-time-picker>
                       </v-menu>
                     </v-text-field>
                   </v-col>
                   <v-col cols="3" class="container right-time">
-                    <v-select v-model="endAMPM" :items="timeStamps" required label="AM / PM" :rules="endAMPMRules"></v-select>
+                    <v-select v-model="startAMPM" :items="timeStamps" label="AM / PM"
+                              :rules="startAMPMRules"></v-select>
+                  </v-col>
+                  <v-col cols="3" class="container left-time">
+                    <v-text-field v-model="frontendEndTime" :active="picker2Render" required label="End Time" readonly
+                                  :rules="endTimeRules"> <!-- DISPLAYS 00 INSTEAD OF 12 -->
+                      <v-menu v-model="picker2Render" :close-on-content-click="false" activator="parent"
+                              transition="slide-x-transition">
+                        <v-time-picker v-if="picker2Render" v-model="endTime" scrollable full-width
+                                       color="green-lighten-1"></v-time-picker>
+                      </v-menu>
+                    </v-text-field>
+                  </v-col>
+                  <v-col cols="3" class="container right-time">
+                    <v-select v-model="endAMPM" :items="timeStamps" required label="AM / PM"
+                              :rules="endAMPMRules"></v-select>
                   </v-col>
 
                   <v-col cols="12" class="">
@@ -486,9 +502,9 @@ const filteredOngoingEvents = computed(() => {
                   </v-col>
                 </v-row>
               </v-form>
-              </v-card>
-            </v-dialog>
-            <!-- END MODAL -->
+            </v-card>
+          </v-dialog>
+          <!-- END MODAL -->
         </v-col>
         <v-col cols="12" md="4">
           <v-text-field
@@ -520,12 +536,12 @@ const filteredOngoingEvents = computed(() => {
                       <!-- <v-card-subtitle>Event ID: {{ event.event_id }}</v-card-subtitle> -->
                       <v-card-subtitle>Start: {{ formatDateTime(event.eventStart.toLocaleString()) }}</v-card-subtitle>
                       <v-card-subtitle>End: {{ formatDateTime(event.eventEnd.toLocaleString()) }}</v-card-subtitle>
-                      <v-card-text>{{ event.eventDesc }} </v-card-text>
+                      <v-card-text>{{ event.eventDesc }}</v-card-text>
                       <v-card-subtitle>Hosted at {{ convertLocIdToName(event.eventLoc) }}</v-card-subtitle>
                     </v-col>
-                  <v-col cols="4">
-                    <v-img class="img" cover src='https://www.groupestate.gr/images/joomlart/demo/default.jpg' alt="Default image"></v-img>
-                  </v-col>
+                    <v-col cols="4">
+                      <v-img :src="event.courtPic || '/images/default.jpg'"  class="court-pic" contain></v-img>
+                    </v-col>
                   </v-row>
                 </v-card>
               </div>
@@ -548,13 +564,12 @@ const filteredOngoingEvents = computed(() => {
                       <v-card-title>{{ event.eventTitle }}</v-card-title>
                       <!-- <v-card-subtitle>Event ID: {{ event.eventId }}</v-card-subtitle> -->
                       <v-card-subtitle>Start: {{ formatDateTime(event.eventStart.toLocaleString()) }}</v-card-subtitle>
-                      <v-card-subtitle>End: {{ formatDateTime(event.eventEnd.toLocaleString())}}</v-card-subtitle>
-                      <v-card-text>Description: {{ event.eventDesc }} </v-card-text>
+                      <v-card-subtitle>End: {{ formatDateTime(event.eventEnd.toLocaleString()) }}</v-card-subtitle>
                       <v-card-subtitle>Hosted at {{ convertLocIdToName(event.eventLoc) }}</v-card-subtitle>
                     </v-col>
-                  <v-col cols="4">
-                    <v-img class="img" cover src='https://www.groupestate.gr/images/joomlart/demo/default.jpg' alt="Default image"></v-img>
-                  </v-col>
+                    <v-col cols="4">
+                      <v-img :src="event.courtPic" class="court-pic" contain></v-img>
+                    </v-col>
                   </v-row>
                 </v-card>
               </div>
@@ -567,116 +582,136 @@ const filteredOngoingEvents = computed(() => {
 </template>
 
 <style scoped>
-   .container{
-    padding-top: 0rem;
-    padding-bottom: 0rem;
-   }
-   .input-format{
-    margin-bottom: 0rem;
-    margin-top: 0rem;
-  }
-  .errors{
-    display: inline-block;
-    margin: auto;
-    text-align: center;
-    color: rgb(223, 70, 70);
-    font-weight: bold;
-    padding-top: 0;
-    padding-bottom:0;
-    font-size: 14px;
-    height: 0px
-  }
-  .submit{
-    background-color: #4caf50;
-    width: 100%;
-    height: 3.5rem;
-    margin-top: 0.4rem
-  }
-  .event-labels{
-    justify-content: center;
-    text-align: center;
-    padding-top: 0;
-  }
-  .modal-header{
-    padding-left: 57px;
-    justify-content: center;
-    text-align: center;
+.container {
+  padding-top: 0rem;
+  padding-bottom: 0rem;
+}
 
-    padding-right: 0;
-  }
-  .left-time{
-    padding-right: 6px;
-  }
-  .right-time{
-    padding-left: 6px;
-  }
-  .test{
+.input-format {
+  margin-bottom: 0rem;
+  margin-top: 0rem;
+}
 
-  }
-  .modal-container{
-    max-width: 800px;
-  }
-  .modal-card{
-    background-color: #222222;
-    padding: 2.5em;
-    /* max-height: 672px; */
-  }
-  .card-item{
-    border-radius: 8px;
-    padding: 0.8rem;
-    background-color: #42424254;
-  }
-  .close-container{
+.errors {
+  display: inline-block;
+  margin: auto;
+  text-align: center;
+  color: rgb(223, 70, 70);
+  font-weight: bold;
+  padding-top: 0;
+  padding-bottom: 0;
+  font-size: 14px;
+  height: 0px
+}
 
-  }
-  .close-btn{
-   display:block;
-   margin-left: auto;
-   margin-right: 0;
-  }
-  #event-btn{
-    background-color:#4caf50;
-    width: 16rem;
-    height: 3rem;
-  }
-  .main-container{
-    border-radius: 8px;
-    padding: 1rem;
-    /* padding-right: 16rem;
-    padding-left: 16rem; */
-  }
-  div.layout{
-    background-color: #222222;
-    border-radius: 8px;
-    padding:1rem;
-  }
-  .cards-header{
-    background-color: #42424254;
-    border-radius: 8px;
-    padding: 0.9rem;
-    margin-bottom: 12px;
-    text-align: center;
-  }
-   .btn{
-    background-color: #42424254;
-  }
-  .card{
-    padding: 0.8em;
-    margin: 0.1em;
-    /* height: 700px; */
-  }
+.submit {
+  background-color: #4caf50;
+  width: 100%;
+  height: 3.5rem;
+  margin-top: 0.4rem
+}
 
-  .img{
-    width: 100%;
-    height: 90%;
-  }
-  .row-container{
-    display:inline-block;
-    border :2px;
-  }
+.event-labels {
+  justify-content: center;
+  text-align: center;
+  padding-top: 0;
+}
 
-  .v-container {
-    max-width: 1168px;
-  }
+.modal-header {
+  padding-left: 57px;
+  justify-content: center;
+  text-align: center;
+
+  padding-right: 0;
+}
+
+.left-time {
+  padding-right: 6px;
+}
+
+.right-time {
+  padding-left: 6px;
+}
+
+.test {
+
+}
+
+.modal-container {
+  max-width: 800px;
+}
+
+.modal-card {
+  background-color: #222222;
+  padding: 2.5em;
+  /* max-height: 672px; */
+}
+
+.card-item {
+  border-radius: 8px;
+  padding: 0.8rem;
+  background-color: #42424254;
+}
+
+.close-container {
+
+}
+
+.close-btn {
+  display: block;
+  margin-left: auto;
+  margin-right: 0;
+}
+
+#event-btn {
+  background-color: #4caf50;
+  width: 16rem;
+  height: 3rem;
+}
+
+.main-container {
+  border-radius: 8px;
+  padding: 1rem;
+  /* padding-right: 16rem;
+  padding-left: 16rem; */
+}
+
+div.layout {
+  background-color: #222222;
+  border-radius: 8px;
+  padding: 1rem;
+}
+
+.cards-header {
+  background-color: #42424254;
+  border-radius: 8px;
+  padding: 0.9rem;
+  margin-bottom: 12px;
+  text-align: center;
+}
+
+.btn {
+  background-color: #42424254;
+}
+
+.card {
+  padding: 0.8em;
+  margin: 0.1em;
+  /* height: 700px; */
+}
+
+.img {
+  width: 100%;
+  height: 90%;
+}
+
+.row-container {
+  display: inline-block;
+  border: 2px;
+}
+
+.v-container {
+  max-width: 1168px;
+}
 
 </style>
