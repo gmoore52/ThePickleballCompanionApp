@@ -52,25 +52,25 @@ function visitProfile(userName){
 
 </script>
 <template>
-    <v-dialog persistent :model-value="dialog" max-width="500px" >
+    <v-dialog persistent :model-value="dialog" max-width="500px">
         <v-row>
             <v-col cols="12">
                 <v-card>
                     <v-btn color="red" class="close-btn" @click="close" density="compact" icon="$close" size="large"></v-btn>
 
-             <v-col cols="12">
-            <v-card-title class="card-header">Results</v-card-title>
-              <v-card-subtitle>Outcome: <strong>{{winOrLoss}}</strong></v-card-subtitle>
-              <v-card-subtitle>{{store.state.selectedUsername}}'s score: <strong>{{selectedTeamScore}}</strong></v-card-subtitle>
-              <v-card-subtitle>Opponent's score: <strong>{{otherTeamScore}}</strong></v-card-subtitle>
-            </v-col>  
-             <v-col cols="12">
-              <v-card-title class="card-header">Game Info</v-card-title>
-              <v-card-subtitle>Location: {{formattedCourt}}</v-card-subtitle>
-              <v-card-subtitle>Date: {{formatDateTime(game.gameDate)}}</v-card-subtitle>
-              <v-card-subtitle>Logged by: {{game.player1}}</v-card-subtitle>
-            </v-col> 
-            <v-col cols="12">
+                <v-col cols="12">
+                <v-card-title class="card-header">Results</v-card-title>
+                  <v-card-subtitle>Outcome: <strong>{{winOrLoss}}</strong></v-card-subtitle>
+                  <v-card-subtitle>{{store.state.selectedUsername}}'s score: <strong>{{selectedTeamScore}}</strong></v-card-subtitle>
+                  <v-card-subtitle>Opponent's score: <strong>{{otherTeamScore}}</strong></v-card-subtitle>
+                </v-col>  
+                <v-col cols="12">
+                  <v-card-title class="card-header">Game Info</v-card-title>
+                  <v-card-subtitle>Location: {{formattedCourt}}</v-card-subtitle>
+                  <v-card-subtitle>Date: {{formatDateTime(game.gameDate)}}</v-card-subtitle>
+                  <v-card-subtitle>Logged by: {{game.player1}}</v-card-subtitle>
+                </v-col> 
+              <v-col cols="12">
                 <v-card-title class="card-header">Players</v-card-title>
                 <v-card-subtitle> {{team1WinLoss}} team with <strong>{{game.userScore}}</strong> point(s)</v-card-subtitle>
                 
@@ -99,7 +99,7 @@ function visitProfile(userName){
               <v-card-subtitle class="notes">{{formatNotes(game.notes)}}</v-card-subtitle>
             </v-col> 
             </v-card>
-            </v-col>
+          </v-col>
         </v-row>
     </v-dialog>
 

@@ -25,27 +25,25 @@ function formatFullName(user){
 }
 
 function handleRequestDeny(otherUsername){
-  
   try {
-      // console.log(`/friends/reject/${store.state.selectedUsername}/${otherUsername}`)
-      const response = fetchData(`/friends/reject/${store.state.selectedUsername}/${otherUsername}`,
-      {
-        method:'POST',
-      });
-      console.log(response)
-      // showAlert('success', 'Friend request accepted')
-    }
-     catch (error){
-      // console.error('Error adding Event:', response);
-      showAlert('error', `Friend request could not be rejected`)
-    }
-
+    // console.log(`/friends/reject/${store.state.selectedUsername}/${otherUsername}`)
+    const response = fetchData(`/friends/reject/${store.state.selectedUsername}/${otherUsername}`,
+    {
+      method:'POST',
+    });
+    // console.log(response)
+    // showAlert('success', 'Friend request accepted')
+  } 
+    catch (error){
+    // console.error('Error adding Event:', response);
+    showAlert('error', `Friend request could not be rejected`)
+  } 
   emit('reload');
 }
 
 function handleRequestConfirm(otherUsername){
   try {
-      console.log(`/friends/accept/${store.state.selectedUsername}/${otherUsername}`)
+      // console.log(`/friends/accept/${store.state.selectedUsername}/${otherUsername}`)
       const response = fetchData(`/friends/accept/${store.state.selectedUsername}/${otherUsername}`,
       {
         method:'POST',

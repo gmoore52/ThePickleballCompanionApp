@@ -360,23 +360,23 @@ function closeModal(){
   eventDescription.value = null;
 }
 
-  function convertDateObjToFrontendDate(date){
-  console.log(date.toLocaleString())
+//   function convertDateObjToFrontendDate(date){
+//   console.log(date.toLocaleString())
  
-  let newDate = new Date(date);
-  let fullDate = newDate.toDateString();
-  let hours = newDate.getHours();
-  let minutes = newDate.getMinutes();
+//   let newDate = new Date(date);
+//   let fullDate = newDate.toDateString();
+//   let hours = newDate.getHours();
+//   let minutes = newDate.getMinutes();
 
-  let ampm = hours >= 12 ? 'PM' : 'AM';
-  hours = hours % 12 || 12;
+//   let ampm = hours >= 12 ? 'PM' : 'AM';
+//   hours = hours % 12 || 12;
 
-  if(minutes == 0){
-    minutes = '00'
-  }
+//   if(minutes == 0){
+//     minutes = '00'
+//   }
 
-  return `${fullDate} ${hours}:${minutes}${ampm}`;
-}
+//   return `${fullDate} ${hours}:${minutes}${ampm}`;
+// }
 
 // Computed property to filter courts based on search query
 const filteredUpcomingEvents = computed(() => {
@@ -507,6 +507,7 @@ const filteredOngoingEvents = computed(() => {
           <v-row class="main-row-1">
             <v-col cols="12" class="main-col-1">
               <h2 class="cards-header" id="header-1">Ongoing Events</h2>
+              <v-card class="card-item py-6 centered" v-if="filteredOngoingEvents.length == 0"> No ongoing events</v-card>
               <div
                 class="left-card"
                 v-for="event in filteredOngoingEvents"
@@ -536,6 +537,7 @@ const filteredOngoingEvents = computed(() => {
           <v-row class="main-row-2">
             <v-col cols="12" class="main-col-2">
               <h2 class="cards-header" id="header-2">Upcoming Events</h2>
+              <v-card class="card-item py-6 centered" v-if="filteredUpcomingEvents.length == 0"> No upcoming events</v-card>
               <div
                 class="right-card"
                 v-for="event in filteredUpcomingEvents"
@@ -585,6 +587,11 @@ const filteredOngoingEvents = computed(() => {
     padding-bottom:0;
     font-size: 14px;
     height: 0px
+  }
+
+  .centered{
+    justify-content: center;
+    text-align: center;
   }
   .submit{
     background-color: #4caf50;

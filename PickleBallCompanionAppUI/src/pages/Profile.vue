@@ -13,6 +13,7 @@ const router = useRouter();
 
 const JSONFriends = ref([]); // State for user's friends
 const JSONFriendRequests = ref([]);
+const friendRequestStatus = ref();
 
 const userData = ref({
   userName: '',
@@ -21,6 +22,7 @@ const userData = ref({
   accCreationDate: '',
   skillLevel: ''
 });
+
 // Skill level mapping to be used with getSkillLevelText to present skill level as a string on the front end
 const skillLevels = {
   1: "Beginner",
@@ -61,7 +63,7 @@ const fetchFriendRequests = async () => {
   try {
     const url = `/friends/getFriendRequests/${store.state.selectedUsername}`; // TODO change the path and everything here so it works correctly
     JSONFriendRequests.value = await fetchData(url);
-    console.log(JSONFriendRequests.value)
+    // console.log(JSONFriendRequests.value)
   } catch (error) {
     console.error(error);
   }
@@ -80,6 +82,21 @@ async function fetchFriends() {
   } catch (err) {
     console.error('Error fetching friends:', err);
   }
+}
+
+async function fetchFriendRequestStatus(){
+  if (store.state.user.userName !== store.state.selectedUsername){ // if you are looking at someone elses profile, you want to fetch this status to be used on the DynamicFriendButton
+    try {
+        friendRequestStatus.value = await fetchData(`/friends/status/${store.state.selectedUsername}/${store.state.user.userName}`);
+        // console.log(friendRequestStatus.value)
+        // showAlert('success', 'Friend request accepted')
+    }
+      catch (error){
+      console.error('Error adding Event:', friendRequestStatus.value);
+      // showAlert('error', `Friend request could not be rejected`)
+    }
+  }
+  // console.log(friendRequestStatus.value)
 }
 
 function addSelectedFriend(userName){
@@ -118,13 +135,15 @@ async function loadData(){
   await fetchUserData(); // Fetch the user data for the selected profile
   await fetchFriendRequests();
   await fetchFriends(); // Fetch the friends of the selected profile
+  await fetchFriendRequestStatus();
 }
 
 onMounted(async () => {
   if (isLoggedIn.value) {
-    await fetchUserData(); // Fetch the user data for the selected profile
-    await fetchFriendRequests();
-    await fetchFriends(); // Fetch the friends of the selected profile
+    fetchUserData(); // Fetch the user data for the selected profile
+    fetchFriendRequests();
+    fetchFriends(); // Fetch the friends of the selected profile
+    fetchFriendRequestStatus(); // Fetch the request status for the selected user
   }
 });
 
@@ -135,6 +154,7 @@ watch(
       fetchUserData();
       fetchFriendRequests();
       fetchFriends(); // Fetch the friends of the selected profile TODO: pls put whatever function you do here to populate friends, here
+      fetchFriendRequestStatus()
     }
   }
 );
@@ -190,8 +210,12 @@ const confirmLogout = async () => {
                 <v-btn v-if="loggedInUserName !== store.state.selectedUsername" prepend-icon="mdi-account-arrow-right" class="mt-5 mx-2" color="blue" @click="visitGameHistory(store.state.selectedUsername)">View Game History</v-btn>
                 <!-- <v-btn v-if="loggedInUserName !== store.state.selectedUsername" prepend-icon="mdi-account-multiple-plus" class="mt-5" color="green" @click="addSelectedFriend(store.state.selectedUsername)">Add Friend</v-btn> -->
 
-                <dynamic-friend-button>
-
+                <dynamic-friend-button
+                :friendRequestStatus="friendRequestStatus"
+                :selectedUsername="store.state.selectedUsername"
+                :loggedInUsername="store.state.user.userName"
+                @reload="loadData()"
+                >
                 </dynamic-friend-button>
 
               </v-col>
@@ -243,7 +267,7 @@ const confirmLogout = async () => {
               </v-col>
             </v-row>
 
-            <!-- <v-card-text v-if="JSONFriends.length === 0" class="white--text">No friends added for {{ store.state.selectedUsername }}.</v-card-text> -->
+            <v-card-text v-if="(JSONFriends.length == 0) && (JSONFriends !== null)" class="white--text">No friends added for {{ store.state.selectedUsername }}.</v-card-text>
           </v-card>
         </v-col>
       </v-row>
