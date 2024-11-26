@@ -123,7 +123,7 @@ watch(
           <v-switch v-model="expandedView" class="gameSwitch" label="Expand" color="primary" style="display:inline-block"></v-switch>
         </div>
       </v-col>
-      <v-col class="no-games" cols="12" v-if="JSONGames.length === 0"> No recent games for user {{ store.state.selectedUsername }} </v-col>
+      <v-col class="no-games" cols="12" v-if="JSONGames.length == 0"> No recent games for {{ store.state.selectedUsername }} </v-col>
       <v-col class=""
               v-for="(game, index) in JSONGames"
               :key="game.id" sm="6" md="4" xs="12">

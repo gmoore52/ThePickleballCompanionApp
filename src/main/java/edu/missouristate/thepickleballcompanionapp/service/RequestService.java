@@ -2,6 +2,7 @@ package edu.missouristate.thepickleballcompanionapp.service;
 
 import edu.missouristate.thepickleballcompanionapp.domain.Request;
 import edu.missouristate.thepickleballcompanionapp.domain.User;
+import edu.missouristate.thepickleballcompanionapp.domain.dto.UserDTO;
 
 import java.util.List;
 
@@ -11,5 +12,5 @@ public interface RequestService {
     public void acceptFriendRequest(String toUsername, String fromUsername);
     public void rejectFriendRequest(String toUsername, String fromUsername);
     public void revokeFriendRequest(String toUsername, String fromUsername);
-    public List<User> getFriendsForSelectedUser(String username);
+    public List<UserDTO> getFriendsForSelectedUser(String username);
 }
