@@ -11,7 +11,7 @@ const store = useStore();
 const router = useRouter();
 
 function handleRequestDeny(otherUsername){
-  // otherUsername 
+  // otherUsername
 }
 
 function handleRequestConfirm(otherUsername){
@@ -23,9 +23,9 @@ function handleRequestConfirm(otherUsername){
   <v-card link class="friend-card">
   <v-col cols="12" class="">
     <v-row class="no-formatting">
-    <v-col cols="3" class="img-container"> 
+    <v-col cols="3" class="img-container">
       <!-- <img :src="friend.profilerImgLoc"> -->
-      <img class="profile-pic" src='https://upload.wikimedia.org/wikipedia/commons/a/ac/Default_pfp.jpg'> <!--TODO: default image we will be removing -->
+      <img class="profile-pic" :src="`/images/${friend.userName}.jpg`">
     </v-col>
     <v-col cols="8">
       <div class="inner-container">
@@ -36,7 +36,7 @@ function handleRequestConfirm(otherUsername){
           {{friend.userName}}
         </p>
       </div>
-    </v-col>     
+    </v-col>
     <v-col cols="1">
         <!-- <v-btn></v-btn> -->
 
@@ -45,7 +45,7 @@ function handleRequestConfirm(otherUsername){
       <v-divider></v-divider>
       <v-card-actions class="btn-actions">
       <v-btn @click.stop="handleRequestDeny(friend.userFullName)" prepend-icon="mdi-account-remove" color="red">Deny</v-btn>
-      <v-btn @click.stop="handleRequestConfirm(friend.userFullName)" prepend-icon="mdi-account-plus" color="green">Confirm</v-btn> 
+      <v-btn @click.stop="handleRequestConfirm(friend.userFullName)" prepend-icon="mdi-account-plus" color="green">Confirm</v-btn>
     </v-card-actions>
     </v-col>
   </v-row>
@@ -77,7 +77,7 @@ function handleRequestConfirm(otherUsername){
 }
 
 .img-container{
-  
+
 }
 
 .inner-container{

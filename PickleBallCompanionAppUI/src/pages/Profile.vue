@@ -79,7 +79,7 @@ const getUsers = async () => {
 
 function returnHome(){
   store.commit('UNSET_SELECTED_USERNAME');
-  router.push(`/profile/:userId`); // /${user.value} 
+  router.push(`/profile/:userId`); // /${user.value}
 }
 
 // Function to fetch friends data from the database
@@ -98,13 +98,13 @@ function addSelectedFriend(userName){
 
 function visitStats(userName){
   store.commit('SET_SELECTED_USERNAME', userName);
-  router.push(`/stats/:userId`); // /${user.value} 
+  router.push(`/stats/:userId`); // /${user.value}
   window.scrollTo(0, 0);
 }
 
 function visitGameHistory(userName){
   store.commit('SET_SELECTED_USERNAME', userName);
-  router.push(`/game-history/:userId`); // /${user.value} 
+  router.push(`/game-history/:userId`); // /${user.value}
   window.scrollTo(0, 0);
 }
 
@@ -115,11 +115,11 @@ const formatDate = (date) => {
 
 function visitProfile(userName){
   store.commit('SET_SELECTED_USERNAME', userName);
-  router.push(`/profile/${userName}`); // /${user.value} 
+  router.push(`/profile/${userName}`); // /${user.value}
   window.scrollTo(0, 0);
 
 
-  // fetchUserData(); 
+  // fetchUserData();
   // getUsers();
 }
 
@@ -166,10 +166,11 @@ const confirmLogout = async () => {
                 <v-card-title class="white--text text-h5">{{ userData.userName }}</v-card-title>
                 <v-card-subtitle class="white--text text-h6">{{ userData.userFullName }}</v-card-subtitle>
                 <v-img
-                  :width="300"
-                  aspect-ratio="16/9"
+                  :width="150"
+                  :height="150"
+                  aspect-ratio="1"
                   cover
-                  src="https://hips.hearstapps.com/hmg-prod/images/pickleball-tips-04-1658358796.png"
+                  :src="`/images/${userData.userName}.jpg`"
                 ></v-img>
               </v-col>
 
@@ -184,7 +185,7 @@ const confirmLogout = async () => {
                 </v-card>
 
                 <v-btn v-if="loggedInUserName === store.state.selectedUsername" prepend-icon="mdi-logout" class="mt-5" color="red" @click="showLogoutConfirm = true">Logout</v-btn>
-                
+
                 <!-- Displays if you are looking at a profile other than your own -->
 
                  <!-- NOTE: THIS BUTTON GOTTA BE DISABLED AND SAY "Friend Added" ONCE WE FINISH FRIEND REQUESTS IF YOU ARE ALREADY THEIR FRIEND-->
@@ -208,12 +209,12 @@ const confirmLogout = async () => {
               <v-row class="friend-container">
                 <v-col v-for="(friend, index) in JSONFriendRequests" cols="4">
                   <v-row class="card-row">
-                  <FriendCard 
+                  <FriendCard
                   @click="visitProfile(friend.userName)"
-                  :friend="friend" 
+                  :friend="friend"
                   :isRequest="true"
                   >
-                  
+
                   </FriendCard>
                 </v-row>
                 </v-col>
@@ -222,7 +223,7 @@ const confirmLogout = async () => {
               <v-card-text v-if="JSONFriends.length === 0" class="white--text">No friends added for {{ store.state.selectedUsername }}.</v-card-text>
             </v-card>
         </v-col>
-      
+
 
         <!-- Friends Section -->
         <v-col cols="12" md="12" class="pt-3 pb-3">
@@ -234,12 +235,12 @@ const confirmLogout = async () => {
             <v-row class="friend-container">
               <v-col v-for="(friend, index) in JSONFriends" cols="4">
                 <v-row class="card-row">
-                <FriendCard 
+                <FriendCard
                 @click="visitProfile(friend.userName)"
-                :friend="friend" 
+                :friend="friend"
                 :isRequest="false"
                 >
-                
+
                 </FriendCard>
               </v-row>
               </v-col>
