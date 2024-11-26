@@ -182,12 +182,16 @@ const confirmLogout = async () => {
               <v-col cols="12" md="3">
                 <v-card-title class="white--text text-h5">{{ userData.userName }}</v-card-title>
                 <v-card-subtitle class="white--text text-h6">{{ userData.userFullName }}</v-card-subtitle>
+                <v-card-text>
                 <v-img
-                  :width="300"
-                  aspect-ratio="16/9"
-                  cover
-                  src="https://hips.hearstapps.com/hmg-prod/images/pickleball-tips-04-1658358796.png"
-                ></v-img>
+                    class="profile-img pl-2"
+                    :width="180"
+                    :height="180"
+                    aspect-ratio="1"
+                    cover
+                    :src="`/images/${userData.userName}.jpg`"
+                  ></v-img>
+                </v-card-text>
               </v-col>
 
               <v-col cols="12" md="8">
@@ -308,6 +312,12 @@ const confirmLogout = async () => {
 <style scoped>
 .border-styling{
   border-radius: 8px;
+}
+
+.profile-img{
+  justify-content: center;
+  text-align: center;
+  border-radius: 12px;
 }
 
 .info-card{

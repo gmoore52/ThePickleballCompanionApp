@@ -25,20 +25,7 @@ function formatFullName(user){
 }
 
 function handleRequestDeny(otherUsername){
-  try {
-    // console.log(`/friends/reject/${store.state.selectedUsername}/${otherUsername}`)
-    const response = fetchData(`/friends/reject/${store.state.selectedUsername}/${otherUsername}`,
-    {
-      method:'POST',
-    });
-    // console.log(response)
-    // showAlert('success', 'Friend request accepted')
-  } 
-    catch (error){
-    // console.error('Error adding Event:', response);
-    showAlert('error', `Friend request could not be rejected`)
-  } 
-  emit('reload');
+  // otherUsername 
 }
 
 function handleRequestConfirm(otherUsername){
@@ -67,9 +54,9 @@ function handleRequestConfirm(otherUsername){
   <v-card link class="friend-card">
   <v-col cols="12" class="">
     <v-row class="no-formatting">
-    <v-col cols="3" class="img-container"> 
+    <v-col cols="3" class="img-container">
       <!-- <img :src="friend.profilerImgLoc"> -->
-      <img class="profile-pic" src='https://upload.wikimedia.org/wikipedia/commons/a/ac/Default_pfp.jpg'> <!--TODO: default image we will be removing -->
+      <img class="profile-pic" :src="`/images/${friend.userName}.jpg`">
     </v-col>
     <v-col cols="8">
       <div class="inner-container">
@@ -80,7 +67,7 @@ function handleRequestConfirm(otherUsername){
           {{friend.userName}}
         </p>
       </div>
-    </v-col>     
+    </v-col>
     <v-col cols="1">
         <!-- <v-btn></v-btn> -->
 
@@ -121,7 +108,7 @@ function handleRequestConfirm(otherUsername){
 }
 
 .img-container{
-  
+
 }
 
 .inner-container{
