@@ -266,7 +266,7 @@ function handleSubmit(){
 
     console.log('Success - game added :', response);
 
-    // this is the re-fetch that occurs when you add the game to be able to display it 
+    // this is the re-fetch that occurs when you add the game to be able to display it
     // getEvents();
     // formatEvents();
     // parseData();
@@ -362,7 +362,7 @@ function closeModal(){
 
 //   function convertDateObjToFrontendDate(date){
 //   console.log(date.toLocaleString())
- 
+
 //   let newDate = new Date(date);
 //   let fullDate = newDate.toDateString();
 //   let hours = newDate.getHours();
@@ -430,7 +430,7 @@ const filteredOngoingEvents = computed(() => {
                     </v-text-field>
                   </v-col>
                   <v-col cols="6" class="container">
-                    <v-autocomplete :items="locations" v-model="eventLocation" clearable required label="Event Location" class="" :rules="locationRules">
+                    <v-autocomplete :items="locations" no-data-text="Location not found" v-model="eventLocation" clearable required label="Event Location" class="" :rules="locationRules">
 
                     </v-autocomplete>
                   </v-col>
