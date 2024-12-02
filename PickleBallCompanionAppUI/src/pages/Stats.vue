@@ -1,3 +1,95 @@
+<template>
+  <v-app>
+    <v-container>
+      <v-row >
+        <!-- Main Left Section (Welcome and Events) -->
+        <v-col cols="12" md="12" class="d-flex flex-column" >
+          <!-- Profile Box -->
+          <v-card class="pa-4 flex-grow-1 big-container" outlined >
+            <v-row>
+              <v-col cols="12" md="3">
+                <v-card-title class="white--text text-h4">Stats</v-card-title>
+
+                <v-card-subtitle class="white--text text-h6">{{ store.state.selectedUsername }}</v-card-subtitle>
+                <v-btn v-if="store.state.user?.userName !== store.state.selectedUsername" prepend-icon="mdi-account-arrow-left-outline" class="mt-2 mx-2" color="blue" @click="returnToOtherProfile(store.state.selectedUsername)">return</v-btn>
+
+
+                <v-card-title class="white--text">Total Games:</v-card-title>
+                <v-card-text class="white--text">{{userStatsAcc.totalGames}}</v-card-text>
+                <v-card-title class="white--text">Total Wins:</v-card-title>
+                <v-card-text class="white--text">{{userStatsAcc.totalWins}}</v-card-text>
+                <v-card-title class="white--text">Total Losses:</v-card-title>
+                <v-card-text class="white--text">{{userStatsAcc.totalLosses}}</v-card-text>
+                <v-card-title class="white--text">W/L Ratio:</v-card-title>
+                <v-card-text class="white--text">{{userStatsAcc.winLossRatio}}</v-card-text>
+
+                <v-card-title class="white--text">Most Frequented Court:</v-card-title>
+                <v-card-text class="white--text">{{userStatsAcc.mostFrequentLocationID}}</v-card-text>
+
+                <v-card-title class="white--text">Top Teammate:</v-card-title>
+                <v-card-text class="d-flex align-center">
+                  <v-card-text class = "white--text">{{userStatsAcc.mostFrequentTeammateUsername}}</v-card-text>
+                          <v-img
+                            src="https://static.vecteezy.com/system/resources/previews/046/300/541/non_2x/avatar-user-profile-person-icon-gender-neutral-silhouette-profile-picture-suitable-for-social-media-profiles-icons-screensavers-free-png.png"
+                            max-width="50"
+                            max-height="50"
+                            contain
+                          ></v-img>
+                </v-card-text>
+                <v-card-title class="white--text">Strongest Opponent</v-card-title>
+                <v-card-text class="d-flex align-center">
+                  <v-card-text class = "white--text">{{userStatsAcc.strongestOpponentUsername}}</v-card-text>
+                          <v-img
+                            src="https://static.vecteezy.com/system/resources/previews/046/300/541/non_2x/avatar-user-profile-person-icon-gender-neutral-silhouette-profile-picture-suitable-for-social-media-profiles-icons-screensavers-free-png.png"
+                            max-width="50"
+                            max-height="50"
+                            contain
+                          ></v-img>
+                </v-card-text>
+
+              </v-col>
+
+              <v-col cols="12" md="8">
+                <apexchart v-for="item in userStatsHst" height="500" :options="chartOptions" :series="item.series"></apexchart>
+<!--                <apexchart height="500" :options="chartOptions" :series="userStatsHst.totalWins.series"></apexchart>-->
+                <v-card class="chart-options">
+                  <div>
+                    <v-menu offset-y>
+                      <template v-slot:activator="{ props }">
+                        <v-btn v-bind="props" class="chart-options">Chart Options</v-btn>
+                      </template>
+                      <v-list>
+                        <v-list-item
+                          v-for="(action, index) in actions"
+                          :key="index"
+                          @click="handleAction(action)"
+                        >
+                          <v-list-item-title>{{ action.title }}</v-list-item-title>
+                        </v-list-item>
+                      </v-list>
+                    </v-menu>
+                  </div>
+
+
+                  <!-- Conditionally Render the Selected Image -->
+                  <div v-if="selectedImage">
+                    <v-img
+                      :src="selectedImage"
+                      aspect-ratio="16/9"
+                      cover
+                      class="mt-4"
+                    ></v-img>
+                  </div>
+                </v-card>
+              </v-col>
+            </v-row>
+          </v-card>
+        </v-col>
+      </v-row>
+    </v-container>
+  </v-app>
+</template>
+
 <script setup>
 import {ref, onMounted, watch, computed} from 'vue';
 import { useRouter } from 'vue-router'; // Import useRouter from vue-router
@@ -201,98 +293,6 @@ function returnToOtherProfile(userName){
 }
 
 </script>
-
-<template>
-  <v-app>
-    <v-container>
-      <v-row >
-        <!-- Main Left Section (Welcome and Events) -->
-        <v-col cols="12" md="12" class="d-flex flex-column" >
-          <!-- Profile Box -->
-          <v-card class="pa-4 flex-grow-1 big-container" outlined >
-            <v-row>
-              <v-col cols="12" md="3">
-                <v-card-title class="white--text text-h4">Stats</v-card-title>
-
-                <v-card-subtitle class="white--text text-h6">{{ store.state.selectedUsername }}</v-card-subtitle>
-                <v-btn v-if="store.state.user?.userName !== store.state.selectedUsername" prepend-icon="mdi-account-arrow-left-outline" class="mt-2 mx-2" color="blue" @click="returnToOtherProfile(store.state.selectedUsername)">return</v-btn>
-
-
-                <v-card-title class="white--text">Total Games:</v-card-title>
-                <v-card-text class="white--text">{{userStatsAcc.totalGames}}</v-card-text>
-                <v-card-title class="white--text">Total Wins:</v-card-title>
-                <v-card-text class="white--text">{{userStatsAcc.totalWins}}</v-card-text>
-                <v-card-title class="white--text">Total Losses:</v-card-title>
-                <v-card-text class="white--text">{{userStatsAcc.totalLosses}}</v-card-text>
-                <v-card-title class="white--text">W/L Ratio:</v-card-title>
-                <v-card-text class="white--text">{{userStatsAcc.winLossRatio}}</v-card-text>
-
-                <v-card-title class="white--text">Most Frequented Court:</v-card-title>
-                <v-card-text class="white--text">{{userStatsAcc.mostFrequentLocationID}}</v-card-text>
-
-                <v-card-title class="white--text">Top Teammate:</v-card-title>
-                <v-card-text class="d-flex align-center">
-                  <v-card-text class = "white--text">{{userStatsAcc.mostFrequentTeammateUsername}}</v-card-text>
-                          <v-img
-                            src="https://static.vecteezy.com/system/resources/previews/046/300/541/non_2x/avatar-user-profile-person-icon-gender-neutral-silhouette-profile-picture-suitable-for-social-media-profiles-icons-screensavers-free-png.png"
-                            max-width="50"
-                            max-height="50"
-                            contain
-                          ></v-img>
-                </v-card-text>
-                <v-card-title class="white--text">Strongest Opponent</v-card-title>
-                <v-card-text class="d-flex align-center">
-                  <v-card-text class = "white--text">{{userStatsAcc.strongestOpponentUsername}}</v-card-text>
-                          <v-img
-                            src="https://static.vecteezy.com/system/resources/previews/046/300/541/non_2x/avatar-user-profile-person-icon-gender-neutral-silhouette-profile-picture-suitable-for-social-media-profiles-icons-screensavers-free-png.png"
-                            max-width="50"
-                            max-height="50"
-                            contain
-                          ></v-img>
-                </v-card-text>
-
-              </v-col>
-
-              <v-col cols="12" md="8">
-                <apexchart v-for="item in userStatsHst" height="500" :options="chartOptions" :series="item.series"></apexchart>
-<!--                <apexchart height="500" :options="chartOptions" :series="userStatsHst.totalWins.series"></apexchart>-->
-                <v-card class="chart-options">
-                  <div>
-                    <v-menu offset-y>
-                      <template v-slot:activator="{ props }">
-                        <v-btn v-bind="props" class="chart-options">Chart Options</v-btn>
-                      </template>
-                      <v-list>
-                        <v-list-item
-                          v-for="(action, index) in actions"
-                          :key="index"
-                          @click="handleAction(action)"
-                        >
-                          <v-list-item-title>{{ action.title }}</v-list-item-title>
-                        </v-list-item>
-                      </v-list>
-                    </v-menu>
-                  </div>
-
-
-                  <!-- Conditionally Render the Selected Image -->
-                  <div v-if="selectedImage">
-                    <v-img
-                      :src="selectedImage"
-                      aspect-ratio="16/9"
-                      cover
-                      class="mt-4"
-                    ></v-img>
-                  </div>
-                </v-card>
-              </v-col>
-            </v-row>
-          </v-card>
-        </v-col>
-      </v-row>
-    </v-container>
-  </v-app>
-</template>
 
 <style scoped>
 .v-app {
