@@ -283,11 +283,6 @@ function handleSubmit() {
 
       console.log('Success - game added :', response);
 
-      // this is the re-fetch that occurs when you add the game to be able to display it
-      // getEvents();
-      // formatEvents();
-      // parseData();
-
     } catch (error) {
       console.error('Error adding Event:', error);
     }
@@ -363,6 +358,7 @@ function closeModal() {
   eventDescription.value = null;
 }
 
+
 function convertDateObjToFrontendDate(date) {
   console.log(date.toLocaleString())
 
@@ -371,15 +367,30 @@ function convertDateObjToFrontendDate(date) {
   let hours = newDate.getHours();
   let minutes = newDate.getMinutes();
 
-  let ampm = hours >= 12 ? 'PM' : 'AM';
-  hours = hours % 12 || 12;
+//   function convertDateObjToFrontendDate(date){
+//   console.log(date.toLocaleString())
+
+
+//   let newDate = new Date(date);
+//   let fullDate = newDate.toDateString();
+//   let hours = newDate.getHours();
+//   let minutes = newDate.getMinutes();
+
 
   if (minutes == 0) {
     minutes = '00'
   }
 
-  return `${fullDate} ${hours}:${minutes}${ampm}`;
-}
+//   let ampm = hours >= 12 ? 'PM' : 'AM';
+//   hours = hours % 12 || 12;
+
+
+//   if(minutes == 0){
+//     minutes = '00'
+//   }
+
+//   return `${fullDate} ${hours}:${minutes}${ampm}`;
+// }
 
 // Computed property to filter courts based on search query
 const filteredUpcomingEvents = computed(() => {
@@ -435,8 +446,11 @@ const filteredOngoingEvents = computed(() => {
                     </v-text-field>
                   </v-col>
                   <v-col cols="6" class="container">
+
                     <v-autocomplete :items="locations" v-model="eventLocation" clearable required label="Event Location"
                                     class="" :rules="locationRules">
+
+                    <v-autocomplete :items="locations" no-data-text="Location not found" v-model="eventLocation" clearable required label="Event Location" class="" :rules="locationRules">
 
                     </v-autocomplete>
                   </v-col>
@@ -523,6 +537,7 @@ const filteredOngoingEvents = computed(() => {
           <v-row class="main-row-1">
             <v-col cols="12" class="main-col-1">
               <h2 class="cards-header" id="header-1">Ongoing Events</h2>
+              <v-card class="card-item py-6 centered" v-if="filteredOngoingEvents.length == 0"> No ongoing events</v-card>
               <div
                 class="left-card"
                 v-for="event in filteredOngoingEvents"
@@ -552,6 +567,7 @@ const filteredOngoingEvents = computed(() => {
           <v-row class="main-row-2">
             <v-col cols="12" class="main-col-2">
               <h2 class="cards-header" id="header-2">Upcoming Events</h2>
+              <v-card class="card-item py-6 centered" v-if="filteredUpcomingEvents.length == 0"> No upcoming events</v-card>
               <div
                 class="right-card"
                 v-for="event in filteredUpcomingEvents"
@@ -582,15 +598,53 @@ const filteredOngoingEvents = computed(() => {
 </template>
 
 <style scoped>
-.container {
-  padding-top: 0rem;
-  padding-bottom: 0rem;
-}
+
+   .container{
+    padding-top: 0rem;
+    padding-bottom: 0rem;
+   }
+   .input-format{
+    margin-bottom: 0rem;
+    margin-top: 0rem;
+  }
+  .errors{
+    display: inline-block;
+    margin: auto;
+    text-align: center;
+    color: rgb(223, 70, 70);
+    font-weight: bold;
+    padding-top: 0;
+    padding-bottom:0;
+    font-size: 14px;
+    height: 0px
+  }
+
+  .centered{
+    justify-content: center;
+    text-align: center;
+  }
+  .submit{
+    background-color: #4caf50;
+    width: 100%;
+    height: 3.5rem;
+    margin-top: 0.4rem
+  }
+  .event-labels{
+    justify-content: center;
+    text-align: center;
+    padding-top: 0;
+  }
+  .modal-header{
+    padding-left: 57px;
+    justify-content: center;
+    text-align: center;
+
 
 .input-format {
   margin-bottom: 0rem;
   margin-top: 0rem;
 }
+
 
 .errors {
   display: inline-block;
@@ -603,6 +657,26 @@ const filteredOngoingEvents = computed(() => {
   font-size: 14px;
   height: 0px
 }
+
+  }
+  .modal-container{
+    max-width: 800px;
+  }
+  .modal-card{
+    background-color: #222222;
+    padding: 2.5em;
+    /* max-height: 672px; */
+  }
+  .card-item{
+    border-radius: 8px;
+    padding: 0.8rem;
+    background-color: #42424254;
+  }
+
+  .v-card{
+    border-radius: 8px !important;
+  }
+  .close-container{
 
 .submit {
   background-color: #4caf50;

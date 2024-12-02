@@ -29,9 +29,9 @@ public class RequestController {
     }
 
     // create a new friend request
-    @PostMapping("/request")
-    public ResponseEntity<String> createFriendRequest(@RequestParam("toUsername") String toUsername,
-                                                      @RequestParam("fromUsername") String fromUsername) {
+    @PostMapping("/create/{toUsername}/{fromUsername}")
+    public ResponseEntity<String> createFriendRequest(@PathVariable("toUsername") String toUsername,
+                                                      @PathVariable("fromUsername") String fromUsername) {
         try {
             requestService.createFriendRequest(toUsername, fromUsername);
             return ResponseEntity.status(HttpStatus.CREATED).body("Friend request sent successfully.");
@@ -41,9 +41,9 @@ public class RequestController {
     }
 
     // accept a friend request
-    @PutMapping("/accept")
-    public ResponseEntity<String> acceptFriendRequest(@RequestParam("toUsername") String toUsername,
-                                                      @RequestParam("fromUsername") String fromUsername) {
+    @PostMapping("/accept/{toUsername}/{fromUsername}")
+    public ResponseEntity<String> acceptFriendRequest(@PathVariable("toUsername") String toUsername,
+            @PathVariable("fromUsername") String fromUsername) {
         try {
             requestService.acceptFriendRequest(toUsername, fromUsername);
             return ResponseEntity.ok("Friend request accepted.");
@@ -53,9 +53,9 @@ public class RequestController {
     }
 
     // reject a friend request
-    @PutMapping("/reject")
-    public ResponseEntity<String> rejectFriendRequest(@RequestParam("toUsername") String toUsername,
-                                                      @RequestParam("fromUsername") String fromUsername) {
+    @PostMapping("/reject/{toUsername}/{fromUsername}")
+    public ResponseEntity<String> rejectFriendRequest(@PathVariable("toUsername") String toUsername,
+            @PathVariable("fromUsername") String fromUsername) {
         try {
             requestService.rejectFriendRequest(toUsername, fromUsername);
             return ResponseEntity.ok("Friend request rejected.");
@@ -65,9 +65,9 @@ public class RequestController {
     }
 
     // revoke a friend request
-    @PutMapping("/revoke")
-    public ResponseEntity<String> revokeFriendRequest(@RequestParam("toUsername") String toUsername,
-                                                      @RequestParam("fromUsername") String fromUsername) {
+    @PostMapping("/revoke/{toUsername}/{fromUsername}")
+    public ResponseEntity<String> revokeFriendRequest(@PathVariable String toUsername,
+            @PathVariable String fromUsername) {
         try {
             requestService.revokeFriendRequest(toUsername, fromUsername);
             return ResponseEntity.ok("Friend request revoked.");

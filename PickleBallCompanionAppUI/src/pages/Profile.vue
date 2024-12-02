@@ -6,12 +6,14 @@ import { showAlert } from "@/util/alert";
 import { useRouter } from 'vue-router';
 import AddFriendModal from '@/components/sub-components/AddFriendModal.vue'; // Import the AddFriendModal component
 import FriendCard from '@/components/sub-components/FriendCard.vue';
+import DynamicFriendButton from '@/components/sub-components/DynamicFriendButton.vue';
 
 const store = useStore();
 const router = useRouter();
 
 const JSONFriends = ref([]); // State for user's friends
 const JSONFriendRequests = ref([]);
+const friendRequestStatus = ref();
 
 const userData = ref({
   userName: '',
@@ -20,6 +22,7 @@ const userData = ref({
   accCreationDate: '',
   skillLevel: ''
 });
+
 // Skill level mapping to be used with getSkillLevelText to present skill level as a string on the front end
 const skillLevels = {
   1: "Beginner",
@@ -60,18 +63,7 @@ const fetchFriendRequests = async () => {
   try {
     const url = `/friends/getFriendRequests/${store.state.selectedUsername}`; // TODO change the path and everything here so it works correctly
     JSONFriendRequests.value = await fetchData(url);
-    console.log(JSONFriendRequests.value)
-  } catch (error) {
-    console.error(error);
-  }
-}
-
-const getUsers = async () => {
-  JSONFriends.value = [];
-  try {
-    const url = '/game/users';
-    JSONFriends.value = await fetchData(url);
-    console.log(JSONFriends.value)
+    // console.log(JSONFriendRequests.value)
   } catch (error) {
     console.error(error);
   }
@@ -79,7 +71,7 @@ const getUsers = async () => {
 
 function returnHome(){
   store.commit('UNSET_SELECTED_USERNAME');
-  router.push(`/profile/:userId`); // /${user.value}
+  router.push(`/profile/:userId`); // /${user.value} 
 }
 
 // Function to fetch friends data from the database
@@ -92,19 +84,34 @@ async function fetchFriends() {
   }
 }
 
+async function fetchFriendRequestStatus(){
+  if (store.state.user.userName !== store.state.selectedUsername){ // if you are looking at someone elses profile, you want to fetch this status to be used on the DynamicFriendButton
+    try {
+        friendRequestStatus.value = await fetchData(`/friends/status/${store.state.selectedUsername}/${store.state.user.userName}`);
+        // console.log(friendRequestStatus.value)
+        // showAlert('success', 'Friend request accepted')
+    }
+      catch (error){
+      console.error('Error adding Event:', friendRequestStatus.value);
+      // showAlert('error', `Friend request could not be rejected`)
+    }
+  }
+  // console.log(friendRequestStatus.value)
+}
+
 function addSelectedFriend(userName){
   // function is not complete yet, we will be calling to the database here
 }
 
 function visitStats(userName){
   store.commit('SET_SELECTED_USERNAME', userName);
-  router.push(`/stats/:userId`); // /${user.value}
+  router.push(`/stats/:userId`); // /${user.value} 
   window.scrollTo(0, 0);
 }
 
 function visitGameHistory(userName){
   store.commit('SET_SELECTED_USERNAME', userName);
-  router.push(`/game-history/:userId`); // /${user.value}
+  router.push(`/game-history/:userId`); // /${user.value} 
   window.scrollTo(0, 0);
 }
 
@@ -115,20 +122,28 @@ const formatDate = (date) => {
 
 function visitProfile(userName){
   store.commit('SET_SELECTED_USERNAME', userName);
-  router.push(`/profile/${userName}`); // /${user.value}
+  router.push(`/profile/${userName}`); // /${user.value} 
   window.scrollTo(0, 0);
 
 
-  // fetchUserData();
+  // fetchUserData(); 
   // getUsers();
+}
+
+async function loadData(){
+  // console.log("@@@@")
+  await fetchUserData(); // Fetch the user data for the selected profile
+  await fetchFriendRequests();
+  await fetchFriends(); // Fetch the friends of the selected profile
+  await fetchFriendRequestStatus();
 }
 
 onMounted(async () => {
   if (isLoggedIn.value) {
-    await fetchUserData(); // Fetch the user data for the selected profile
-    await getUsers();
-    await fetchFriendRequests()
-    await fetchFriends(); // Fetch the friends of the selected profile
+    fetchUserData(); // Fetch the user data for the selected profile
+    fetchFriendRequests();
+    fetchFriends(); // Fetch the friends of the selected profile
+    fetchFriendRequestStatus(); // Fetch the request status for the selected user
   }
 });
 
@@ -137,7 +152,9 @@ watch(
   (newUsername, oldUsername) => {
     if (newUsername !== oldUsername) {
       fetchUserData();
+      fetchFriendRequests();
       fetchFriends(); // Fetch the friends of the selected profile TODO: pls put whatever function you do here to populate friends, here
+      fetchFriendRequestStatus()
     }
   }
 );
@@ -165,13 +182,16 @@ const confirmLogout = async () => {
               <v-col cols="12" md="3">
                 <v-card-title class="white--text text-h5">{{ userData.userName }}</v-card-title>
                 <v-card-subtitle class="white--text text-h6">{{ userData.userFullName }}</v-card-subtitle>
+                <v-card-text>
                 <v-img
-                  :width="150"
-                  :height="150"
-                  aspect-ratio="1"
-                  cover
-                  :src="`/images/${userData.userName}.jpg`"
-                ></v-img>
+                    class="profile-img pl-2"
+                    :width="180"
+                    :height="180"
+                    aspect-ratio="1"
+                    cover
+                    :src="`/images/${userData.userName}.jpg`"
+                  ></v-img>
+                </v-card-text>
               </v-col>
 
               <v-col cols="12" md="8">
@@ -185,14 +205,22 @@ const confirmLogout = async () => {
                 </v-card>
 
                 <v-btn v-if="loggedInUserName === store.state.selectedUsername" prepend-icon="mdi-logout" class="mt-5" color="red" @click="showLogoutConfirm = true">Logout</v-btn>
-
+                
                 <!-- Displays if you are looking at a profile other than your own -->
 
                  <!-- NOTE: THIS BUTTON GOTTA BE DISABLED AND SAY "Friend Added" ONCE WE FINISH FRIEND REQUESTS IF YOU ARE ALREADY THEIR FRIEND-->
                  <v-btn v-if="loggedInUserName !== store.state.selectedUsername" prepend-icon="mdi-exit-run" class="mt-5 mr-10" color="white" @click="returnHome()">Return</v-btn>
                 <v-btn v-if="loggedInUserName !== store.state.selectedUsername" prepend-icon="mdi-account-arrow-right" class="mt-5" color="blue" @click="visitStats(store.state.selectedUsername)">View Stats</v-btn>
                 <v-btn v-if="loggedInUserName !== store.state.selectedUsername" prepend-icon="mdi-account-arrow-right" class="mt-5 mx-2" color="blue" @click="visitGameHistory(store.state.selectedUsername)">View Game History</v-btn>
-                <v-btn v-if="loggedInUserName !== store.state.selectedUsername" prepend-icon="mdi-account-multiple-plus" class="mt-5" color="green" @click="addSelectedFriend(store.state.selectedUsername)">Add Friend</v-btn>
+                <!-- <v-btn v-if="loggedInUserName !== store.state.selectedUsername" prepend-icon="mdi-account-multiple-plus" class="mt-5" color="green" @click="addSelectedFriend(store.state.selectedUsername)">Add Friend</v-btn> -->
+
+                <dynamic-friend-button
+                :friendRequestStatus="friendRequestStatus"
+                :selectedUsername="store.state.selectedUsername"
+                :loggedInUsername="store.state.user.userName"
+                @reload="loadData()"
+                >
+                </dynamic-friend-button>
 
               </v-col>
             </v-row>
@@ -209,44 +237,41 @@ const confirmLogout = async () => {
               <v-row class="friend-container">
                 <v-col v-for="(friend, index) in JSONFriendRequests" cols="4">
                   <v-row class="card-row">
-                  <FriendCard
+                  <FriendCard 
                   @click="visitProfile(friend.userName)"
-                  :friend="friend"
+                  :friend="friend" 
                   :isRequest="true"
+                  @reload="loadData()"
                   >
-
                   </FriendCard>
                 </v-row>
                 </v-col>
               </v-row>
-
-              <v-card-text v-if="JSONFriends.length === 0" class="white--text">No friends added for {{ store.state.selectedUsername }}.</v-card-text>
             </v-card>
         </v-col>
-
-
+      
         <!-- Friends Section -->
         <v-col cols="12" md="12" class="pt-3 pb-3">
           <v-card class="pa-4 border-styling" outlined>
             <v-card-title class="white--text text-h4 d-flex justify-space-between">
               Friends ({{ JSONFriends.length }})
-              <v-btn v-if="loggedInUserName === store.state.selectedUsername" prepend-icon="mdi-account-multiple-plus" color="green" @click="showAddFriendModal = true">Add New Friend</v-btn>
+              <v-btn v-if="loggedInUserName === store.state.selectedUsername" prepend-icon="mdi-account-multiple-plus" color="green" @click="showAddFriendModal = true">Search all users</v-btn>
             </v-card-title>
             <v-row class="friend-container">
               <v-col v-for="(friend, index) in JSONFriends" cols="4">
                 <v-row class="card-row">
-                <FriendCard
+                <FriendCard 
                 @click="visitProfile(friend.userName)"
-                :friend="friend"
+                :friend="friend" 
                 :isRequest="false"
                 >
-
+                
                 </FriendCard>
               </v-row>
               </v-col>
             </v-row>
 
-            <v-card-text v-if="JSONFriends.length === 0" class="white--text">No friends added for {{ store.state.selectedUsername }}.</v-card-text>
+            <v-card-text v-if="(JSONFriends.length == 0) && (JSONFriends !== null)" class="white--text">No friends added for {{ store.state.selectedUsername }}.</v-card-text>
           </v-card>
         </v-col>
       </v-row>
@@ -287,6 +312,12 @@ const confirmLogout = async () => {
 <style scoped>
 .border-styling{
   border-radius: 8px;
+}
+
+.profile-img{
+  justify-content: center;
+  text-align: center;
+  border-radius: 12px;
 }
 
 .info-card{
