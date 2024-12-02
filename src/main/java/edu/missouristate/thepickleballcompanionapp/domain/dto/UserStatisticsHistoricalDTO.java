@@ -8,7 +8,7 @@ import java.util.List;
 public class UserStatisticsHistoricalDTO {
     private String name;
 
-    private List<AbstractMap.SimpleEntry<Timestamp, Number>> series;
+    private List<List<Number>> data;
 
     public String getName() {
         return name;
@@ -18,26 +18,26 @@ public class UserStatisticsHistoricalDTO {
         this.name = name;
     }
 
-    public List<AbstractMap.SimpleEntry<Timestamp, Number>> getSeries() {
-        return series;
+    public List<List<Number>> getData() {
+        return data;
     }
 
-    public void setSeries(List<AbstractMap.SimpleEntry<Timestamp, Number>> series) {
-        this.series = series;
+    public void setData(List<List<Number>> data) {
+        this.data = data;
     }
 
     @Override
     public String toString() {
         return "UserStatisticsHistoricalDTO{" +
                 "name='" + name + '\'' +
-                ", series=" + series +
+                ", data=" + data +
                 '}';
     }
 
     public UserStatisticsHistoricalDTO() {}
 
-    public UserStatisticsHistoricalDTO(String name, List<AbstractMap.SimpleEntry<Timestamp, Number>> series) {
+    public UserStatisticsHistoricalDTO(String name, List<List<Number>> series) {
         this.name = name;
-        this.series = series;
+        this.data = series;
     }
 }

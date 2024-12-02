@@ -75,4 +75,8 @@ public class UserServiceImpl implements UserService {
             return false;
         }
     }
+
+    public Boolean uploadProfileImage(String username, String imageData){
+        return false;
+    }
 }

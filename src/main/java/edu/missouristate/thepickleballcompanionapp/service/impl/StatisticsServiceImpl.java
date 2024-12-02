@@ -49,6 +49,7 @@ public class StatisticsServiceImpl implements StatisticsService {
     public List<UserStatisticsHistoricalDTO> getUserStatisticsHistoric(List<String> username, String stat) {
         // Make variables for the repository methods and timestamp for when the request was received
         String name = "null";
+//        System.out.println(username + " " + stat);
         List<UserStatisticsHistoricalDTO> userStatisticsHistoricalDTOList = new ArrayList<>();
         if(Arrays.asList("totalWins", "totalLosses", "totalGames", "winLossRatio",
                 "mostFreqLocation", "mostFreqTeammate", "strongestOpponent",
@@ -60,17 +61,18 @@ public class StatisticsServiceImpl implements StatisticsService {
             return null;
         }
         for(String uname : username){
-            List<AbstractMap.SimpleEntry<Timestamp, Number>> series = new ArrayList<>();
+            List<List<Number>> series = new ArrayList<>();
             User user = userRepository.getUserById(uname);
             List<UserStatisticsHistoric> userStatsHst = statisticsHistoricRepository.getHistoricStatistics(user);
             for(UserStatisticsHistoric historic : userStatsHst){
                 try{
                     Number val = (Number)historic.getClass().getDeclaredMethod(stat).invoke(historic);
                     Timestamp timestamp = historic.getMaxTimestamp();
-                    series.add(new AbstractMap.SimpleEntry<>(timestamp, val));
+                    series.add(Arrays.asList(timestamp.getTime(), val));
                 }
                 catch(Exception e){
                     e.printStackTrace();
+                    System.out.println(stat);
                 }
             }
             userStatisticsHistoricalDTOList.add(new UserStatisticsHistoricalDTO(name, series));

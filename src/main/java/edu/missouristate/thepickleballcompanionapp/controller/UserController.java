@@ -1,6 +1,7 @@
 package edu.missouristate.thepickleballcompanionapp.controller;
 
 import edu.missouristate.thepickleballcompanionapp.domain.dto.UserDTO;
+import edu.missouristate.thepickleballcompanionapp.domain.dto.ProfileImageDTO;
 import edu.missouristate.thepickleballcompanionapp.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -31,5 +32,11 @@ public class UserController {
     @ResponseBody
     public Boolean addUser(@RequestBody UserDTO userDTO) {
         return userService.addUser(userDTO);
+    }
+
+    @RequestMapping(value = "/uploadProfileImage", method = RequestMethod.POST)
+    @ResponseBody
+    public Boolean uploadProfileImage(@RequestBody ProfileImageDTO imageDTO) {
+        return userService.uploadProfileImage(imageDTO.getImageData(), imageDTO.getImageData());
     }
 }
