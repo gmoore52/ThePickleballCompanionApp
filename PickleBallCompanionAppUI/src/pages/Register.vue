@@ -46,6 +46,7 @@
             label="Username"
             v-model="username"
             :rules="usernameRules"
+            @input="clearUsernameError"
             dense
             :error-messages="usernameError"
           ></v-text-field>
@@ -92,12 +93,12 @@
 </template>
 
 <script setup>
-  import { ref } from 'vue'
-  import { useRouter } from 'vue-router' // Import useRouter
-  import { fetchData } from "@/util/fetchData";
-  import {showAlert} from "@/util/alert";
+import {ref} from 'vue'
+import {useRouter} from 'vue-router' // Import useRouter
+import {fetchData} from "@/util/fetchData";
+import {showAlert} from "@/util/alert";
 
-  // Data properties
+// Data properties
   const firstName = ref('')
   const lastName = ref('')
   const email = ref('')
@@ -160,9 +161,14 @@
   skillLevelError.value = skillLevel.value ? '' : 'Skill level is required';
 }
 
-  const validateUsername = () => {
+const validateUsername = async () => {
   usernameError.value = username.value ? '' : 'Username is required';
+  usernameError.value = await checkUserNameAlreadyExists(username.value) ? 'Username already exists' : '';
 }
+
+const checkUserNameAlreadyExists = async (username) => {
+  return await fetchData(`/users/check/username?username=${username}`);
+};
 
   const validatePassword = () => {
   passwordError.value = password.value ? '' : 'Password is required';
@@ -196,23 +202,18 @@
   const router = useRouter(); // Initialize the router
 
   // Register button handler
-  const register = async () => {
+const register = async () => {
+  // Validate all fields before checking the form
+  validateFirstName();
+  validateLastName();
+  validateEmail();
+  validateSkillLevel();
+  await validateUsername();
+  validatePassword();
+  validateConfirmPassword();
 
-    // formValid only true if all rules are followed
-    // otherwise button is disabled
-    formValid.value = form.value.validate();
-
-    // Validate all fields before checking the form
-    validateFirstName();
-    validateLastName();
-    validateEmail();
-    validateSkillLevel();
-    validateUsername();
-    validatePassword();
-    validateConfirmPassword();
-
-    // Check if any errors exist
-    if (
+  // Check if any errors exist
+  if (
     firstNameError.value ||
     lastNameError.value ||
     emailError.value ||
@@ -220,57 +221,70 @@
     usernameError.value ||
     passwordError.value ||
     confirmPasswordError.value
-    ) {
-      return;
-    }
+  ) {
+    console.log('Form contains errors');
+    return; // Stop the form submission if any errors exist
+  }
 
-    // Validate the form
-    if (form.value.validate()) {
+  // Set the form validity after validation
+  formValid.value = form.value.validate(); // Assuming form validation rules are set up
+
+  // If the form is valid, proceed with submission
+  if (formValid.value) {
     // Build the UserDTO object
-      const skillLevelMap = {
-        'Beginner': 1,
-        'Intermediate': 2,
-        'Advanced': 3,
-        'Pro': 4
-      };
+    const skillLevelMap = {
+      'Beginner': 1,
+      'Intermediate': 2,
+      'Advanced': 3,
+      'Pro': 4
+    };
 
-      const userDTO = {
-        userName: username.value,
-        userFullName: `${firstName.value} ${lastName.value}`, // Combine first and last names
-        emailAddress: email.value,
-        password: password.value,
-        profileImgLoc: null, // Assuming no profile image is provided
-        skillLevel: skillLevelMap[skillLevel.value] || null, // Convert skill level string to integer
-        accCreationDate: new Date() // Set the current date or any other value as needed
-      };
+    const userDTO = {
+      userName: username.value,
+      userFullName: `${firstName.value} ${lastName.value}`, // Combine first and last names
+      emailAddress: email.value,
+      password: password.value,
+      profileImgLoc: null, // Assuming no profile image is provided
+      skillLevel: skillLevelMap[skillLevel.value] || null, // Convert skill level string to integer
+      accCreationDate: new Date() // Set the current date or any other value as needed
+    };
 
-      try {
-        const response = await fetchData('/users/add', {
-          method: 'POST',
-          body: JSON.stringify(userDTO),
-          headers: {
+    try {
+      // Send the user data to the backend for registration
+      const response = await fetchData('/users/add', {
+        method: 'POST',
+        body: JSON.stringify(userDTO),
+        headers: {
           'Content-Type': 'application/json'
-          }
-        });
+        }
+      });
 
-        showAlert('success', 'Your account has been created', 5000);
-        resetForm()
+      // Show success alert and reset the form
+      showAlert('success', 'Your account has been created successfully!', 5000);
+      resetForm();
 
-        // Redirect to the login page
-        await router.push('/login');
-      } catch (error) {
+      // Redirect to the login page after account creation
+      await router.push('/login');
+    } catch (error) {
       console.error('Error adding user:', error);
-      }
-    } else {
-      console.log('Form is not valid');
+      showAlert('error', 'There was an error creating your account. Please try again.', 5000);
     }
+  } else {
+    console.log('Form is not valid');
+    showAlert('error', 'Please correct the form errors before submitting.', 5000);
+  }
 };
+
+const clearUsernameError = () => {
+  usernameError.value = '';
+};
+
 
 </script>
 
 <style scoped>
 .fill-height {
-  
+
 }
 .big-container{
   margin-top: 0px;
@@ -287,4 +301,8 @@
   font-size: 16px;
   font-weight: bold;
 }
+
+.v-container {
+  max-width: 1168px;
+  }
 </style>

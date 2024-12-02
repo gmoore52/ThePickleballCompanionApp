@@ -432,7 +432,7 @@ const getCourts = async () => {
                 <!-- invisible col for formatting -->
               </v-col>
               <v-col sm="6" md="5" class="left-pannel-col">
-                <v-text-field v-model="oppScore" label="Opp Score" type="number" class="num left-pannel" required :rules="oppScoreRules"></v-text-field>
+                <v-text-field v-model="oppScore" label="Opponent Score" type="number" class="num left-pannel" required :rules="oppScoreRules"></v-text-field>
               </v-col>
               <v-col cols="12" class="left-pannel-col left-pannel-col-header no-margins">
                 <h2>Extra Information</h2>
@@ -442,7 +442,7 @@ const getCourts = async () => {
                 <v-text-field v-model="gameDate" label="Date" type="date" class="text left-pannel" required :rules="dateRules" ref="gd"></v-text-field>
               </v-col>
               <v-col cols="12" class="left-pannel-col no-margins">
-                <v-autocomplete v-model="location" clearable label="Location"type="text" class="text left-pannel" required :items=locations :rules="locationRules"></v-autocomplete>
+                <v-autocomplete v-model="location" label="Game location" clearable no-data-text="Location not found" type="text" class="text left-pannel" required :items=locations :rules="locationRules"></v-autocomplete>
               </v-col>
               <v-col cols="12" class="left-pannel-col no-margins">
                 <v-textarea v-model="notes" label="(Optional) Notes"type="text" class="text left-pannel"></v-textarea>
@@ -463,7 +463,7 @@ const getCourts = async () => {
                   </v-text-field>
                 </div>
                 <div class="court">
-                  <v-autocomplete v-model="player3" :disabled=!isInDuosMode class="player-search" auto-select-first clearable required label="Player 3" :items="players3" :rules="player3Rules">
+                  <v-autocomplete v-model="player3" no-data-text="Player not found" :disabled=!isInDuosMode class="player-search" auto-select-first clearable required label="Player 3" :items="players3" :rules="player3Rules">
                   </v-autocomplete>
                 </div>
               </div>
@@ -474,19 +474,19 @@ const getCourts = async () => {
                 <h2 class="team-heading left-pannel-col-header">Opposing Team Players</h2>
                 <div class="court">
 
-                  <v-autocomplete v-model="player2" class="player-search" clearable required label="Player 2" :items="players2" :rules="player2Rules">
+                  <v-autocomplete v-model="player2" class="player-search" clearable required no-data-text="Player not found" label="Player 2" :items="players2" :rules="player2Rules">
 
                   </v-autocomplete>
                 </div>
                 <div class="court">
-                  <v-autocomplete v-model="player4" :disabled=!isInDuosMode class="player-search" clearable required label="Player 4" :items="players4" :rules="player4Rules">
+                  <v-autocomplete v-model="player4" no-data-text="Player not found" :disabled=!isInDuosMode class="player-search" clearable required label="Player 4" :items="players4" :rules="player4Rules">
 
                   </v-autocomplete>
                 </div>
               </div>
             </v-col>
             <v-col cols="12" class="btn-col">
-                <v-btn prepend-icon="mdi-archive-check"type="submit" variant="tonal" class="w-100 submit"> Submit Game</v-btn>
+                <v-btn prepend-icon="mdi-folder-account" type="submit" variant="tonal" class="w-100 submit"> Submit Game</v-btn>
             </v-col>
             <v-col cols="12" class="errors">
               </v-col>
@@ -609,5 +609,9 @@ const getCourts = async () => {
     font-weight: bold;
     padding-top: 0;
     font-size: 14px;
+  }
+
+  .v-container {
+  max-width: 1168px;
   }
 </style>

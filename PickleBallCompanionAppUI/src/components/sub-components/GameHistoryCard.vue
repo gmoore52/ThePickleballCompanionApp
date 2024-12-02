@@ -114,7 +114,14 @@ function returnCorrectScore(game, teamNum){
 }
 
 
-
+function formatUsername(username){
+  if (username == store.state.user.userName){
+    return username + ' (You)'
+  }
+  else{
+    return username
+  }
+}
 
 function formatNotes(notes){
   if (notes === null){
@@ -132,6 +139,7 @@ function formatCourt(courtNum){
 function visitProfile(userName){
   store.commit('SET_SELECTED_USERNAME', "Peter_Dinklage3");
   router.push(`/profile/:userId`); // /${user.value} 
+  window.scrollTo(0, 0);
 }
 
 function returnToOtherProfile(userName){
@@ -170,16 +178,16 @@ function returnToOtherProfile(userName){
                   <v-card-title class="card-header">Game Info</v-card-title>
                   <v-card-subtitle>Location: {{location}}</v-card-subtitle>
                   <v-card-subtitle>Date: {{formatDateTime(game.gameDate)}}</v-card-subtitle>
-                  <v-card-subtitle>Logged by: {{game.player1}}</v-card-subtitle>
+                  <v-card-subtitle>Logged by: {{formatUsername(game.player1)}}</v-card-subtitle>
                 </v-col> 
                 <v-col cols="12">
                   <v-card-title class="card-header">Players</v-card-title>
                   <v-card-subtitle> {{calcTeamWinLoss(game, 1)}} team with <strong>{{game.userScore}}</strong> point(s)</v-card-subtitle>
-                  <v-card-subtitle>- {{game.player1}}</v-card-subtitle>
-                  <v-card-subtitle class="mb-3"> <span v-if="game.player3">- {{game.player3}}</span></v-card-subtitle>
+                  <v-card-subtitle>- {{formatUsername(game.player1)}}</v-card-subtitle>
+                  <v-card-subtitle class="mb-3"> <span v-if="game.player3">- {{formatUsername(game.player3)}}</span></v-card-subtitle>
                   <v-card-subtitle> {{calcTeamWinLoss(game, 2)}} team with  <strong>{{game.oppScore}}</strong> point(s)</v-card-subtitle>
-                  <v-card-subtitle>- {{game.player2}}</v-card-subtitle>
-                  <v-card-subtitle v-if="game.player4">- {{game.player4}}</v-card-subtitle>
+                  <v-card-subtitle>- {{formatUsername(game.player2)}}</v-card-subtitle>
+                  <v-card-subtitle v-if="game.player4">- {{formatUsername(game.player4)}}</v-card-subtitle>
                 </v-col>
 
                 <v-col cols="12">
@@ -339,4 +347,8 @@ function returnToOtherProfile(userName){
 .no-padding {
   padding: 0 !important;
 }
+
+.v-container {
+  max-width: 1168px;
+  }
 </style>

@@ -1,7 +1,7 @@
 <template>
   <v-app>
     <v-container class="fill-height d-flex flex-column big-container">
-      <v-row  align="stretch" class="flex-grow-1">
+      <v-row class="flex-grow-1">
         <!-- Main Left Section (Welcome and Events) -->
         <v-col cols="12" md="8" class="d-flex flex-column">
           <!-- Welcome Section -->
@@ -26,6 +26,9 @@
                     {{ formatDateTime(new Date(event.eventStart).toLocaleString()) }}
                   </v-card-subtitle>
                 </v-card>
+              </v-col>
+              <v-col v-if="sortedEvents.length == 0" class="no-data">
+                No upcoming events
               </v-col>
             </v-row>
           </v-card>
@@ -52,7 +55,7 @@
                 @close="modalStates[index] = false">
                 </game-history-card>
               </div>
-
+              <v-col class="no-data" v-if="JSONGames.length == 0">No recent games</v-col>
             </v-card-text>
           </v-card>
         </v-col>
@@ -61,14 +64,14 @@
   </v-app>
 </template>
 <script setup>
-import { ref, onMounted, computed } from 'vue';
+import { ref, onMounted, computed, watch } from 'vue';
 import { fetchData } from "@/util/fetchData";
 import { formatDateTime } from '@/util/formatDate.js'
 import { useStore } from 'vuex';
 import { useRouter } from 'vue-router';
 
 const JSONEvents = ref([]);
-const JSONGames = ref()
+const JSONGames = ref([])
 const JSONCourts = ref({});
 const locationDict = ref({}); // used to index between loc_id and location_name
 const limitedGames = computed(() => {
@@ -135,6 +138,24 @@ onMounted(async () => {
   await parseData();
 });
 
+
+watch(
+  () => store.state.selectedUsername,
+  async (newUsername, oldUsername) => {
+    if (newUsername !== oldUsername) {
+      // Use an async function to handle the series of async tasks
+      await (async () => {
+        await getEvents();
+        await getGames();
+        await sortGames();
+        await getCourts();
+        await parseData();
+      })();
+    }
+  }
+);
+
+
 // Computed property to filter and sort events by EVENT_START date
 const sortedEvents = computed(() => {
   const now = new Date();
@@ -168,6 +189,13 @@ function formatCourt(courtNum){
   background-color: none;
 }
 
+.no-data{
+  content: center;
+  text-align: center;
+  color: white;
+  padding-top: 45px;
+}
+
 .v-card {
   background-color: #42424254;
   border: 1px solid white;
@@ -190,4 +218,9 @@ function formatCourt(courtNum){
 .v-row {
   margin-bottom: 20px;
 }
+
+.v-container {
+  max-width: 1168px;
+}
+
 </style>

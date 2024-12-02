@@ -40,4 +40,8 @@ function close() {
 
 <style scoped>
 /* Custom styling for the username */
+
+.v-container {
+  max-width: 1168px;
+  }
 </style>

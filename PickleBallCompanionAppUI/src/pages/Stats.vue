@@ -11,7 +11,7 @@
                 <v-card-title class="white--text text-h4">Stats</v-card-title>
 
                 <v-card-subtitle class="white--text text-h6">{{ store.state.selectedUsername }}</v-card-subtitle>
-                <v-btn v-if="store.state.user?.userName !== store.state.selectedUsername" prepend-icon="mdi-account-arrow-left-outline" class="mt-2 mx-2" color="blue" @click="returnToOtherProfile(store.state.selectedUsername)">return</v-btn>
+                <v-btn v-if="store.state.user?.userName !== store.state.selectedUsername" prepend-icon="mdi-account-arrow-left" class="mt-2 mx-2" color="blue" @click="returnToOtherProfile(store.state.selectedUsername)">return</v-btn>
 
 
                 <v-card-title class="white--text">Total Games:</v-card-title>
@@ -28,23 +28,31 @@
 
                 <v-card-title class="white--text">Top Teammate:</v-card-title>
                 <v-card-text class="d-flex align-center">
-                  <v-card-text class = "white--text">{{userStatsAcc.mostFrequentTeammateUsername}}</v-card-text>
-                          <v-img
+                  <!-- <v-card-text class = "white--text">{{userStatsAcc.mostFrequentTeammateUsername}}</v-card-text> -->
+                  <go-to-player-profile-button
+                  :playerUsername="userStatsAcc.mostFrequentTeammateUsername"
+                  ></go-to-player-profile-button>
+
+                          <!-- <v-img
                             src="https://static.vecteezy.com/system/resources/previews/046/300/541/non_2x/avatar-user-profile-person-icon-gender-neutral-silhouette-profile-picture-suitable-for-social-media-profiles-icons-screensavers-free-png.png"
                             max-width="50"
                             max-height="50"
                             contain
-                          ></v-img>
+                          ></v-img> -->
                 </v-card-text>
                 <v-card-title class="white--text">Strongest Opponent</v-card-title>
                 <v-card-text class="d-flex align-center">
-                  <v-card-text class = "white--text">{{userStatsAcc.strongestOpponentUsername}}</v-card-text>
-                          <v-img
+
+                  <go-to-player-profile-button
+                  :playerUsername="userStatsAcc.strongestOpponentUsername"
+                  ></go-to-player-profile-button>
+                  <!-- <v-card-text class = "white--text">{{userStatsAcc.strongestOpponentUsername}}</v-card-text> -->
+                          <!-- <v-img
                             src="https://static.vecteezy.com/system/resources/previews/046/300/541/non_2x/avatar-user-profile-person-icon-gender-neutral-silhouette-profile-picture-suitable-for-social-media-profiles-icons-screensavers-free-png.png"
                             max-width="50"
                             max-height="50"
                             contain
-                          ></v-img>
+                          ></v-img> -->
                 </v-card-text>
 
               </v-col>
@@ -95,6 +103,7 @@ import {ref, onMounted, watch, computed} from 'vue';
 import { useRouter } from 'vue-router'; // Import useRouter from vue-router
 import { useStore } from 'vuex';
 import {fetchData} from "@/util/fetchData";
+import GoToPlayerProfileButton from '@/components/sub-components/GoToPlayerProfileButton.vue'; 
 
 const store = useStore();
 const router = useRouter();
@@ -325,4 +334,8 @@ function returnToOtherProfile(userName){
 .v-row {
   margin-bottom: 20px;
 }
+
+.v-container {
+  max-width: 1168px;
+  }
 </style>

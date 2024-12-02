@@ -1,22 +1,32 @@
 <template>
   <!-- App Bar -->
-  <v-app-bar app color="green darken-4" dark>
-    <v-toolbar-title class="text-center">
-      <span class="text-h4 font-italic">Pickleball Companion</span>
+  <v-app-bar class="sticky" app color="green darken-4" dark>
+    <v-toolbar-title>
+      <span class="text-h4">Pickleball Companion</span>
     </v-toolbar-title>
-    
-    <v-spacer></v-spacer>
 
+    <!-- Tabs within the app bar -->
+    <v-tabs class="d-flex justify-center flex-grow-1" v-model="tab" background-color="grey lighten-2">
+      <v-tab
+        v-for="item in filteredTabs"
+        :key="item.title"
+        :to="item.route"
+        @click="returnToYourView(item.title)"
+        ripple
+      >
+        {{ item.title }}
+      </v-tab>
+    </v-tabs>
+
+    <!-- User-specific buttons -->
     <v-toolbar-items>
-   
-          <template v-if="isLoggedIn">
-            <v-btn color="white" @click="goToProfile">{{ user }}</v-btn>
-          </template>
-          <template v-else>
-            <v-btn color="white" @click="goToLogin">Login</v-btn>
-            <v-btn color="white" @click="goToRegister">Register</v-btn>
-          </template>
- 
+      <template v-if="isLoggedIn">
+        <v-btn color="white" @click="goToProfile">{{ user }}</v-btn>
+      </template>
+      <template v-else>
+        <v-btn color="white" @click="goToLogin">Login</v-btn>
+        <v-btn color="white" @click="goToRegister">Register</v-btn>
+      </template>
     </v-toolbar-items>
   </v-app-bar>
 
@@ -34,29 +44,15 @@
   >
     {{ alert.message }}
   </v-alert>
-
-  <!-- Tabs Section -->
-  <v-tabs v-model="tab" background-color="grey lighten-2" centered>
-    <v-tab
-      v-for="item in filteredTabs"
-      :key="item.title"
-      :to="item.route"
-      @click="returnToYourView(item.title)"
-      ripple
-    >
-      {{ item.title }}
-    </v-tab>
-  </v-tabs>
-
 </template>
 
 <script setup>
 import { ref, computed } from 'vue';
 import { useStore } from 'vuex';
 import { useRouter } from 'vue-router';
-import { useAlert } from '@/util/alert.js'; // Import the alert utility
+import { useAlert } from '@/util/alert.js';
 
-// Router instance
+
 const router = useRouter();
 const store = useStore();
 
@@ -66,19 +62,16 @@ const user = computed(() => {
   if (isLoggedIn.value) {
     return store.state.user.userName;
   }
-  return ''; // Or you can return an empty string or some default value if not logged in
+  return '';
 });
+
 // Filter tabs based on user login status
 const filteredTabs = computed(() => {
-  // If the user is logged in, show all tabs including "Profile"
   if (isLoggedIn.value) {
     return tabs.value; // Show all tabs
-  }
-  else{
-    // occurs when you are not logged in at all
+  } else {
     return tabs.value.filter(tab => tab.title !== 'Log game' && tab.title !== 'Stats' && tab.title !== 'Profile' && tab.title !== 'Game History');
   }
-
 });
 
 // Tabs data for navigation
@@ -88,12 +81,9 @@ const tabs = ref([
   { title: 'Courts', route: '/courts' },
   { title: 'Events', route: '/events' },
   { title: 'Log game', route: '/log-game' },
-  { title: 'Stats', route: `/stats/${store.state.selectedUsername}`},
-  { title: 'Game History', route: `/game-history/${store.state.selectedUsername}`}, ///${user.value}
-  { title: 'Profile', route:  `/profile/${store.state.selectedUsername}`},//isLoggedIn.value ? `/profile/${user.value}` :
+  { title: 'Stats', route: `/stats/${store.state.selectedUsername}` },
+  { title: 'Game History', route: `/game-history/${store.state.selectedUsername}` },
 ]);
-
-////profile/${store.state.selectedUsername}
 
 // Use alert state and methods
 const { alert, showAlert, closeAlert } = useAlert();
@@ -109,10 +99,10 @@ const goToRegister = () => {
 
 const goToProfile = () => {
   store.commit('UNSET_SELECTED_USERNAME');
-  router.push(`/profile/:userId`); // /${user.value}
+  router.push(`/profile/:userId`);
 }
 
-function returnToYourView(tabName){
+function returnToYourView(tabName) {
   store.commit('UNSET_SELECTED_USERNAME');
 }
 
@@ -121,9 +111,10 @@ const triggerErrorAlert = () => {
   showAlert('error', 'Error: Incorrect email/username or password.', 5000); // Show alert for 5 seconds
 };
 </script>
+
 <style scoped>
 .alert {
-  position: absolute;
+  position: fixed;
   z-index: 9999;
   margin-top: 35px;
   right: 50%;

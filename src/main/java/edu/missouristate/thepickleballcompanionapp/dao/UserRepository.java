@@ -14,4 +14,5 @@ public interface UserRepository extends CrudRepository<User, Integer>, UserRepos
     public List<User> findAll();
 
     public User findByUserName(String username);
+    Boolean existsByUserName(String username);
 }

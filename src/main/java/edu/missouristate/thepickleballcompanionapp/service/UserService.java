@@ -14,4 +14,5 @@ public interface UserService {
     public UserDTO getUserByUserName(String username);
     public Boolean addUser(UserDTO userDTO);
     public Boolean uploadProfileImage(String username, String imageData);
+    public Boolean checkUserNameAlreadyExists(String username);
 }

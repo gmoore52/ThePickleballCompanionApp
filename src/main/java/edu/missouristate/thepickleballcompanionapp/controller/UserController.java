@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@CrossOrigin(origins = "http://localhost:3000")  // Allows only localhost:3000
+@CrossOrigin(origins = "http://localhost:3000") // Allows only localhost:3000
 @RequestMapping("/users")
 public class UserController {
 
@@ -20,6 +20,12 @@ public class UserController {
     @ResponseBody
     public UserDTO findByUsername(@RequestParam("username") String username) {
         return userService.getUserByUserName(username);
+    }
+
+    @RequestMapping(value = "/check/username", method = RequestMethod.GET)
+    @ResponseBody
+    public Boolean checkUserNameAlreadyExists(@RequestParam("username") String username) {
+        return userService.checkUserNameAlreadyExists(username);
     }
 
     @RequestMapping(value = "/all/users", method = RequestMethod.GET)

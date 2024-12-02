@@ -8,7 +8,7 @@ import GameHistoryModal from '@/components/sub-components/GameHistoryModal.vue';
 import GameHistoryCard from '@/components/sub-components/GameHistoryCard.vue'; 
 
 
-const JSONGames = ref()
+const JSONGames = ref([])
 const JSONCourts = ref({});
 const locationDict = ref({}); // used to index between loc_id and location_name
 const modalStates = ref([]); // This will hold refs initialized to false
@@ -61,11 +61,13 @@ function formatCourt(courtNum){
 function visitProfile(userName){
   store.commit('SET_SELECTED_USERNAME', "Peter_Dinklage3");
   router.push(`/profile/:userId`); // /${user.value} 
+  window.scrollTo(0, 0);
 }
 
 function returnToOtherProfile(userName){
   // store.commit('SET_SELECTED_USERNAME', "Peter_Dinklage3");
   router.push(`/profile/:userId`); // /${user.value} 
+  window.scrollTo(0, 0);
 }
 
 const parseData = async () =>{
@@ -109,7 +111,7 @@ watch(
       <v-col cols="7">
 
         <h2>Recent Game History for {{ store.state.selectedUsername }}</h2>
-        <v-btn v-if="loggedInUserName !== store.state.selectedUsername" prepend-icon="mdi-account-arrow-right-outline" class="mt-5  mx-2" color="blue" @click="returnToOtherProfile(store.state.selectedUsername)">Return</v-btn>
+        <v-btn v-if="loggedInUserName !== store.state.selectedUsername" prepend-icon="mdi-account-arrow-right" class="mt-5  mx-2" color="blue" @click="returnToOtherProfile(store.state.selectedUsername)">Return</v-btn>
 
         <!-- <v-btn color="orange" @click="temp1()">olivia_brown</v-btn>
         <v-btn color="orange" @click="temp2()">Peter_Dinklage3</v-btn> -->
@@ -121,7 +123,7 @@ watch(
           <v-switch v-model="expandedView" class="gameSwitch" label="Expand" color="primary" style="display:inline-block"></v-switch>
         </div>
       </v-col>
-      <v-col class="no-games" cols="12" v-if="checkJSONLength()"> No recent for user {{ store.state.selectedUsername }} </v-col>
+      <v-col class="no-games" cols="12" v-if="JSONGames.length == 0"> No recent games for {{ store.state.selectedUsername }} </v-col>
       <v-col class=""
               v-for="(game, index) in JSONGames"
               :key="game.id" sm="6" md="4" xs="12">
@@ -267,4 +269,8 @@ watch(
 .no-padding {
   padding: 0 !important;
 }
+
+.v-container {
+    max-width: 1168px;
+  }
 </style>

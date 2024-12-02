@@ -42,6 +42,18 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public Boolean checkUserNameAlreadyExists(String username) {
+        try {
+            // Check if the username exists in the database
+            return userRepository.existsByUserName(username); // Returns true if username exists
+        } catch (Exception e) {
+            // Log the error if something goes wrong (e.g., database issues)
+            e.printStackTrace();
+            return true; // Return true if there was an error, assuming the username might exist
+        }
+    }
+
+    @Override
     public UserDTO getUserByUserName(String username) {
         User user = userRepository.findByUserName(username);
         UserDTO userDTO = new UserDTO(
