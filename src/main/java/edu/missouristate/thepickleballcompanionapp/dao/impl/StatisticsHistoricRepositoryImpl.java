@@ -56,7 +56,7 @@ public class StatisticsHistoricRepositoryImpl extends QuerydslRepositorySupport 
                     }
                     }).count();
             long gamesLost = totalGames - gamesWon;
-            float winLossRatio = ((float)gamesWon)/((float)gamesLost);
+            float winLossRatio = gamesLost != 0 ? ((float)gamesWon)/((float)gamesLost) : 0;
             Map<String, Integer> playersPlayedWith = new HashMap<>();
             Map<String, Integer> opponentsPlayedAgainst = new HashMap<>();
             Map<Integer, Integer> locationsPlayedAt = new HashMap<>();
@@ -69,23 +69,32 @@ public class StatisticsHistoricRepositoryImpl extends QuerydslRepositorySupport 
                 // Run a check for each case where a user is either player 1, 2, 3, or 4
                 // Then add the players played with and the players lost to to their respective maps
                 if(g.getPlayer1() == selectedUser){
-                    playersPlayedWith.put(g.getPlayer3().getUserName(),
-                            playersPlayedWith.getOrDefault(g.getPlayer3().getUserName(), 0) + 1);
+                    if(g.getPlayer3() != null) {
+                        playersPlayedWith.put(g.getPlayer3().getUserName(),
+                                playersPlayedWith.getOrDefault(g.getPlayer3().getUserName(), 0) + 1);
+                    }
                     if(g.getTeam1Score() < g.getTeam2Score()){
                         opponentsPlayedAgainst.put(g.getPlayer2().getUserName(),
                                 opponentsPlayedAgainst.getOrDefault(g.getPlayer2().getUserName(), 0) + 1);
-                        opponentsPlayedAgainst.put(g.getPlayer4().getUserName(),
-                                opponentsPlayedAgainst.getOrDefault(g.getPlayer4().getUserName(), 0) + 1);
+                        if(g.getPlayer4() != null){
+                            opponentsPlayedAgainst.put(g.getPlayer4().getUserName(),
+                                    opponentsPlayedAgainst.getOrDefault(g.getPlayer4().getUserName(), 0) + 1);
+                        }
                     }
                 }
                 else if(g.getPlayer2() == selectedUser){
-                    playersPlayedWith.put(g.getPlayer4().getUserName(),
-                            playersPlayedWith.getOrDefault(g.getPlayer4().getUserName(), 0) + 1);
+                    if(g.getPlayer4() != null){
+                        playersPlayedWith.put(g.getPlayer4().getUserName(),
+                                playersPlayedWith.getOrDefault(g.getPlayer4().getUserName(), 0) + 1);
+
+                    }
                     if(g.getTeam1Score() > g.getTeam2Score()){
                         opponentsPlayedAgainst.put(g.getPlayer1().getUserName(),
                                 opponentsPlayedAgainst.getOrDefault(g.getPlayer1().getUserName(), 0) + 1);
-                        opponentsPlayedAgainst.put(g.getPlayer3().getUserName(),
-                                opponentsPlayedAgainst.getOrDefault(g.getPlayer3().getUserName(), 0) + 1);
+                        if(g.getPlayer3() != null) {
+                            opponentsPlayedAgainst.put(g.getPlayer3().getUserName(),
+                                    opponentsPlayedAgainst.getOrDefault(g.getPlayer3().getUserName(), 0) + 1);
+                        }
                     }
                 }
                 else if(g.getPlayer3() == selectedUser){
@@ -94,8 +103,10 @@ public class StatisticsHistoricRepositoryImpl extends QuerydslRepositorySupport 
                     if(g.getTeam1Score() < g.getTeam2Score()){
                         opponentsPlayedAgainst.put(g.getPlayer2().getUserName(),
                                 opponentsPlayedAgainst.getOrDefault(g.getPlayer2().getUserName(), 0) + 1);
-                        opponentsPlayedAgainst.put(g.getPlayer4().getUserName(),
-                                opponentsPlayedAgainst.getOrDefault(g.getPlayer4().getUserName(), 0) + 1);
+                        if(g.getPlayer4() != null) {
+                            opponentsPlayedAgainst.put(g.getPlayer4().getUserName(),
+                                    opponentsPlayedAgainst.getOrDefault(g.getPlayer4().getUserName(), 0) + 1);
+                        }
                     }
                 }
                 else{
@@ -104,8 +115,10 @@ public class StatisticsHistoricRepositoryImpl extends QuerydslRepositorySupport 
                     if(g.getTeam1Score() > g.getTeam2Score()){
                         opponentsPlayedAgainst.put(g.getPlayer1().getUserName(),
                                 opponentsPlayedAgainst.getOrDefault(g.getPlayer1().getUserName(), 0) + 1);
-                        opponentsPlayedAgainst.put(g.getPlayer3().getUserName(),
-                                opponentsPlayedAgainst.getOrDefault(g.getPlayer3().getUserName(), 0) + 1);
+                        if(g.getPlayer3() != null) {
+                            opponentsPlayedAgainst.put(g.getPlayer3().getUserName(),
+                                    opponentsPlayedAgainst.getOrDefault(g.getPlayer3().getUserName(), 0) + 1);
+                        }
                     }
                 }
             }
@@ -120,10 +133,10 @@ public class StatisticsHistoricRepositoryImpl extends QuerydslRepositorySupport 
                     .stream()
                     .max(Comparator.comparingInt(Map.Entry::getValue)).orElse(null);
             // Assign proper variables for the maximum entries and check for null cases
-            String playerMostPlayedWith = (mostPlayedWithTeammate != null) ? mostPlayedWithTeammate.getKey() : null;
-            String opponentMostLostTo = (mostLostToOpponent != null) ? mostLostToOpponent.getKey() : null;
+            String playerMostPlayedWith = (mostPlayedWithTeammate != null) ? mostPlayedWithTeammate.getKey() : "";
+            String opponentMostLostTo = (mostLostToOpponent != null) ? mostLostToOpponent.getKey() : "";
             Integer lossesToStrongestOpponent = (mostLostToOpponent != null) ? mostLostToOpponent.getValue() : Integer.valueOf(0);
-            Integer mostFrequentLocationID = (mostFrequentLocationPair != null) ? mostFrequentLocationPair.getKey() : null;
+            Integer mostFrequentLocationID = (mostFrequentLocationPair != null) ? mostFrequentLocationPair.getKey() : -1;
             Location mostFrequentLocation = (mostFrequentLocationID != null) ? from(location)
                     .select(location)
                     .where(location.id.eq(Long.valueOf(mostFrequentLocationID)))
