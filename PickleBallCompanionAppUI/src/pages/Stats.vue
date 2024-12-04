@@ -299,7 +299,7 @@ function generateChartOptions(stat){
 async function fetchUserStatsHst(username, stat) {
   try {
     isChartDataLoading.value = true;
-    const json = await fetchData(`/statistics/getUserStatsHst?username=${username},user4&stat=${stat}`);
+    const json = await fetchData(`/statistics/getUserStatsHst?username=${username}&stat=${stat}`);
     userStatsHst.value[stat]["series"] = json;
     generateChartOptions(stat);
 
