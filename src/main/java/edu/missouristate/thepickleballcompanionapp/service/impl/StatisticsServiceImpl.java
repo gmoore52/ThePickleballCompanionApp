@@ -18,6 +18,7 @@ import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class StatisticsServiceImpl implements StatisticsService {
@@ -95,5 +96,11 @@ public class StatisticsServiceImpl implements StatisticsService {
         }
         complete = true;
         return complete;
+    }
+
+    @Override
+    public boolean stageAllStatisticsHistoric() {
+        List<String> usernames = userRepository.findAll().stream().map(u -> u.getUserName()).collect(Collectors.toList());
+        return stageUserStatisticsHistoric(usernames);
     }
 }

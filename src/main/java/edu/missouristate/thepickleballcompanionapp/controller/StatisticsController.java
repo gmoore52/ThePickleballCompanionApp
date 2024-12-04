@@ -27,6 +27,11 @@ public class StatisticsController {
          return statisticsService.stageUserStatisticsHistoric(username);
     }
 
+    @GetMapping("/stageAllUserStatsHst")
+    public boolean stageAllUserStatisticsHistoric(){
+        return statisticsService.stageAllStatisticsHistoric();
+    }
+
     @GetMapping("/getUserStats")
     public UserStatisticsDTO getUserStatistics(@RequestParam String username){
         return statisticsService.getUserStatistics(username);
