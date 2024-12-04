@@ -55,6 +55,10 @@ public class StatisticsServiceImpl implements StatisticsService {
                 "mostFreqLocation", "mostFreqTeammate", "strongestOpponent",
                 "mostLossesToStrongestOpponent").contains(stat)){
             name = stat;
+            name = (stat.substring(0, 1).toUpperCase() + stat.substring(1)).replaceAll("([A-Z][a-z]+)", " $1") // Words beginning with UC
+                    .replaceAll("([A-Z][A-Z]+)", " $1") // "Words" of only UC
+                    .replaceAll("([^A-Za-z ]+)", " $1") // "Words" of non-letters
+                    .trim();
             stat = "get" + stat.substring(0, 1).toUpperCase() + stat.substring(1);
         }
         else{
@@ -72,10 +76,9 @@ public class StatisticsServiceImpl implements StatisticsService {
                 }
                 catch(Exception e){
                     e.printStackTrace();
-                    System.out.println(stat);
                 }
             }
-            userStatisticsHistoricalDTOList.add(new UserStatisticsHistoricalDTO(name, series));
+            userStatisticsHistoricalDTOList.add(new UserStatisticsHistoricalDTO(name + " - " + uname, series));
         }
         return userStatisticsHistoricalDTOList;
     }
@@ -86,7 +89,7 @@ public class StatisticsServiceImpl implements StatisticsService {
         // Make variables for the repository methods and timestamp for when the request was received
         for(String name : username){
             User user = userRepository.getUserById(name);
-            List<UserStatisticsHistoric> userStatsHst = statisticsHistoricRepository.getHistoricStatistics(user);
+            List<UserStatisticsHistoric> userStatsHst = statisticsHistoricRepository.getHistoricStatisticsForStage(user);
             statisticsHistoricRepository.saveAll(userStatsHst);
 
         }

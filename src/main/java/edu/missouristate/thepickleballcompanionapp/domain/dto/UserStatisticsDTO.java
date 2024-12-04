@@ -7,7 +7,7 @@ public class UserStatisticsDTO {
 
     private int totalWins;
 
-    private int totalLoses;
+    private int totalLosses;
 
     private float winLossRatio;
 
@@ -22,7 +22,7 @@ public class UserStatisticsDTO {
     public UserStatisticsDTO(String username,
                              int totalGames,
                              int totalWins,
-                             int totalLoses,
+                             int totalLosses,
                              float winLossRatio,
                              int mostFrequentLocationID,
                              String mostFrequentTeammateUsername,
@@ -31,7 +31,7 @@ public class UserStatisticsDTO {
         this.username = username;
         this.totalGames = totalGames;
         this.totalWins = totalWins;
-        this.totalLoses = totalLoses;
+        this.totalLosses = totalLosses;
         this.winLossRatio = winLossRatio;
         this.mostFrequentLocationID = mostFrequentLocationID;
         this.mostFrequentTeammateUsername = mostFrequentTeammateUsername;
@@ -63,12 +63,12 @@ public class UserStatisticsDTO {
         this.totalWins = totalWins;
     }
 
-    public int getTotalLoses() {
-        return totalLoses;
+    public int getTotalLosses() {
+        return totalLosses;
     }
 
-    public void setTotalLoses(int totalLoses) {
-        this.totalLoses = totalLoses;
+    public void setTotalLosses(int totalLosses) {
+        this.totalLosses = totalLosses;
     }
 
     public float getWinLossRatio() {
@@ -117,7 +117,7 @@ public class UserStatisticsDTO {
                 "username='" + username + '\'' +
                 ", totalGames=" + totalGames +
                 ", totalWins=" + totalWins +
-                ", totalLoses=" + totalLoses +
+                ", totalLosses=" + totalLosses +
                 ", winLossRatio=" + winLossRatio +
                 ", mostFrequentLocationID=" + mostFrequentLocationID +
                 ", mostFrequentTeammateUsername='" + mostFrequentTeammateUsername + '\'' +

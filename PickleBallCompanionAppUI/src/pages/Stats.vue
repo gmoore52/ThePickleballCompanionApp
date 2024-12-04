@@ -58,7 +58,7 @@
               </v-col>
 
               <v-col cols="12" md="8">
-                <apexchart v-for="item in userStatsHst" height="500" :options="chartOptions" :series="item.series"></apexchart>
+                <apexchart v-for="(item, index) in userStatsHst" height="500" :options="JSON.stringify(chartOptionsStats) != '{}' ? chartOptionsStats[index] : chartOptions" :series="item.series"></apexchart>
 <!--                <apexchart height="500" :options="chartOptions" :series="userStatsHst.totalWins.series"></apexchart>-->
                 <v-card class="chart-options">
                   <div>
@@ -103,7 +103,7 @@ import {ref, onMounted, watch, computed} from 'vue';
 import { useRouter } from 'vue-router'; // Import useRouter from vue-router
 import { useStore } from 'vuex';
 import {fetchData} from "@/util/fetchData";
-import GoToPlayerProfileButton from '@/components/sub-components/GoToPlayerProfileButton.vue'; 
+import GoToPlayerProfileButton from '@/components/sub-components/GoToPlayerProfileButton.vue';
 
 const store = useStore();
 const router = useRouter();
@@ -125,9 +125,9 @@ const userStatsHst = ref({
   totalLosses: {
     series: []
   },
-  totalGames: {
-    series: []
-  },
+  // totalGames: {
+  //   series: []
+  // },
   winLossRatio: {
     series: []
   },
@@ -142,31 +142,19 @@ const userStatsHst = ref({
   }
 })
 
-// const chartData = ref([
-//   {
-//     name: "High - 2013",
-//     data: [28, 29, 33, 36, 32, 32, 33]
-//     // data: []
-//   },
-//   // {
-//   //   name: "Low - 2013",
-//   //   data: [12, 11, 14, 18, 17, 13, 13]
-//   //   // data: []
-//   // }
-// ]);
-// const chartData = ref([]);
-const chartOptions = ref({
+const chartOptions = {
   chart: {
     height: 350,
     type: 'line',
     dropShadow: {
       enabled: true,
-      color: '#000',
+      color: '#FFFFFF',
       top: 18,
       left: 7,
       blur: 10,
       opacity: 0.2
     },
+
     zoom: {
       enabled: false
     },
@@ -174,7 +162,8 @@ const chartOptions = ref({
       show: false
     }
   },
-  colors: ['#77B6EA', '#545454'],
+  forecolor: "#FFFFFF",
+  // colors: ['#77B6EA'],
   dataLabels: {
     enabled: true,
   },
@@ -182,40 +171,54 @@ const chartOptions = ref({
     curve: 'smooth'
   },
   title: {
-    text: 'Average High & Low Temperature',
-    align: 'left'
+    text: 'Loading...',
+    align: 'center',
+    style: {
+      color: "#FFFFFF"
+    }
   },
   grid: {
-    borderColor: '#e7e7e7',
+    borderColor: '#FFFFFF',
     row: {
-      colors: ['#f3f3f3', 'transparent'], // takes an array which will be repeated on columns
+      colors: ['#F0F0F0', 'transparent'], // takes an array which will be repeated on columns
       opacity: 0.5
     },
   },markers: {
     size: 1
   },
   xaxis: {
-    type: 'datetime'
-    // {
-    //
-    // categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'],
-    // title: {
-    //   text: 'Month'
-    // }
+    type: 'datetime',
+    tickPlacement: 'between',
+    labels: {
+      style: {
+        colors: "#FFFFFF"
+      }
+    }
   },
   yaxis: {
     title: {
-      text: 'Temperature'
+      text: 'Loading...',
+      style: {
+        color: "#FFFFFF"
+      }
     },
     min: -15,
-    max: 15
+    max: 15,
+    labels: {
+      style: {
+        colors: "#FFFFFF"
+      }
+    }
   },
   legend: {
     position: 'top',
     horizontalAlign: 'right',
     floating: true,
     offsetY: -25,
-    offsetX: -5
+    offsetX: -5,
+    labels: {
+      colors: "#FFFFFF"
+    }
   },
   noData: {
     text: isChartDataLoading.value ? "Loading...":"No Data present in the graph!",
@@ -224,11 +227,19 @@ const chartOptions = ref({
     offsetX: 0,
     offsetY: 0,
     style: {
-      color: "#000000",
+      color: "#FFFFFF",
       fontSize: '14px',
       fontFamily: "Helvetica"
     }
   }
+};
+
+const chartOptionsStats = ref({
+  totalWins: structuredClone(chartOptions),
+  totalLosses: structuredClone(chartOptions),
+  totalGames: structuredClone(chartOptions),
+  winLossRatio: structuredClone(chartOptions),
+  mostLossesToStrongestOpponent: structuredClone(chartOptions)
 });
 
 const selectedImage = ref(null); // Reactive variable to hold the selected image
@@ -248,14 +259,50 @@ function handleAction(action) {
   // console.log(`Action selected: ${action.title}`);
 }
 
+function generateChartOptions(stat){
+  let series = userStatsHst.value[stat]["series"]
+
+  chartOptionsStats.value[stat] = structuredClone(chartOptions);
+  chartOptionsStats.value[stat]["title"]["text"] = series[0].name.substring(0, series[0].name.indexOf(' -')) + " Over Time";
+  chartOptionsStats.value[stat]["yaxis"]["title"]["text"] = series[0].name.substring(0, series[0].name.indexOf(' -'))
+  let overallMin = Infinity;
+  let overallMax = -Infinity;
+
+// Loop through each object in the list
+  series.forEach(obj => {
+    // Loop through each inner list in the data array
+    obj.data.forEach(innerList => {
+      // The second element is at index 1
+      const secondElement = innerList[1];
+
+      // Update overall min and max
+      if (secondElement < overallMin) {
+        overallMin = secondElement;
+      }
+      if (secondElement > overallMax) {
+        overallMax = secondElement;
+      }
+    });
+  });
+
+  // Use the median as the padding value
+  // let padding = (overallMax-overallMin)/2;
+  let padding = 2;
+  chartOptionsStats.value[stat]["yaxis"]["min"] = overallMin - padding;
+  chartOptionsStats.value[stat]["yaxis"]["max"] = overallMax + padding;
+  // chartOptionsStats.value[stat]["yaxis"]["formatter"] = function(val) {
+  //   return val.toFixed(0);
+  // }
+
+}
+
 async function fetchUserStatsHst(username, stat) {
   try {
     isChartDataLoading.value = true;
-    const json = await fetchData(`/statistics/getUserStatsHst?username=${username}&stat=${stat}`);
-    // Object.assign(userStatsHst.value[stat], json); // Merging user data
+    const json = await fetchData(`/statistics/getUserStatsHst?username=${username},user4&stat=${stat}`);
     userStatsHst.value[stat]["series"] = json;
-    // console.log(JSON.stringify(userStatsHst.value))
-    // console.log(JSON.stringify(json))
+    generateChartOptions(stat);
+
     isChartDataLoading.value = false;
   } catch (err) {
     console.error('Error fetching user data:', err);
@@ -338,4 +385,8 @@ function returnToOtherProfile(userName){
 .v-container {
   max-width: 1168px;
   }
+
+.apexcharts-tooltip span {
+  color: #ffffff;
+}
 </style>
