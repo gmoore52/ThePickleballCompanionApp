@@ -39,13 +39,13 @@
       </v-form>
 
       <!-- Card Actions -->
-      <v-card-actions class="pt-0 float-left">
-        <v-spacer></v-spacer>
+      <div class="friend-btn">
+        <!-- <v-spacer></v-spacer> -->
         <go-to-player-profile-button
           @click="close"
           :playerUsername="selectedUser"
         ></go-to-player-profile-button>
-      </v-card-actions>
+      </div>
     </v-card>
 
     <!-- User Profile Popup -->
@@ -101,9 +101,17 @@ function close() {
 
 <style scoped>
 .add-friend-card {
-  width: 40vh;
-  max-width: 400px;
-  margin: auto;
+  width: 400px;
+  padding: 10px
+}
+
+.v-card{
+  border-radius: 8px;
+}
+
+.friend-btn{
+  padding-top: 0px;
+  padding: 12px;
 }
 
 </style>

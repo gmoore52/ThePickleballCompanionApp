@@ -7,7 +7,7 @@ INSERT INTO USERS (
     SKILL_LVL,
     ACC_CREATION_DATE
 ) VALUES
-      ('jane_smith', 'Jane Smith', 'jane.smith@example.com', '$2a$10$xx8vlZ3Mdx0sDKNiPfbM0.BDhB9Bdl8a7AzlyTHlh7OdPrncAoUnO', '/images/jane_smith.jpg', 5, '2024-11-11 03:46:07.739750'),
+      ('jane_smith', 'Jane Smith', 'jane.smith@example.com', '$2a$10$xx8vlZ3Mdx0sDKNiPfbM0.BDhB9Bdl8a7AzlyTHlh7OdPrncAoUnO', '/images/jane_smith.jpg', 2, '2024-11-11 03:46:07.739750'),
       ('ImElena1004', 'Elena Green', 'elena.green@example.com', '$2a$10$xx8vlZ3Mdx0sDKNiPfbM0.BDhB9Bdl8a7AzlyTHlh7OdPrncAoUnO', '/images/elena_green.jpg', 4, '2024-11-11 03:46:07.739750'),
       ('olivia_brown', 'Olivia Brown', 'olivia.brown@example.com', '$2a$10$xx8vlZ3Mdx0sDKNiPfbM0.BDhB9Bdl8a7AzlyTHlh7OdPrncAoUnO', '/images/olivia_brown.jpg', 3, '2024-11-11 03:46:07.739750'),
       ('benjamin_martinez', 'Benjamin Martinez', 'benjamin.martinez@example.com', '$2a$10$xx8vlZ3Mdx0sDKNiPfbM0.BDhB9Bdl8a7AzlyTHlh7OdPrncAoUnO', '/images/benjamin_martinez.jpg', 2, '2024-11-11 03:46:07.739750'),

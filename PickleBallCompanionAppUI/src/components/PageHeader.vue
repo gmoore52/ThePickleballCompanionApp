@@ -2,7 +2,7 @@
   <!-- App Bar -->
   <v-app-bar class="sticky" app color="green darken-4" dark>
     <v-toolbar-title>
-      <span class="text-h4">Pickleball Companion</span>
+      <div class="text-h4 pickle-title">Pickleball Companion</div>
     </v-toolbar-title>
 
     <!-- Tabs within the app bar -->
@@ -83,6 +83,7 @@ const tabs = ref([
   { title: 'Log game', route: '/log-game' },
   { title: 'Stats', route: `/stats/${store.state.selectedUsername}` },
   { title: 'Game History', route: `/game-history/${store.state.selectedUsername}` },
+  { title: 'Profile', route: `/profile/${store.state.selectedUsername}` },
 ]);
 
 // Use alert state and methods
@@ -119,5 +120,10 @@ const triggerErrorAlert = () => {
   margin-top: 35px;
   right: 50%;
   transform: translateX(50%);
+}
+
+.pickle-title{
+  min-width: 10000px;
+  font-family: 'Roboto';
 }
 </style>

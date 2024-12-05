@@ -109,19 +109,19 @@ watch(
   <v-app>
   <v-container class="big-container">
     <v-row>
-      <v-col cols="7">
+      <v-col cols="7" class="top-containers">
+        <v-btn v-if="loggedInUserName !== store.state.selectedUsername" prepend-icon="mdi-account-arrow-right" class="mr-6 mb-2" color="blue" @click="returnToOtherProfile(store.state.selectedUsername)">Return</v-btn>
 
-        <h2>Recent Game History for {{ store.state.selectedUsername }}</h2>
-        <v-btn v-if="loggedInUserName !== store.state.selectedUsername" prepend-icon="mdi-account-arrow-right" class="mt-5  mx-2" color="blue" @click="returnToOtherProfile(store.state.selectedUsername)">Return</v-btn>
+        <h2 class="d-inline-block ml-1">Game History for {{ store.state.selectedUsername }}</h2>
 
         <!-- <v-btn color="orange" @click="temp1()">olivia_brown</v-btn>
         <v-btn color="orange" @click="temp2()">Peter_Dinklage3</v-btn> -->
         <!-- <v-btn color="orange" @click="unset()">unset</v-btn> -->
         <!-- <v-btn color="orange" @click="visitProfile(store.state.selectedUsername)">Go to peters profile</v-btn> -->
       </v-col>
-      <v-col cols="5">
+      <v-col cols="5" class="top-containers">
         <div class="game-switch">
-          <v-switch v-model="expandedView" class="gameSwitch" label="Expand" color="primary" style="display:inline-block"></v-switch>
+          <v-switch v-model="expandedView" class="game-switch" label="Expand" color="primary" ></v-switch>
         </div>
       </v-col>
       <v-col class="no-games" cols="12" v-if="JSONGames.length == 0"> No recent games for {{ store.state.selectedUsername }} </v-col>
@@ -273,6 +273,10 @@ watch(
 
 .no-padding {
   padding: 0 !important;
+}
+
+.top-containers{
+  height: 60px;
 }
 
 /* .v-container {

@@ -5,13 +5,14 @@
         <!-- Main Left Section (Welcome and Events) -->
         <v-col cols="12" md="12" class="d-flex flex-column big-col">
           <!-- Profile Box -->
-          <v-card class="pa-4 flex-grow-1 big-container" outlined >
+          <v-card class="pa-4 flex-grow-1 big-container">
             <v-row>
               <v-col cols="12" md="3">
-                <v-card-title class="white--text text-h4">Stats</v-card-title>
+                <v-card class="stats-container">
+                  <v-btn v-if="store.state.user?.userName !== store.state.selectedUsername" prepend-icon="mdi-account-arrow-left" class="mt-3 ml-4" color="blue" @click="returnToOtherProfile(store.state.selectedUsername)">return</v-btn>
 
+                <v-card-title class="white--text text-h4 pb-0">Stats</v-card-title>
                 <v-card-subtitle class="white--text text-h6">{{ store.state.selectedUsername }}</v-card-subtitle>
-                <v-btn v-if="store.state.user?.userName !== store.state.selectedUsername" prepend-icon="mdi-account-arrow-left" class="mt-2 mx-2" color="blue" @click="returnToOtherProfile(store.state.selectedUsername)">return</v-btn>
 
 
                 <v-card-title class="white--text">Total Games:</v-card-title>
@@ -23,7 +24,7 @@
                 <v-card-title class="white--text">W/L Ratio:</v-card-title>
                 <v-card-text class="white--text">{{userStatsAcc.winLossRatio}}</v-card-text>
 
-                <v-card-title class="white--text">Most Frequented Court:</v-card-title>
+                <v-card-title class="white--text">Favorite Court:</v-card-title>
                 <v-card-text class="white--text">{{userStatsAcc.mostFrequentLocationID}}</v-card-text>
 
                 <v-card-title class="white--text">Top Teammate:</v-card-title>
@@ -54,42 +55,18 @@
                             contain
                           ></v-img> -->
                 </v-card-text>
-
+              </v-card>
               </v-col>
 
-              <v-col cols="12" md="8">
-                <apexchart v-for="(item, index) in userStatsHst" height="500" :options="JSON.stringify(chartOptionsStats) != '{}' ? chartOptionsStats[index] : chartOptions" :series="item.series"></apexchart>
+              <v-col cols="12" md="9" class="pl-1">
+                <v-card class='stats-container chart-container' v-for="(item, index) in userStatsHst">
+      
+                <apexchart height="500" :options="JSON.stringify(chartOptionsStats) != '{}' ? chartOptionsStats[index] : chartOptions" :series="item.series"></apexchart>
 <!--                <apexchart height="500" :options="chartOptions" :series="userStatsHst.totalWins.series"></apexchart>-->
-                <v-card class="chart-options">
-                  <div>
-                    <v-menu offset-y>
-                      <template v-slot:activator="{ props }">
-                        <v-btn v-bind="props" class="chart-options">Chart Options</v-btn>
-                      </template>
-                      <v-list>
-                        <v-list-item
-                          v-for="(action, index) in actions"
-                          :key="index"
-                          @click="handleAction(action)"
-                        >
-                          <v-list-item-title>{{ action.title }}</v-list-item-title>
-                        </v-list-item>
-                      </v-list>
-                    </v-menu>
-                  </div>
-
-
-                  <!-- Conditionally Render the Selected Image -->
-                  <div v-if="selectedImage">
-                    <v-img
-                      :src="selectedImage"
-                      aspect-ratio="16/9"
-                      cover
-                      class="mt-4"
-                    ></v-img>
-                  </div>
                 </v-card>
               </v-col>
+
+              
             </v-row>
           </v-card>
         </v-col>
@@ -144,7 +121,7 @@ const userStatsHst = ref({
 
 const chartOptions = {
   chart: {
-    height: 350,
+    height:400,
     type: 'line',
     dropShadow: {
       enabled: true,
@@ -172,9 +149,13 @@ const chartOptions = {
   },
   title: {
     text: 'Loading...',
+    offsetX: 0,
+    offsetY: -5,
     align: 'center',
     style: {
-      color: "#FFFFFF"
+      fontSize:  '25px',
+      color: "#FFFFFF",
+      fontFamily:  'Roboto',
     }
   },
   grid: {
@@ -191,7 +172,8 @@ const chartOptions = {
     tickPlacement: 'between',
     labels: {
       style: {
-        colors: "#FFFFFF"
+        colors: "#FFFFFF",
+        fontFamily:  'Roboto',
       }
     }
   },
@@ -199,14 +181,16 @@ const chartOptions = {
     title: {
       text: 'Loading...',
       style: {
-        color: "#FFFFFF"
+        color: "#FFFFFF",
+        fontFamily:  'Roboto',
       }
     },
     min: -15,
     max: 15,
     labels: {
       style: {
-        colors: "#FFFFFF"
+        colors: "#FFFFFF",
+        fontFamily:  'Roboto',
       }
     }
   },
@@ -216,9 +200,15 @@ const chartOptions = {
     floating: true,
     offsetY: -25,
     offsetX: -5,
+    fontWeight: 700,
     labels: {
       colors: "#FFFFFF"
-    }
+    },
+    markers: {
+          size: 5,
+          shape: undefined,
+          strokeWidth: 2,
+      },
   },
   noData: {
     text: isChartDataLoading.value ? "Loading...":"No Data present in the graph!",
@@ -229,7 +219,7 @@ const chartOptions = {
     style: {
       color: "#FFFFFF",
       fontSize: '14px',
-      fontFamily: "Helvetica"
+      fontFamily:  'Roboto',
     }
   }
 };
@@ -299,7 +289,7 @@ function generateChartOptions(stat){
 async function fetchUserStatsHst(username, stat) {
   try {
     isChartDataLoading.value = true;
-    const json = await fetchData(`/statistics/getUserStatsHst?username=${username},user4&stat=${stat}`);
+    const json = await fetchData(`/statistics/getUserStatsHst?username=${username}&stat=${stat}`); // add commas here like this ${username},${username}
     userStatsHst.value[stat]["series"] = json;
     generateChartOptions(stat);
 
@@ -323,7 +313,8 @@ onMounted(async () => {
   // put fetch function here (also see the watch function below)
   if (isLoggedIn.value) {
     // fetchData(``)
-    fetchUserStatsAcc();
+    await fetchUserStatsAcc();
+    console.log(userStatsAcc.value)
     for(let stat in userStatsHst.value){
       fetchUserStatsHst(store.state.selectedUsername, stat); // Fetch the user data for the selected profile
 
@@ -363,6 +354,15 @@ function returnToOtherProfile(userName){
 
 }
 
+.stats-container{
+  background-color: #42424254;
+  border-radius: 8px;
+}
+
+.chart-container{
+  margin-bottom: 16px;
+}
+
 .v-container {
   height: 100%;
 }
@@ -398,4 +398,10 @@ function returnToOtherProfile(userName){
 .apexcharts-tooltip span {
   color: #ffffff;
 }
+
+text.apexcharts-title-text{
+  font-size: 123px !important;
+}
+
+
 </style>

@@ -25,7 +25,19 @@ function formatFullName(user){
 }
 
 function handleRequestDeny(otherUsername){
-  // otherUsername 
+  try {
+      // console.log(`/friends/accept/${store.state.selectedUsername}/${otherUsername}`)
+      const response = fetchData(`/friends/reject/${store.state.selectedUsername}/${otherUsername}`,
+      {
+        method:'POST',
+      });
+    }
+     catch (error){
+      console.error('Error adding Event:', error);
+      showAlert('error', `Friend request not successfully rejected`)
+    }
+
+    emit('reload');
 }
 
 function handleRequestConfirm(otherUsername){
@@ -38,7 +50,7 @@ function handleRequestConfirm(otherUsername){
       showAlert('success', 'Friend request accepted')
     }
      catch (error){
-      console.error('Error adding Event:', response);
+      console.error('Error adding Event:', error);
       showAlert('error', `Friend request not successfully accepted`)
     }
 
