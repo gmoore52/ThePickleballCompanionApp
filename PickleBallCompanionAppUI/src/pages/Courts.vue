@@ -1,26 +1,27 @@
 <template>
   <v-container class="big-container">
     <!-- Search and Location Toolbar -->
-    <v-row class="">
-      <v-col cols="12" md="8">
-        <v-btn prepend-icon="mdi-map-marker-account" color="#212121" id="loc-btn" class="mr-2" @click="getUserLocation">
-          Click here to use your precise location
-        </v-btn>
-      </v-col>
-      <v-col cols="12" md="4" class="d-flex">
-        <v-text-field
-          v-model="searchQuery"
-          label="Search Courts"
-          single-line
-          color="#212121"
-          class="white--text no-padding"
-          hide-details
-        ></v-text-field>
-        <v-btn color="#212121" class="ml-1 search-btn">
-          <v-icon>mdi-magnify</v-icon>
-        </v-btn>
-      </v-col>
-    </v-row>
+    <div class="spacing">
+      <v-row>
+        <v-col cols="12" md="8">
+          <v-btn prepend-icon="mdi-map-marker-account" color="#212121" id="loc-btn" class="mr-2" @click="getUserLocation">
+            Click here to use your precise location
+          </v-btn>
+        </v-col>
+        <v-col cols="12" md="4" class="d-flex">
+          <v-text-field
+            v-model="searchQuery"
+            label="Search Courts"
+            single-line
+            color="#212121"
+            class="white--text no-padding"
+            hide-details
+          ></v-text-field>
+          <v-btn color="#212121" class="ml-1 search-btn">
+            <v-icon>mdi-magnify</v-icon>
+          </v-btn>
+        </v-col>
+      </v-row>
 
     <!-- List of Courts -->
     <v-row>
@@ -47,6 +48,7 @@
         </v-card>
       </v-col>
     </v-row>
+  </div>
   </v-container>
 </template>
 
@@ -148,6 +150,11 @@ const calculateDistances = () => {
 
 }
 
+/* .spacing{
+  margin-left: 16px;
+  margin-right: 16px; 
+} */
+
 #loc-btn{
   background-color:#4caf50 !important;
 }
@@ -194,7 +201,7 @@ const calculateDistances = () => {
   padding: 0 !important;
 }
 
-.v-container {
+/* .v-container {
     max-width: 1168px;
-}
+} */
 </style>

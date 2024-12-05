@@ -686,8 +686,8 @@ const filteredOngoingEvents = computed(() => {
     border :2px;
   }
 
-  .v-container {
+  /* .v-container {
     max-width: 1168px;
-  }
+  } */
 
 </style>

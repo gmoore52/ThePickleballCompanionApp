@@ -106,6 +106,7 @@ watch(
 </script>
 
 <template>
+  <v-app>
   <v-container class="big-container">
     <v-row>
       <v-col cols="7">
@@ -139,9 +140,14 @@ watch(
       </v-col>
     </v-row>
   </v-container>
+  </v-app>
 </template>
 
 <style scoped>
+.v-row{
+  margin: -12px;
+}
+
 .no-games{
   content: center;
   text-align: center;
@@ -236,10 +242,9 @@ watch(
 
 .big-container{
   background-color: #212121;
-
   border-radius: 8px;
-  margin-bottom:16px;
-  margin-top:16px;
+  margin-top: 16px;
+  margin-bottom: 16px;
 }
 
 
@@ -270,7 +275,7 @@ watch(
   padding: 0 !important;
 }
 
-.v-container {
+/* .v-container {
     max-width: 1168px;
-  }
+  } */
 </style>

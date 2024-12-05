@@ -219,8 +219,8 @@ function formatCourt(courtNum){
   margin-bottom: 20px;
 }
 
-.v-container {
+/* .v-container {
   max-width: 1168px;
-}
+} */
 
 </style>
