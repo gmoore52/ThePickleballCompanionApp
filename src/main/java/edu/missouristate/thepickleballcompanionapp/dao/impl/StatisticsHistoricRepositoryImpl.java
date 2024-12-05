@@ -26,9 +26,8 @@ public class StatisticsHistoricRepositoryImpl extends QuerydslRepositorySupport 
         super(QUserStatisticsHistoric.class);
     }
 
-    public List<UserStatisticsHistoric> getHistoricStatistics(User selectedUser){
+    public List<UserStatisticsHistoric> getHistoricStatisticsForStage(User selectedUser){
         List<UserStatisticsHistoric> historicStatistics = new ArrayList<>();
-
         // Loop through each possible timestamp for a game to happen for this user
         for(Timestamp t : from(game)
                 .select(game.gameDate).distinct()
@@ -39,14 +38,13 @@ public class StatisticsHistoricRepositoryImpl extends QuerydslRepositorySupport 
                 .fetch()){
             // Make a list of each game that is before or on the timestamp in this iteration
             List<Game> games = from(game)
-                                .select(game)
-                                .where(game.gameDate.loe(t)
-                                        .and(game.player1.eq(selectedUser)
-                                        .or(game.player2.eq(selectedUser)
-                                        .or(game.player3.eq(selectedUser)
-                                        .or(game.player4.eq(selectedUser))))))
-                                .fetch();
-
+                    .select(game)
+                    .where(game.gameDate.loe(t)
+                            .and(game.player1.eq(selectedUser)
+                                    .or(game.player2.eq(selectedUser)
+                                            .or(game.player3.eq(selectedUser)
+                                                    .or(game.player4.eq(selectedUser))))))
+                    .fetch();
             // Get dummy variables ready for generating the DTO
             String username = selectedUser.getUserName();
             int totalGames = games.size();
@@ -58,62 +56,69 @@ public class StatisticsHistoricRepositoryImpl extends QuerydslRepositorySupport 
                     }
                     }).count();
             long gamesLost = totalGames - gamesWon;
-            float winLossRatio = ((float)gamesWon)/((float)gamesLost);
+            float winLossRatio = gamesLost != 0 ? ((float)gamesWon)/((float)gamesLost) : 0;
             Map<String, Integer> playersPlayedWith = new HashMap<>();
             Map<String, Integer> opponentsPlayedAgainst = new HashMap<>();
             Map<Integer, Integer> locationsPlayedAt = new HashMap<>();
-
             // For loop that will accumulate statistics for each game before the current timestamp
             for(Game g : games){
                 // Add a new location or increment it
                 locationsPlayedAt.put(Math.toIntExact(g.getLocation().getId()),
-                                locationsPlayedAt.getOrDefault(
-                                        Math.toIntExact(g.getLocation().getId()), 0) + 1);
-
+                        locationsPlayedAt.getOrDefault(
+                                Math.toIntExact(g.getLocation().getId()), 0) + 1);
                 // Run a check for each case where a user is either player 1, 2, 3, or 4
                 // Then add the players played with and the players lost to to their respective maps
                 if(g.getPlayer1() == selectedUser){
-                    playersPlayedWith.put(g.getPlayer3().getUserName(),
-                            playersPlayedWith.getOrDefault(g.getPlayer3().getUserName(), 0) + 1);
-
+                    if(g.getPlayer3() != null) {
+                        playersPlayedWith.put(g.getPlayer3().getUserName(),
+                                playersPlayedWith.getOrDefault(g.getPlayer3().getUserName(), 0) + 1);
+                    }
                     if(g.getTeam1Score() < g.getTeam2Score()){
                         opponentsPlayedAgainst.put(g.getPlayer2().getUserName(),
                                 opponentsPlayedAgainst.getOrDefault(g.getPlayer2().getUserName(), 0) + 1);
-                        opponentsPlayedAgainst.put(g.getPlayer4().getUserName(),
-                                opponentsPlayedAgainst.getOrDefault(g.getPlayer4().getUserName(), 0) + 1);
+                        if(g.getPlayer4() != null){
+                            opponentsPlayedAgainst.put(g.getPlayer4().getUserName(),
+                                    opponentsPlayedAgainst.getOrDefault(g.getPlayer4().getUserName(), 0) + 1);
+                        }
                     }
                 }
                 else if(g.getPlayer2() == selectedUser){
-                    playersPlayedWith.put(g.getPlayer4().getUserName(),
-                            playersPlayedWith.getOrDefault(g.getPlayer4().getUserName(), 0) + 1);
+                    if(g.getPlayer4() != null){
+                        playersPlayedWith.put(g.getPlayer4().getUserName(),
+                                playersPlayedWith.getOrDefault(g.getPlayer4().getUserName(), 0) + 1);
 
+                    }
                     if(g.getTeam1Score() > g.getTeam2Score()){
                         opponentsPlayedAgainst.put(g.getPlayer1().getUserName(),
                                 opponentsPlayedAgainst.getOrDefault(g.getPlayer1().getUserName(), 0) + 1);
-                        opponentsPlayedAgainst.put(g.getPlayer3().getUserName(),
-                                opponentsPlayedAgainst.getOrDefault(g.getPlayer3().getUserName(), 0) + 1);
+                        if(g.getPlayer3() != null) {
+                            opponentsPlayedAgainst.put(g.getPlayer3().getUserName(),
+                                    opponentsPlayedAgainst.getOrDefault(g.getPlayer3().getUserName(), 0) + 1);
+                        }
                     }
                 }
                 else if(g.getPlayer3() == selectedUser){
                     playersPlayedWith.put(g.getPlayer1().getUserName(),
                             playersPlayedWith.getOrDefault(g.getPlayer1().getUserName(), 0) + 1);
-
                     if(g.getTeam1Score() < g.getTeam2Score()){
                         opponentsPlayedAgainst.put(g.getPlayer2().getUserName(),
                                 opponentsPlayedAgainst.getOrDefault(g.getPlayer2().getUserName(), 0) + 1);
-                        opponentsPlayedAgainst.put(g.getPlayer4().getUserName(),
-                                opponentsPlayedAgainst.getOrDefault(g.getPlayer4().getUserName(), 0) + 1);
+                        if(g.getPlayer4() != null) {
+                            opponentsPlayedAgainst.put(g.getPlayer4().getUserName(),
+                                    opponentsPlayedAgainst.getOrDefault(g.getPlayer4().getUserName(), 0) + 1);
+                        }
                     }
                 }
                 else{
                     playersPlayedWith.put(g.getPlayer2().getUserName(),
                             playersPlayedWith.getOrDefault(g.getPlayer2().getUserName(), 0) + 1);
-
                     if(g.getTeam1Score() > g.getTeam2Score()){
                         opponentsPlayedAgainst.put(g.getPlayer1().getUserName(),
                                 opponentsPlayedAgainst.getOrDefault(g.getPlayer1().getUserName(), 0) + 1);
-                        opponentsPlayedAgainst.put(g.getPlayer3().getUserName(),
-                                opponentsPlayedAgainst.getOrDefault(g.getPlayer3().getUserName(), 0) + 1);
+                        if(g.getPlayer3() != null) {
+                            opponentsPlayedAgainst.put(g.getPlayer3().getUserName(),
+                                    opponentsPlayedAgainst.getOrDefault(g.getPlayer3().getUserName(), 0) + 1);
+                        }
                     }
                 }
             }
@@ -121,53 +126,51 @@ public class StatisticsHistoricRepositoryImpl extends QuerydslRepositorySupport 
             Map.Entry<String, Integer> mostLostToOpponent = opponentsPlayedAgainst.entrySet()
                     .stream()
                     .max(Comparator.comparingInt(Map.Entry::getValue)).orElse(null);
-
             Map.Entry<String, Integer> mostPlayedWithTeammate = playersPlayedWith.entrySet()
                     .stream()
                     .max(Comparator.comparingInt(Map.Entry::getValue)).orElse(null);
-
             Map.Entry<Integer, Integer> mostFrequentLocationPair = locationsPlayedAt.entrySet()
                     .stream()
                     .max(Comparator.comparingInt(Map.Entry::getValue)).orElse(null);
-
             // Assign proper variables for the maximum entries and check for null cases
-            String playerMostPlayedWith = (mostPlayedWithTeammate != null) ? mostPlayedWithTeammate.getKey() : null;
-            String opponentMostLostTo = (mostLostToOpponent != null) ? mostLostToOpponent.getKey() : null;
+            String playerMostPlayedWith = (mostPlayedWithTeammate != null) ? mostPlayedWithTeammate.getKey() : "";
+            String opponentMostLostTo = (mostLostToOpponent != null) ? mostLostToOpponent.getKey() : "";
             Integer lossesToStrongestOpponent = (mostLostToOpponent != null) ? mostLostToOpponent.getValue() : Integer.valueOf(0);
-            Integer mostFrequentLocationID = (mostFrequentLocationPair != null) ? mostFrequentLocationPair.getKey() : null;
-
+            Integer mostFrequentLocationID = (mostFrequentLocationPair != null) ? mostFrequentLocationPair.getKey() : -1;
             Location mostFrequentLocation = (mostFrequentLocationID != null) ? from(location)
                     .select(location)
                     .where(location.id.eq(Long.valueOf(mostFrequentLocationID)))
                     .fetchOne()
                     : null;
-
             User mostFreqTeammate = from(user)
                     .select(user)
                     .where(user.userName.eq(playerMostPlayedWith))
                     .fetchOne();
-
             User strongestOpponent = from(user)
-                                    .select(user)
-                                    .where(user.userName.eq(opponentMostLostTo))
-                                    .fetchOne();
-
+                    .select(user)
+                    .where(user.userName.eq(opponentMostLostTo))
+                    .fetchOne();
             // Make a new object of the DTO to send back with the right information
             UserStatisticsHistoric userStatsHst = new UserStatisticsHistoric(username,
-                                                                            t,
-                                                                            Math.toIntExact(gamesWon),
-                                                                            Math.toIntExact(gamesLost),
-                                                                            totalGames,
-                                                                            winLossRatio,
-                                                                            mostFrequentLocation,
-                                                                            mostFreqTeammate,
-                                                                            strongestOpponent,
-                                                                            lossesToStrongestOpponent);
-
+                    t,
+                    Math.toIntExact(gamesWon),
+                    Math.toIntExact(gamesLost),
+                    totalGames,
+                    winLossRatio,
+                    mostFrequentLocation,
+                    mostFreqTeammate,
+                    strongestOpponent,
+                    lossesToStrongestOpponent);
             historicStatistics.add(userStatsHst);
         }
-
-
         return historicStatistics;
+    }
+
+    public List<UserStatisticsHistoric> getHistoricStatistics(User selectedUser){
+        return from(userStatisticsHistoric)
+                .select(userStatisticsHistoric)
+                .where(userStatisticsHistoric.username.eq(selectedUser.getUserName()))
+                .orderBy(userStatisticsHistoric.maxTimestamp.desc())
+                .fetch();
     }
 }

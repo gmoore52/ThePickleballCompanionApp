@@ -9,6 +9,6 @@ import java.sql.Timestamp;
 import java.util.List;
 
 public interface StatisticsHistoricRepositoryCustom {
-//    public UserStatistics getUserStatisticsByUsername(String username);
+    public List<UserStatisticsHistoric> getHistoricStatisticsForStage(User user);
     public List<UserStatisticsHistoric> getHistoricStatistics(User user);
 }
