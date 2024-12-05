@@ -1,29 +1,30 @@
 <template>
   <v-app>
-    <v-container class="fill-height d-flex flex-column big-container">
+    <v-container class="big-container d-flex pb-0">
       <v-row class="flex-grow-1">
         <!-- Main Left Section (Welcome and Events) -->
         <v-col cols="12" md="8" class="d-flex flex-column">
           <!-- Welcome Section -->
-          <v-card class="pa-1 mb-6 flex-grow-0">
-            <v-card-title class="white--text text-h5">Welcome to the site!</v-card-title>
+          <v-card class="pa-1 mb-6 flex-grow-0 py-3">
+            <v-card-title class="white--text text-h5 mb-0">Welcome to the site!</v-card-title>
             <v-card-text class="white--text">
               Here we host your game statistics, looking for groups request, events,
               playable courts, and more. The tabs above will take you to the various
-              parts of pickleball companion web app.
+              parts of pickleball companion webapp.
             </v-card-text>
           </v-card>
 
           <!-- Events Section -->
-          <v-card class="pa-4 flex-grow-1" outlined>
-            <v-card-title class="white--text text-h5">Upcoming Events</v-card-title>
+          <v-card class="pa-4 events-container">
+            <v-card-title class="white--text text-h5 mb-1 pt-0 d-inline-block">Upcoming Events</v-card-title>
+            <v-btn class="nav-event-btn" prependIcon="mdi-arrow-right-bold" color="info" @click="goToEvents()">visit events</v-btn>
             <v-row>
-              <v-col v-for="event in sortedEvents" :key="event.eventId" cols="12" md="6">
+              <v-col v-for="event in sortedEvents" :key="event.eventId" cols="12" md="6" class="py-1">
                 <v-card class="inner-card">
                   <v-card-title class="white--text">{{ event.eventTitle }}</v-card-title>
                   <v-card-text class="white--text">{{ event.eventDesc }}</v-card-text>
                   <v-card-subtitle class="white--text">
-                    {{ formatDateTime(new Date(event.eventStart).toLocaleString()) }}
+                    Start: {{ formatDateTime(new Date(event.eventStart).toLocaleString()) }}
                   </v-card-subtitle>
                 </v-card>
               </v-col>
@@ -35,8 +36,8 @@
         </v-col>
 
         <!-- Recent Games Section -->
-        <v-col cols="12" md="4" class="d-flex flex-column">
-          <v-card class="pa-4 flex-grow-1" outlined>
+        <v-col cols="12" md="4" class="">
+          <v-card class="pa-4 flex-grow-1 games-container" outlined>
             <v-card-title class="white--text text-h5 games-title">Recent Games</v-card-title>
             <v-card-text>
               
@@ -45,7 +46,8 @@
                 <div class="mb-3"
               v-for="(game, index) in JSONGames"
               :key="game.id">
-                <game-history-card 
+                <game-history-card
+                v-if="isLoggedIn && index < 4" 
                 :game="game"
                 :index="index"
                 :expandedView="expandedView"
@@ -55,7 +57,8 @@
                 @close="modalStates[index] = false">
                 </game-history-card>
               </div>
-              <v-col class="no-data" v-if="JSONGames.length == 0">No recent games</v-col>
+              <v-col class="no-data" v-if="JSONGames.length == 0 && isLoggedIn">No recent games</v-col>
+              <v-col v-if="!isLoggedIn" class="no-data"><a href="/login">Log in</a> to view recent games</v-col>
             </v-card-text>
           </v-card>
         </v-col>
@@ -84,6 +87,8 @@ const expandedView = ref(false)
 
 const store = useStore();
 const router = useRouter();
+
+const isLoggedIn = computed(() => store.state.isAuthenticated);
 
 const getEvents = async () => {
   JSONEvents.value = [];
@@ -142,7 +147,7 @@ onMounted(async () => {
 watch(
   () => store.state.selectedUsername,
   async (newUsername, oldUsername) => {
-    if (newUsername !== oldUsername) {
+    if (newUsername !== oldUsername || newUsername === null || oldUsername === null) {
       // Use an async function to handle the series of async tasks
       await (async () => {
         await getEvents();
@@ -155,6 +160,9 @@ watch(
   }
 );
 
+const goToEvents = () => {
+  router.push('/events');
+}
 
 // Computed property to filter and sort events by EVENT_START date
 const sortedEvents = computed(() => {
@@ -181,12 +189,12 @@ function formatCourt(courtNum){
 }
 
 .v-container {
-  height: 100%;
   border-radius: 8px;
 }
 
 .inner-card{
   background-color: none;
+  min-height: 10rem;
 }
 
 .no-data{
@@ -219,8 +227,24 @@ function formatCourt(courtNum){
   margin-bottom: 20px;
 }
 
-.v-container {
-  max-width: 1168px;
+.event-card{
+  height: 200px;
 }
+
+.events-container{
+  min-height: 550px;
+}
+
+.games-container{
+  height: 709px;
+}
+
+.nav-event-btn{
+  float: right;
+}
+
+/* .v-container {
+  max-width: 1168px;
+} */
 
 </style>

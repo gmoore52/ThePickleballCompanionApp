@@ -359,13 +359,13 @@ function closeModal() {
 }
 
 
-function convertDateObjToFrontendDate(date) {
-  console.log(date.toLocaleString())
+// function convertDateObjToFrontendDate(date) {
+//   console.log(date.toLocaleString())
 
-  let newDate = new Date(date);
-  let fullDate = newDate.toDateString();
-  let hours = newDate.getHours();
-  let minutes = newDate.getMinutes();
+//   let newDate = new Date(date);
+//   let fullDate = newDate.toDateString();
+//   let hours = newDate.getHours();
+//   let minutes = newDate.getMinutes();
 
 //   function convertDateObjToFrontendDate(date){
 //   console.log(date.toLocaleString())
@@ -377,9 +377,9 @@ function convertDateObjToFrontendDate(date) {
 //   let minutes = newDate.getMinutes();
 
 
-  if (minutes == 0) {
-    minutes = '00'
-  }
+  // if (minutes == 0) {
+  //   minutes = '00'
+  // }
 
 //   let ampm = hours >= 12 ? 'PM' : 'AM';
 //   hours = hours % 12 || 12;
@@ -446,10 +446,7 @@ const filteredOngoingEvents = computed(() => {
                     </v-text-field>
                   </v-col>
                   <v-col cols="6" class="container">
-
-                    <v-autocomplete :items="locations" v-model="eventLocation" clearable required label="Event Location"
-                                    class="" :rules="locationRules">
-
+        
                     <v-autocomplete :items="locations" no-data-text="Location not found" v-model="eventLocation" clearable required label="Event Location" class="" :rules="locationRules">
 
                     </v-autocomplete>
@@ -555,7 +552,7 @@ const filteredOngoingEvents = computed(() => {
                       <v-card-subtitle>Hosted at {{ convertLocIdToName(event.eventLoc) }}</v-card-subtitle>
                     </v-col>
                     <v-col cols="4">
-                      <v-img :src="event.courtPic || '/images/default.jpg'"  class="court-pic" contain></v-img>
+                      <v-img cover :src="event.courtPic || '/images/default.jpg'" class="court-pic"></v-img>
                     </v-col>
                   </v-row>
                 </v-card>
@@ -581,10 +578,11 @@ const filteredOngoingEvents = computed(() => {
                       <!-- <v-card-subtitle>Event ID: {{ event.eventId }}</v-card-subtitle> -->
                       <v-card-subtitle>Start: {{ formatDateTime(event.eventStart.toLocaleString()) }}</v-card-subtitle>
                       <v-card-subtitle>End: {{ formatDateTime(event.eventEnd.toLocaleString()) }}</v-card-subtitle>
+                      <v-card-text>{{ event.eventDesc }}</v-card-text>
                       <v-card-subtitle>Hosted at {{ convertLocIdToName(event.eventLoc) }}</v-card-subtitle>
                     </v-col>
                     <v-col cols="4">
-                      <v-img :src="event.courtPic" class="court-pic" contain></v-img>
+                      <v-img :src="event.courtPic" class="court-pic" cover></v-img>
                     </v-col>
                   </v-row>
                 </v-card>
@@ -677,12 +675,19 @@ const filteredOngoingEvents = computed(() => {
     border-radius: 8px !important;
   }
   .close-container{
+  }
 
 .submit {
   background-color: #4caf50;
   width: 100%;
   height: 3.5rem;
   margin-top: 0.4rem
+}
+
+.v-img{
+  height: 160px;
+
+  height: 160px;
 }
 
 .event-labels {
@@ -784,8 +789,8 @@ div.layout {
   border: 2px;
 }
 
-.v-container {
-  max-width: 1168px;
-}
+  /* .v-container {
+    max-width: 1168px;
+  } */
 
 </style>

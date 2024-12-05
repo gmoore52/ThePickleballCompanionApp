@@ -1,26 +1,28 @@
 <template>
   <v-container class="big-container">
     <!-- Search and Location Toolbar -->
-    <v-row class="">
-      <v-col cols="12" md="8">
-        <v-btn prepend-icon="mdi-map-marker-account" color="#212121" id="loc-btn" class="mr-2" @click="getUserLocation">
-          Click here to use your precise location
-        </v-btn>
-      </v-col>
-      <v-col cols="12" md="4" class="d-flex">
-        <v-text-field
-          v-model="searchQuery"
-          label="Search Courts"
-          single-line
-          color="#212121"
-          class="white--text no-padding"
-          hide-details
-        ></v-text-field>
-        <v-btn color="#212121" class="ml-1 search-btn">
-          <v-icon>mdi-magnify</v-icon>
-        </v-btn>
-      </v-col>
-    </v-row>
+    <div class="spacing">
+      <v-row>
+        <v-col cols="12" md="8" class="top-containers">
+          <v-btn prepend-icon="mdi-map-marker-account" color="#212121" id="loc-btn" class="mr-2" @click="getUserLocation">
+            Click here to use your precise location
+          </v-btn>
+        </v-col>
+        <v-col cols="12" md="4" class="d-flex top-containers">
+          <v-text-field
+            v-model="searchQuery"
+            label="Search"
+            append-icon="mdi-magnify"
+            single-line
+            dense
+            color="black"
+            class="white--text search-bar" 
+          ></v-text-field>
+          <!-- <v-btn color="#212121" class="ml-1 search-btn">
+            <v-icon>mdi-magnify</v-icon>
+          </v-btn> -->
+        </v-col>
+      </v-row>
 
     <!-- List of Courts -->
     <v-row>
@@ -41,12 +43,13 @@
               <v-card-text>Number of courts: {{ court.numOfCourts }}</v-card-text>
             </v-col>
             <v-col cols="4">
-              <v-img :src="court.courtPic" alt="Court Image" />
+              <v-img cover :src="court.courtPic" alt="Court Image" />
             </v-col>
           </v-row>
         </v-card>
       </v-col>
     </v-row>
+  </div>
   </v-container>
 </template>
 
@@ -148,6 +151,11 @@ const calculateDistances = () => {
 
 }
 
+/* .spacing{
+  margin-left: 16px;
+  margin-right: 16px; 
+} */
+
 #loc-btn{
   background-color:#4caf50 !important;
 }
@@ -174,6 +182,7 @@ const calculateDistances = () => {
 
 .v-btn {
   font-size: 14px;
+  height: 48px;
 }
 
 .v-card-title, .v-card-subtitle, .v-card-text {
@@ -185,16 +194,22 @@ const calculateDistances = () => {
   padding: 0; /* Remove extra padding */
 }
 
+.search-bar{
+  background-color: #212121;
+}
+
 .v-img {
   object-fit: cover;
-  height: 100%;
+  height: 180px;
+  width: 360x;
 }
+
 
 .no-padding {
   padding: 0 !important;
 }
 
-.v-container {
+/* .v-container {
     max-width: 1168px;
-}
+} */
 </style>

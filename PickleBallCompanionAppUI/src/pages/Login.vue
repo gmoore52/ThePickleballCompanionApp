@@ -85,5 +85,8 @@ const submitForm = async () => {
 .v-container {
   max-width: 1168px;
   }
+.v-card{
+  border-radius: 8px;
+}
 /* Custom styles if needed */
 </style>

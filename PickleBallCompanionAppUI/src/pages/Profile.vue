@@ -180,6 +180,7 @@ const confirmLogout = async () => {
             <v-row>
               <!-- User Information Section -->
               <v-col cols="12" md="3">
+                <v-card></v-card>
                 <v-card-title class="white--text text-h5">{{ userData.userName }}</v-card-title>
                 <v-card-subtitle class="white--text text-h6">{{ userData.userFullName }}</v-card-subtitle>
                 <v-card-text>
@@ -296,8 +297,8 @@ const confirmLogout = async () => {
 
       <!-- Logout Confirmation Dialog -->
       <v-dialog v-model="showLogoutConfirm" max-width="400">
-        <v-card>
-          <v-card-title class="white--text">Confirm Logout</v-card-title>
+        <v-card class="logout-modal">
+          <v-card-title class="white--text centered">Confirm Logout</v-card-title>
           <v-card-text class="white--text">Are you sure you want to log out?</v-card-text>
           <v-card-actions>
             <v-btn color="green" @click="confirmLogout">Yes</v-btn>
@@ -346,6 +347,10 @@ const confirmLogout = async () => {
 
 .v-container {
     max-width: 1168px;
+}
+
+.logout-modal{
+  border-radius: 8px !important;
 }
 
 /* Add styles as needed */
