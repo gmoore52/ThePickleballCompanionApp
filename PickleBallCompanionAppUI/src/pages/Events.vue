@@ -359,13 +359,13 @@ function closeModal() {
 }
 
 
-function convertDateObjToFrontendDate(date) {
-  console.log(date.toLocaleString())
+// function convertDateObjToFrontendDate(date) {
+//   console.log(date.toLocaleString())
 
-  let newDate = new Date(date);
-  let fullDate = newDate.toDateString();
-  let hours = newDate.getHours();
-  let minutes = newDate.getMinutes();
+//   let newDate = new Date(date);
+//   let fullDate = newDate.toDateString();
+//   let hours = newDate.getHours();
+//   let minutes = newDate.getMinutes();
 
 //   function convertDateObjToFrontendDate(date){
 //   console.log(date.toLocaleString())
@@ -377,9 +377,9 @@ function convertDateObjToFrontendDate(date) {
 //   let minutes = newDate.getMinutes();
 
 
-  if (minutes == 0) {
-    minutes = '00'
-  }
+  // if (minutes == 0) {
+  //   minutes = '00'
+  // }
 
 //   let ampm = hours >= 12 ? 'PM' : 'AM';
 //   hours = hours % 12 || 12;
@@ -449,7 +449,7 @@ const filteredOngoingEvents = computed(() => {
 
                     <v-autocomplete :items="locations" v-model="eventLocation" clearable required label="Event Location"
                                     class="" :rules="locationRules">
-
+                    </v-autocomplete>
                     <v-autocomplete :items="locations" no-data-text="Location not found" v-model="eventLocation" clearable required label="Event Location" class="" :rules="locationRules">
 
                     </v-autocomplete>
@@ -677,6 +677,7 @@ const filteredOngoingEvents = computed(() => {
     border-radius: 8px !important;
   }
   .close-container{
+  }
 
 .submit {
   background-color: #4caf50;

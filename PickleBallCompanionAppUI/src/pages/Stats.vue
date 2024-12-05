@@ -393,6 +393,7 @@ function returnToOtherProfile(userName){
 /* .v-container {
   max-width: 1168px;
   }
+*/
 
 .apexcharts-tooltip span {
   color: #ffffff;
