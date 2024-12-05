@@ -19,19 +19,21 @@ public class StatisticsController {
     @GetMapping("/getUserStatsHst")
     public List<UserStatisticsHistoricalDTO> getUserStatisticsHistoric(@RequestParam List<String> username,
                                                                        @RequestParam String stat) {
-//        return statisticsService.getUserStatisticsHistoric(username, stat);
-        return null;
+        return statisticsService.getUserStatisticsHistoric(username, stat);
     }
 
     @GetMapping("/stageUserStatsHst")
     public boolean stageUserStatisticsHistoric(@RequestParam List<String> username){
-        // return statisticsService.stageUserStatisticsHistoric(username);
-        return false;
+         return statisticsService.stageUserStatisticsHistoric(username);
+    }
+
+    @GetMapping("/stageAllUserStatsHst")
+    public boolean stageAllUserStatisticsHistoric(){
+        return statisticsService.stageAllStatisticsHistoric();
     }
 
     @GetMapping("/getUserStats")
     public UserStatisticsDTO getUserStatistics(@RequestParam String username){
-//        return statisticsService.getUserStatistics(username);
-        return null;
+        return statisticsService.getUserStatistics(username);
     }
 }
