@@ -3,7 +3,7 @@
     <v-container>
       <v-row >
         <!-- Main Left Section (Welcome and Events) -->
-        <v-col cols="12" md="12" class="d-flex flex-column" >
+        <v-col cols="12" md="12" class="d-flex flex-column big-col">
           <!-- Profile Box -->
           <v-card class="pa-4 flex-grow-1 big-container" outlined >
             <v-row>
@@ -351,8 +351,16 @@ function returnToOtherProfile(userName){
 </script>
 
 <style scoped>
+/* .v-row{
+  margin: -12px;
+} */
+
 .v-app {
   height: 100vh;
+}
+
+.big-col{
+
 }
 
 .v-container {
@@ -382,9 +390,10 @@ function returnToOtherProfile(userName){
   margin-bottom: 20px;
 }
 
-.v-container {
+/* .v-container {
   max-width: 1168px;
   }
+*/
 
 .apexcharts-tooltip span {
   color: #ffffff;
