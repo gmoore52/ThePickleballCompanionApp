@@ -38,9 +38,15 @@ public class StatisticsServiceImpl implements StatisticsService {
                                     stats.getTotalWins(),
                                     stats.getTotalLosses(),
                                     (float)stats.getWinLossRatio(),
-                                    Math.toIntExact(stats.getMostFreqLocation().getId()),
-                                    stats.getMostFreqTeamate().getUserName(),
-                                    stats.getStrongestOpponent().getUserName(),
+                                    stats.getMostFreqLocation() != null ?
+                                            Math.toIntExact(stats.getMostFreqLocation().getId()) :
+                                            -1,
+                                    stats.getMostFreqTeamate() != null ?
+                                            stats.getMostFreqTeamate().getUserName() :
+                                            "Not enough games played",
+                                    stats.getStrongestOpponent() != null ?
+                                            stats.getStrongestOpponent().getUserName() :
+                                            "No strongest opponent",
                                     stats.getMostLossesToStrongestOpponent());
         }
         return null;

@@ -28,7 +28,8 @@
                 <v-card-text class="white--text">{{userStatsAcc.mostFrequentLocationID}}</v-card-text>
 
                 <v-card-title class="white--text">Top Teammate:</v-card-title>
-                <v-card-text class="d-flex align-center">
+                <v-card-text class="white--text" :v-if="userStatsAcc.mostFrequentTeammateUsername === 'Not enough games played'">{{userStatsAcc.mostFrequentLocationID}}</v-card-text>
+                <v-card-text class="d-flex align-center" :v-if="userStatsAcc.mostFrequentTeammateUsername !== 'Not enough games played'">
                   <!-- <v-card-text class = "white--text">{{userStatsAcc.mostFrequentTeammateUsername}}</v-card-text> -->
                   <go-to-player-profile-button
                   :playerUsername="userStatsAcc.mostFrequentTeammateUsername"
@@ -42,7 +43,8 @@
                           ></v-img> -->
                 </v-card-text>
                 <v-card-title class="white--text">Strongest Opponent</v-card-title>
-                <v-card-text class="d-flex align-center">
+                <v-card-text class="white--text" :v-if="userStatsAcc.strongestOpponentUsername === 'No strongest opponent'">{{userStatsAcc.mostFrequentLocationID}}</v-card-text>
+                <v-card-text class="d-flex align-center" :v-if="userStatsAcc.strongestOpponentUsername !== 'No strongest opponent'">
 
                   <go-to-player-profile-button
                   :playerUsername="userStatsAcc.strongestOpponentUsername"
@@ -60,13 +62,13 @@
 
               <v-col cols="12" md="9" class="pl-1">
                 <v-card class='stats-container chart-container' v-for="(item, index) in userStatsHst">
-      
+
                 <apexchart height="500" :options="JSON.stringify(chartOptionsStats) != '{}' ? chartOptionsStats[index] : chartOptions" :series="item.series"></apexchart>
 <!--                <apexchart height="500" :options="chartOptions" :series="userStatsHst.totalWins.series"></apexchart>-->
                 </v-card>
               </v-col>
 
-              
+
             </v-row>
           </v-card>
         </v-col>
@@ -313,8 +315,7 @@ onMounted(async () => {
   // put fetch function here (also see the watch function below)
   if (isLoggedIn.value) {
     // fetchData(``)
-    await fetchUserStatsAcc();
-    console.log(userStatsAcc.value)
+    fetchUserStatsAcc();
     for(let stat in userStatsHst.value){
       fetchUserStatsHst(store.state.selectedUsername, stat); // Fetch the user data for the selected profile
 
