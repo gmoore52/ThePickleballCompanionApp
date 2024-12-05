@@ -302,7 +302,7 @@ const clearUsernameError = () => {
   font-weight: bold;
 }
 
-.v-container {
-  max-width: 1168px;
-  }
+  .v-card{
+  border-radius: 8px;
+}
 </style>

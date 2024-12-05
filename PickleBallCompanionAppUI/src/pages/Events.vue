@@ -446,10 +446,7 @@ const filteredOngoingEvents = computed(() => {
                     </v-text-field>
                   </v-col>
                   <v-col cols="6" class="container">
-
-                    <v-autocomplete :items="locations" v-model="eventLocation" clearable required label="Event Location"
-                                    class="" :rules="locationRules">
-                    </v-autocomplete>
+        
                     <v-autocomplete :items="locations" no-data-text="Location not found" v-model="eventLocation" clearable required label="Event Location" class="" :rules="locationRules">
 
                     </v-autocomplete>
@@ -555,7 +552,7 @@ const filteredOngoingEvents = computed(() => {
                       <v-card-subtitle>Hosted at {{ convertLocIdToName(event.eventLoc) }}</v-card-subtitle>
                     </v-col>
                     <v-col cols="4">
-                      <v-img :src="event.courtPic || '/images/default.jpg'"  class="court-pic" contain></v-img>
+                      <v-img cover :src="event.courtPic || '/images/default.jpg'" class="court-pic"></v-img>
                     </v-col>
                   </v-row>
                 </v-card>
@@ -581,10 +578,11 @@ const filteredOngoingEvents = computed(() => {
                       <!-- <v-card-subtitle>Event ID: {{ event.eventId }}</v-card-subtitle> -->
                       <v-card-subtitle>Start: {{ formatDateTime(event.eventStart.toLocaleString()) }}</v-card-subtitle>
                       <v-card-subtitle>End: {{ formatDateTime(event.eventEnd.toLocaleString()) }}</v-card-subtitle>
+                      <v-card-text>{{ event.eventDesc }}</v-card-text>
                       <v-card-subtitle>Hosted at {{ convertLocIdToName(event.eventLoc) }}</v-card-subtitle>
                     </v-col>
                     <v-col cols="4">
-                      <v-img :src="event.courtPic" class="court-pic" contain></v-img>
+                      <v-img :src="event.courtPic" class="court-pic" cover></v-img>
                     </v-col>
                   </v-row>
                 </v-card>
@@ -684,6 +682,12 @@ const filteredOngoingEvents = computed(() => {
   width: 100%;
   height: 3.5rem;
   margin-top: 0.4rem
+}
+
+.v-img{
+  height: 160px;
+
+  height: 160px;
 }
 
 .event-labels {

@@ -230,17 +230,19 @@ const getCourts = async () => {
             'Content-type':'application/json',
         }
       });
+
+      console.log(jsonGame)
       if(jsonGame["player1"] != null){
-        fetchData(`/statistics/stageUserStatsHst?username=${store.jsonGame["player1"]}`)
+        fetchData(`/statistics/stageUserStatsHst?username=${jsonGame["player1"]}`)
       }
       if(jsonGame["player2"] != null){
-        fetchData(`/statistics/stageUserStatsHst?username=${store.jsonGame["player2"]}`)
+        fetchData(`/statistics/stageUserStatsHst?username=${jsonGame["player2"]}`)
       }
       if(jsonGame["player3"] != null){
-        fetchData(`/statistics/stageUserStatsHst?username=${store.jsonGame["player3"]}`)
+        fetchData(`/statistics/stageUserStatsHst?username=${jsonGame["player3"]}`)
       }
       if(jsonGame["player4"] != null){
-        fetchData(`/statistics/stageUserStatsHst?username=${store.jsonGame["player4"]}`)
+        fetchData(`/statistics/stageUserStatsHst?username=${jsonGame["player4"]}`)
       }
 
     console.log('Success - game added :', response);

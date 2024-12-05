@@ -59,7 +59,7 @@ function visitProfile(userName){
                     <v-btn color="red" class="close-btn" @click="close" density="compact" icon="$close" size="large"></v-btn>
 
                 <v-col cols="12">
-                <v-card-title class="card-header">Results</v-card-title>
+                <v-card-title class="card-header mt-2">Results</v-card-title>
                   <v-card-subtitle>Outcome: <strong>{{winOrLoss}}</strong></v-card-subtitle>
                   <v-card-subtitle>{{store.state.selectedUsername}}'s score: <strong>{{selectedTeamScore}}</strong></v-card-subtitle>
                   <v-card-subtitle>Opponent's score: <strong>{{otherTeamScore}}</strong></v-card-subtitle>
@@ -74,29 +74,35 @@ function visitProfile(userName){
                 <v-card-title class="card-header">Players</v-card-title>
                 <v-card-subtitle> {{team1WinLoss}} team with <strong>{{game.userScore}}</strong> point(s)</v-card-subtitle>
                 
-                <go-to-player-profile-button
-                :playerUsername="game.player1"
-                ></go-to-player-profile-button>
-
-                <go-to-player-profile-button
-                v-if="game.player3"
-                :playerUsername="game.player3"
-                ></go-to-player-profile-button>
+                <p>
+                  <go-to-player-profile-button
+                  :playerUsername="game.player1"
+                  ></go-to-player-profile-button>
+                </p>
+                
+                <p>
+                  <go-to-player-profile-button
+                  v-if="game.player3"
+                  :playerUsername="game.player3"
+                  ></go-to-player-profile-button>
+                </p>
 
                 <v-card-subtitle> {{team2WinLoss}} team with  <strong>{{game.oppScore}}</strong> point(s)</v-card-subtitle>
-
-                <go-to-player-profile-button
-                :playerUsername="game.player2"
-                ></go-to-player-profile-button>
-
-                <go-to-player-profile-button
-                v-if="game.player4"
-                :playerUsername="game.player4"
-                ></go-to-player-profile-button>
+                <p>
+                  <go-to-player-profile-button
+                  :playerUsername="game.player2"
+                  ></go-to-player-profile-button>
+                </p>
+                <p>
+                  <go-to-player-profile-button
+                  v-if="game.player4"
+                  :playerUsername="game.player4"
+                  ></go-to-player-profile-button>
+                </p>
               </v-col>
             <v-col cols="12">
               <v-card-title class="card-header">Notes</v-card-title>
-              <v-card-subtitle class="notes">{{formatNotes(game.notes)}}</v-card-subtitle>
+              <v-card-subtitle class="notes mb-4">{{formatNotes(game.notes)}}</v-card-subtitle>
             </v-col> 
             </v-card>
           </v-col>
