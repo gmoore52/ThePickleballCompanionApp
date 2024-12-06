@@ -504,7 +504,8 @@ const filteredOngoingEvents = computed(() => {
                   </v-col>
 
                   <v-col cols="12" class="">
-                    <v-btn prepend-icon="mdi-calendar-plus" class="submit" type="submit">
+                    <!-- prepend-icon="mdi-calendar-plus" -->
+                    <v-btn class="submit" type="submit">
                       Add Event
                     </v-btn>
                   </v-col>
