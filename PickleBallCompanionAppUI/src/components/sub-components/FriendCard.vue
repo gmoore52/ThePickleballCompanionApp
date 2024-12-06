@@ -87,8 +87,14 @@ function handleRequestConfirm(otherUsername){
     <v-col v-if="isRequest" cols="12" class="btn-container">
       <v-divider></v-divider>
       <v-card-actions class="btn-actions">
-      <v-btn @click.stop="handleRequestDeny(friend.userName)" prepend-icon="mdi-account-remove" color="red">Deny</v-btn>
-      <v-btn @click.stop="handleRequestConfirm(friend.userName)" prepend-icon="mdi-account-plus" color="green">Confirm</v-btn> 
+      <v-btn @click.stop="handleRequestDeny(friend.userName)" prepend-icon="mdi-close">
+        <template v-slot:prepend> <v-icon color="red"></v-icon> </template> 
+        Deny
+      </v-btn>
+      <v-btn @click.stop="handleRequestConfirm(friend.userName)" prepend-icon="mdi-check">
+        <template v-slot:prepend> <v-icon color="success"></v-icon> </template> 
+        Confirm
+      </v-btn> 
     </v-card-actions>
     </v-col>
   </v-row>

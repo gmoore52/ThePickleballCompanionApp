@@ -16,8 +16,8 @@
 
           <!-- Events Section -->
           <v-card class="pa-4 events-container">
-            <v-card-title class="white--text text-h5 mb-1 pt-0 d-inline-block">Upcoming Events</v-card-title>
-            <v-btn class="nav-event-btn" prependIcon="mdi-arrow-right-bold" color="info" @click="goToEvents()">visit events</v-btn>
+            <v-card-title class="white--text text-h5 mb-1 pl-1 pt-0 d-inline-block">Upcoming Events</v-card-title>
+            <v-btn class="nav-event-btn" appendIcon="mdi-arrow-right" @click="goToEvents()">all events</v-btn>
             <v-row>
               <v-col v-for="event in sortedEvents" :key="event.eventId" cols="12" md="6" class="py-1">
                 <v-card class="inner-card">
@@ -241,6 +241,7 @@ function formatCourt(courtNum){
 
 .nav-event-btn{
   float: right;
+  background-color: #42424254;
 }
 
 /* .v-container {

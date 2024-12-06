@@ -1,15 +1,17 @@
 <template>
   <v-app>
     <v-container>
-      <v-row >
+      <v-row>
         <!-- Main Left Section (Welcome and Events) -->
         <v-col cols="12" md="12" class="d-flex flex-column big-col">
           <!-- Profile Box -->
           <v-card class="pa-4 flex-grow-1 big-container">
             <v-row>
+              <v-col v-if="store.state.user?.userName !== store.state.selectedUsername" cols="12" md="12" class="pb-1">
+                <v-btn prepend-icon="mdi-arrow-left" class="return-btn" @click="returnToOtherProfile(store.state.selectedUsername)">return</v-btn>
+            </v-col>
               <v-col cols="12" md="3">
                 <v-card class="stats-container">
-                  <v-btn v-if="store.state.user?.userName !== store.state.selectedUsername" prepend-icon="mdi-account-arrow-left" class="mt-3 ml-4" color="blue" @click="returnToOtherProfile(store.state.selectedUsername)">return</v-btn>
 
                 <v-card-title class="white--text text-h4 pb-0">Stats</v-card-title>
                 <v-card-subtitle class="white--text text-h6">{{ store.state.selectedUsername }}</v-card-subtitle>
@@ -28,7 +30,7 @@
                 <v-card-text class="white--text">{{userStatsAcc.mostFrequentLocationID}}</v-card-text>
 
                 <v-card-title class="white--text">Top Teammate:</v-card-title>
-                <v-card-text class="white--text" :v-if="userStatsAcc.mostFrequentTeammateUsername === 'Not enough games played'">{{userStatsAcc.mostFrequentLocationID}}</v-card-text>
+                <!-- <v-card-text class="white--text" :v-if="userStatsAcc.mostFrequentTeammateUsername === 'Not enough games played'">{{userStatsAcc.mostFrequentLocationID}}</v-card-text> -->
                 <v-card-text class="d-flex align-center" :v-if="userStatsAcc.mostFrequentTeammateUsername !== 'Not enough games played'">
                   <!-- <v-card-text class = "white--text">{{userStatsAcc.mostFrequentTeammateUsername}}</v-card-text> -->
                   <go-to-player-profile-button
@@ -43,7 +45,7 @@
                           ></v-img> -->
                 </v-card-text>
                 <v-card-title class="white--text">Strongest Opponent</v-card-title>
-                <v-card-text class="white--text" :v-if="userStatsAcc.strongestOpponentUsername === 'No strongest opponent'">{{userStatsAcc.mostFrequentLocationID}}</v-card-text>
+                <!-- <v-card-text class="white--text" :v-if="userStatsAcc.strongestOpponentUsername === 'No strongest opponent'">{{userStatsAcc.mostFrequentLocationID}}</v-card-text> -->
                 <v-card-text class="d-flex align-center" :v-if="userStatsAcc.strongestOpponentUsername !== 'No strongest opponent'">
 
                   <go-to-player-profile-button
@@ -161,10 +163,10 @@ const chartOptions = {
     }
   },
   grid: {
-    borderColor: '#FFFFFF',
+    borderColor: 'rgba(255, 255, 255, 0.3)',
     row: {
       colors: ['#F0F0F0', 'transparent'], // takes an array which will be repeated on columns
-      opacity: 0.5
+      opacity: 0.05
     },
   },markers: {
     size: 1
@@ -398,6 +400,10 @@ function returnToOtherProfile(userName){
 
 .apexcharts-tooltip span {
   color: #ffffff;
+}
+
+.return-btn{
+  background-color: #42424254;
 }
 
 text.apexcharts-title-text{

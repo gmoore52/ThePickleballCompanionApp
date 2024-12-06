@@ -39,10 +39,29 @@ function formatButtonText(){
 </script>
 <template>
 
-    <v-btn prepend-icon="mdi-account" color="green" class="player-btns" @click="visitProfile(playerUsername)">{{formatButtonText()}}</v-btn>
+    <v-btn class="player-btns grey-btn px-2" @click="visitProfile(playerUsername)">
+        <v-img
+                    v-if="playerUsername !== null"
+                    class="profile-img-icon"
+                    :width="24"
+                    :height="24"
+                    aspect-ratio="1"
+                    cover
+                    :src="`/images/${playerUsername}.jpg`"
+                  ></v-img>
+                  {{formatButtonText()}}
+    </v-btn>
 
 </template>
 <style scoped>
+.grey-btn{
+    background-color: #424242;
+}
+
+.profile-img-icon{
+    border-radius: 4px;
+    margin-right: 8px;
+}
 
 </style>
 

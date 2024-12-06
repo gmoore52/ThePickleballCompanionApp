@@ -4,8 +4,8 @@
     <div class="spacing">
       <v-row>
         <v-col cols="12" md="8" class="top-containers">
-          <v-btn prepend-icon="mdi-map-marker-account" color="#212121" id="loc-btn" class="mr-2" @click="getUserLocation">
-            Click here to use your precise location
+          <v-btn prepend-icon="mdi-map-marker" color="#212121" id="loc-btn" class="mr-2" @click="getUserLocation">
+            Use precise location
           </v-btn>
         </v-col>
         <v-col cols="12" md="4" class="d-flex top-containers">

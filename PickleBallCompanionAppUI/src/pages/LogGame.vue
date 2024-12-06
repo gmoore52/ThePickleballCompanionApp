@@ -436,18 +436,18 @@ const getCourts = async () => {
               <v-col sm="6" md="5" class="left-pannel-col">
                 <v-text-field v-model="oppScore" label="Opponent Score" type="number" class="num left-pannel" required :rules="oppScoreRules"></v-text-field>
               </v-col>
-              <v-col cols="12" class="left-pannel-col left-pannel-col-header no-margins">
-                <h2>Extra Information</h2>
-              </v-col>
+              <!-- <v-col cols="12" class="left-pannel-col left-pannel-col-header no-margins">
+                
+              </v-col> -->
 
-              <v-col cols="12" class="left-pannel-col">
+              <v-col cols="12" class="left-pannel-col no-margins">
                 <v-text-field v-model="gameDate" label="Date" type="date" class="text left-pannel" required :rules="dateRules" ref="gd"></v-text-field>
               </v-col>
               <v-col cols="12" class="left-pannel-col no-margins">
-                <v-autocomplete v-model="location" label="Game location" clearable no-data-text="Location not found" type="text" class="text left-pannel" required :items=locations :rules="locationRules"></v-autocomplete>
+                <v-autocomplete v-model="location" label="Game Location" clearable no-data-text="Location not found" type="text" class="text left-pannel" required :items=locations :rules="locationRules"></v-autocomplete>
               </v-col>
               <v-col cols="12" class="left-pannel-col no-margins">
-                <v-textarea v-model="notes" label="(Optional) Notes"type="text" class="text left-pannel"></v-textarea>
+                <v-textarea v-model="notes" label="Notes (Optional)" type="text" class="left-pannel text-area"></v-textarea>
 
               </v-col>
             </v-row>
@@ -459,9 +459,9 @@ const getCourts = async () => {
           <v-row id="row2 w-100">
             <v-col cols="">
               <div class="player-container-1">
-                <h2 class="team-heading center left-pannel-col-header">Your Team Players</h2>
+                <h2 class="team-heading center left-pannel-col-header">Your Team</h2>
                 <div class="court">
-                  <v-text-field v-model="player1" class="player-search" readonly required label="You (selected)" :items="players1">
+                  <v-text-field v-model="player1" class="player-search"  hover="disabled" readonly required label="You" :items="players1">
                   </v-text-field>
                 </div>
                 <div class="court">
@@ -473,7 +473,7 @@ const getCourts = async () => {
 
               </div>
               <div class="player-container-2">
-                <h2 class="team-heading left-pannel-col-header">Opposing Team Players</h2>
+                <h2 class="team-heading left-pannel-col-header">Opposing Team</h2>
                 <div class="court">
 
                   <v-autocomplete v-model="player2" class="player-search" clearable required no-data-text="Player not found" label="Player 2" :items="players2" :rules="player2Rules">
@@ -488,7 +488,8 @@ const getCourts = async () => {
               </div>
             </v-col>
             <v-col cols="12" class="btn-col">
-                <v-btn prepend-icon="mdi-folder-account" type="submit" variant="tonal" class="w-100 submit"> Submit Game</v-btn>
+                <v-btn type="submit" variant="tonal" class="w-100 submit"> Submit Game</v-btn>
+                <!-- prepend-icon="mdi-folder-account" -->
             </v-col>
             <v-col cols="12" class="errors">
               </v-col>
@@ -525,6 +526,10 @@ const getCourts = async () => {
     justify-content: center;
     display: block;
     padding-top: 12px;
+  }
+
+  .text-area{
+    height: 17rem;
   }
   .submit{
     background-color: #4caf50;
