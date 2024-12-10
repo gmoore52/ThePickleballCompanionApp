@@ -80,3 +80,12 @@ VALUES
     (NOW() - INTERVAL '30 days', '2025-10-10 11:00:00', 3, 'Beginner Lessons', 'Free lessons for beginners to learn the game of pickleball.'),
     (NOW(), '2025-10-15 20:00:00', 4, 'Night Play', 'Enjoy pickleball under the lights!'),
     (NOW(), '2025-10-20 21:00:00', 5, 'Pickleball Social', 'Join us for a social evening of pickleball and networking!');
+
+INSERT INTO LOCATION_META (AVAILABILITY, SHELTER, NET_TYPE)
+VALUES
+    ('FREE', true, 'Permanent'),
+    ('FREE', false, 'Portable'),
+    ('FREE', true, 'Permanent'),
+    ('MEMBER', false, 'Portable'),
+    ('MEMBER', true, 'Permanent'),
+    ('MEMBER', false, 'Portable');
