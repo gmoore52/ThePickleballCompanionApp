@@ -17,7 +17,7 @@ for name in names_list:
     user_name = name.split()
     user_name = user_name[0].lower()[0] + user_name[1].lower() + str(random.randint(0, 900))
     email_addr = "testing@email.com"
-    password = "123456placeholder"
+    password = "$2a$10$xx8vlZ3Mdx0sDKNiPfbM0.BDhB9Bdl8a7AzlyTHlh7OdPrncAoUnO"
     profile_img = "placeholder"
     skill_lvl = random.randint(50, 7500)
     acc_date = datetime.datetime.now()
