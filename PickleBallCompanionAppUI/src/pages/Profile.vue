@@ -184,6 +184,7 @@ watch(
       fetchFriendRequests();
       fetchFriends(); // Fetch the friends of the selected profile TODO: pls put whatever function you do here to populate friends, here
       fetchFriendRequestStatus()
+      profileImgPath.value = `/images/${store.state.selectedUsername}.jpg`
     }
   }
 );

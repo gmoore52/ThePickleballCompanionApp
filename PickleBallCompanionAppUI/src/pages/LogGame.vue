@@ -618,7 +618,7 @@ const getCourts = async () => {
     font-size: 14px;
   }
 
-  /* .v-container {
+  .v-container {
   max-width: 1168px;
-  } */
+  }
 </style>

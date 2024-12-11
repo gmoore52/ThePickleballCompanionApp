@@ -251,8 +251,8 @@ function formatCourt(courtNum){
   background-color: #42424254;
 }
 
-/* .v-container {
-  max-width: 1168px;
-} */
+.v-container {
+    max-width: 1168px;
+}
 
 </style>

@@ -234,7 +234,7 @@ const calculateDistances = () => {
   padding: 0 !important;
 }
 
-/* .v-container {
+.v-container {
     max-width: 1168px;
-} */
+}
 </style>

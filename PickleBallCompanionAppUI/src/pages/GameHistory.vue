@@ -293,7 +293,7 @@ watch(
   height: 60px;
 }
 
-/* .v-container {
+.v-container {
     max-width: 1168px;
-  } */
+  }
 </style>

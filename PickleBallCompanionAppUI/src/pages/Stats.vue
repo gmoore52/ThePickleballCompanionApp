@@ -426,10 +426,10 @@ function convertLocIdToName(id) {
   margin-bottom: 20px;
 }
 
-/* .v-container {
+.v-container {
   max-width: 1168px;
   }
-*/
+
 
 .apexcharts-tooltip span {
   color: #ffffff;
