@@ -107,11 +107,12 @@ watch(
 
 <template>
   <v-app>
+    
   <v-container class="big-container">
+    <v-btn v-if="loggedInUserName !== store.state.selectedUsername" prepend-icon="mdi-arrow-left" class="mr-6 mb-2 return-home-btn" @click="returnToOtherProfile(store.state.selectedUsername)">Return</v-btn>
+
     <v-row>
       <v-col cols="7" class="top-containers">
-        <v-btn v-if="loggedInUserName !== store.state.selectedUsername" prepend-icon="mdi-account-arrow-right" class="mr-6 mb-2" color="blue" @click="returnToOtherProfile(store.state.selectedUsername)">Return</v-btn>
-
         <h2 class="d-inline-block ml-1">Game History for {{ store.state.selectedUsername }}</h2>
 
         <!-- <v-btn color="orange" @click="temp1()">olivia_brown</v-btn>
@@ -167,6 +168,10 @@ watch(
 }
 .size-btn-group{
   float: right;
+}
+
+.return-home-btn{
+  background-color: #42424254;
 }
 
 .icons{

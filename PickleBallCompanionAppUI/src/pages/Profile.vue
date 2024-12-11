@@ -201,11 +201,13 @@ const confirmLogout = async () => {
     <v-container>
       <v-row v-if="isLoggedIn" justify="space-between" class="flex-grow-1">
         <v-col cols="12" md="12" class="d-flex flex-column pb-3">
+          <div>          <v-btn v-if="loggedInUserName !== store.state.selectedUsername" prepend-icon="mdi-arrow-left" class="mb-3 mr-10"  @click="returnHome()">my profile</v-btn>
+          </div>
           <v-card class="pa-4 flex-grow-1 border-styling" outlined>
             <v-row>
               <!-- User Information Section -->
               <v-col cols="12" md="3">
-                <v-card></v-card>
+
                 <v-card-title class="white--text text-h5">{{ userData.userName }}</v-card-title>
                 <v-card-subtitle class="white--text text-h6">{{ userData.userFullName }}</v-card-subtitle>
                 <v-card-text>
@@ -226,7 +228,10 @@ const confirmLogout = async () => {
                 <v-btn @click="uploadProfileImage()"></v-btn>
               </v-col>
 
-              <v-col cols="12" md="8">
+              <v-col cols="12" md="9" class="profile-content">
+
+                <div class="profile-details"> <!-- NOAH ADDED THIS -->
+
                 <v-card class="info-card">
                   <v-card-title class="white--text">Email</v-card-title>
                   <v-card-text class="white--text">{{ userData.emailAddress }}</v-card-text>
@@ -236,16 +241,27 @@ const confirmLogout = async () => {
                   <v-card-text class="white--text">{{ formatDate(userData.accCreationDate) }}</v-card-text>
                 </v-card>
 
-                <v-btn v-if="loggedInUserName === store.state.selectedUsername" prepend-icon="mdi-logout" class="mt-5" color="red" @click="showLogoutConfirm = true">Logout</v-btn>
 
                 <!-- Displays if you are looking at a profile other than your own -->
 
                  <!-- NOTE: THIS BUTTON GOTTA BE DISABLED AND SAY "Friend Added" ONCE WE FINISH FRIEND REQUESTS IF YOU ARE ALREADY THEIR FRIEND-->
-                 <v-btn v-if="loggedInUserName !== store.state.selectedUsername" prepend-icon="mdi-exit-run" class="mt-5 mr-10" color="white" @click="returnHome()">Return</v-btn>
-                <v-btn v-if="loggedInUserName !== store.state.selectedUsername" prepend-icon="mdi-account-arrow-right" class="mt-5" color="blue" @click="visitStats(store.state.selectedUsername)">View Stats</v-btn>
-                <v-btn v-if="loggedInUserName !== store.state.selectedUsername" prepend-icon="mdi-account-arrow-right" class="mt-5 mx-2" color="blue" @click="visitGameHistory(store.state.selectedUsername)">View Game History</v-btn>
+                <div class="profile-details-buttons">
+                  <v-btn v-if="loggedInUserName !== store.state.selectedUsername" prepend-icon="mdi-chart-line" class="mt-5 grey-btn" @click="visitStats(store.state.selectedUsername)">
+                    View Stats
+                    <template v-slot:prepend> <v-icon color="info"></v-icon> </template>
+                  </v-btn>
+                  <v-btn v-if="loggedInUserName !== store.state.selectedUsername" prepend-icon="mdi-history" class="mt-5 mx-2 grey-btn" @click="visitGameHistory(store.state.selectedUsername)">
+                    View Game History
+                    <template v-slot:prepend>
+                      <v-icon color="info"></v-icon>
+                    </template>
+                  </v-btn>
+                </div>
                 <!-- <v-btn v-if="loggedInUserName !== store.state.selectedUsername" prepend-icon="mdi-account-multiple-plus" class="mt-5" color="green" @click="addSelectedFriend(store.state.selectedUsername)">Add Friend</v-btn> -->
 
+              </div> <!-- NOAH ADDED THIS -->
+
+              <div class="profile-utility-buttons">
                 <dynamic-friend-button
                 :friendRequestStatus="friendRequestStatus"
                 :selectedUsername="store.state.selectedUsername"
@@ -253,15 +269,21 @@ const confirmLogout = async () => {
                 @reload="loadData()"
                 >
                 </dynamic-friend-button>
+                <v-btn v-if="loggedInUserName === store.state.selectedUsername" prepend-icon="mdi-logout" class="mt-0 grey-btn" @click="showLogoutConfirm = true">
+                  Logout
+                  <template v-slot:prepend> <v-icon color="red"></v-icon> </template>
+                </v-btn>
+              </div>
 
               </v-col>
+
+
             </v-row>
           </v-card>
         </v-col>
 
         <!-- Friend Request Section -->
-        <v-col v-if="(JSONFriendRequests.length !== 0) && (loggedInUserName === store.state.selectedUsername)"
-        cols="12" md="12" class="pt-3 pb-3">
+        <v-col v-if="(JSONFriendRequests.length !== 0) && (loggedInUserName === store.state.selectedUsername)"cols="12" md="12" class="pt-3 pb-3">
           <v-card class="pa-4 border-styling" outlined>
               <v-card-title class="white--text text-h4 d-flex justify-space-between">
                 Friend Requests ({{ JSONFriendRequests.length }})
@@ -287,7 +309,10 @@ const confirmLogout = async () => {
           <v-card class="pa-4 border-styling" outlined>
             <v-card-title class="white--text text-h4 d-flex justify-space-between">
               Friends ({{ JSONFriends.length }})
-              <v-btn v-if="loggedInUserName === store.state.selectedUsername" prepend-icon="mdi-account-multiple-plus" color="green" @click="showAddFriendModal = true">Search all users</v-btn>
+              <v-btn v-if="loggedInUserName === store.state.selectedUsername" prepend-icon="mdi-magnify" class='grey-btn' @click="showAddFriendModal = true">
+                Search all users
+                <template v-slot:prepend> <v-icon color="success"></v-icon> </template>
+              </v-btn>
             </v-card-title>
             <v-row class="friend-container">
               <v-col v-for="(friend, index) in JSONFriends" cols="4">
@@ -382,6 +407,28 @@ const confirmLogout = async () => {
 
 .logout-modal{
   border-radius: 8px !important;
+}
+
+.grey-btn{
+  background-color: #42424254;
+}
+
+.profile-content {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  grid-column-gap: 16px;
+}
+
+.profile-details {
+  display: grid;
+  grid-template-rows: 1fr auto;
+}
+
+.profile-utility-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: flex-end;
 }
 
 /* Add styles as needed */

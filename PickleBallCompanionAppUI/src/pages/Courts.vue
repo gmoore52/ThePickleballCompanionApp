@@ -16,7 +16,7 @@
             single-line
             dense
             color="black"
-            class="white--text search-bar" 
+            class="white--text search-bar"
           ></v-text-field>
           <!-- <v-btn color="#212121" class="ml-1 search-btn">
             <v-icon>mdi-magnify</v-icon>
@@ -153,7 +153,7 @@ const calculateDistances = () => {
 
 /* .spacing{
   margin-left: 16px;
-  margin-right: 16px; 
+  margin-right: 16px;
 } */
 
 #loc-btn{

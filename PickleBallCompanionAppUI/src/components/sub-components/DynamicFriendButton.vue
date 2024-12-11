@@ -17,9 +17,9 @@ const router = useRouter();
 const emit = defineEmits(['reload']);
 
 function sendNewFriendRequest(){
-  
+
   showAlert('success',`Friend request sent to ${store.state.selectedUsername}`)
-  
+
 }
 
 function returnFriendStatus(){
@@ -38,12 +38,12 @@ function handleRequestDeny(){
     console.log(response)
     // showAlert('success', 'Friend request accepted')
     showAlert('success',`${store.state.selectedUsername} removed from your friends list`)
-  } 
+  }
     catch (error){
     // console.error('Error adding Event:', response);
     showAlert('error', `Friend request could not be rejected`)
-  } 
-  
+  }
+
   emit('reload');
 }
 
@@ -104,7 +104,7 @@ function handleRequestConfirm(){
 
   <!-- One of the buttons will display when you are viewing someone elses profile -->
   <span v-if="store.state.user.userName !== store.state.selectedUsername">
-    
+
     <!-- Request is pending button 'REC' from this user to you-->
     <v-btn v-if="returnFriendStatus() == `REC - received`" prepend-icon="mdi-account-multiple-plus" class="mt-5" color="green" @click="handleRequestConfirm()">Accept Friend Request</v-btn>
 
