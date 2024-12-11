@@ -2,7 +2,7 @@ package edu.missouristate.thepickleballcompanionapp.domain.dto;
 
 public class ProfileImageDTO {
     private String username;
-    private String imageData;
+    private String image;
 
     public String getUsername() {
         return username;
@@ -12,11 +12,11 @@ public class ProfileImageDTO {
         this.username = username;
     }
 
-    public String getImageData() {
-        return imageData;
+    public String getImage() {
+        return image;
     }
 
-    public void setImageData(String imageData) {
-        this.imageData = imageData;
+    public void setImage(String image) {
+        this.image = image;
     }
 }

@@ -15,6 +15,8 @@ const JSONFriends = ref([]); // State for user's friends
 const JSONFriendRequests = ref([]);
 const friendRequestStatus = ref();
 
+const fileLoc = ref(new File([""], ""));
+
 const userData = ref({
   userName: '',
   userFullName: '',
@@ -71,7 +73,7 @@ const fetchFriendRequests = async () => {
 
 function returnHome(){
   store.commit('UNSET_SELECTED_USERNAME');
-  router.push(`/profile/:userId`); // /${user.value} 
+  router.push(`/profile/:userId`); // /${user.value}
 }
 
 // Function to fetch friends data from the database
@@ -105,13 +107,13 @@ function addSelectedFriend(userName){
 
 function visitStats(userName){
   store.commit('SET_SELECTED_USERNAME', userName);
-  router.push(`/stats/:userId`); // /${user.value} 
+  router.push(`/stats/:userId`); // /${user.value}
   window.scrollTo(0, 0);
 }
 
 function visitGameHistory(userName){
   store.commit('SET_SELECTED_USERNAME', userName);
-  router.push(`/game-history/:userId`); // /${user.value} 
+  router.push(`/game-history/:userId`); // /${user.value}
   window.scrollTo(0, 0);
 }
 
@@ -120,13 +122,36 @@ const formatDate = (date) => {
   return new Date(date).toLocaleDateString();
 };
 
+async function uploadProfileImage(){
+  const reader = new FileReader();
+
+  reader.onloadend = () => {
+    this.encodedImage = reader.result.split(",")[1]; // Remove the data:image/... prefix
+  };
+
+  reader.readAsDataURL(fileLoc.value); // Convert the image to base64
+
+  const payload = {
+    username: store.state.selectedUsername,
+    image: this.encodedImage, // Send the base64 encoded image
+  }
+
+
+  await fetchData("/users/uploadProfileImage", {
+    method: 'POST',
+    body: JSON.stringify(payload),
+    headers: {
+        'Content-type':'application/json'
+    }});
+}
+
 function visitProfile(userName){
   store.commit('SET_SELECTED_USERNAME', userName);
-  router.push(`/profile/${userName}`); // /${user.value} 
+  router.push(`/profile/${userName}`); // /${user.value}
   window.scrollTo(0, 0);
 
 
-  // fetchUserData(); 
+  // fetchUserData();
   // getUsers();
 }
 
@@ -193,6 +218,12 @@ const confirmLogout = async () => {
                     :src="`/images/${userData.userName}.jpg`"
                   ></v-img>
                 </v-card-text>
+                <v-file-input
+                  accept="image/*"
+                  label="Upload Profile Picture"
+                  v-model="fileLoc">
+                </v-file-input>
+                <v-btn @click="uploadProfileImage()"></v-btn>
               </v-col>
 
               <v-col cols="12" md="8">
@@ -206,7 +237,7 @@ const confirmLogout = async () => {
                 </v-card>
 
                 <v-btn v-if="loggedInUserName === store.state.selectedUsername" prepend-icon="mdi-logout" class="mt-5" color="red" @click="showLogoutConfirm = true">Logout</v-btn>
-                
+
                 <!-- Displays if you are looking at a profile other than your own -->
 
                  <!-- NOTE: THIS BUTTON GOTTA BE DISABLED AND SAY "Friend Added" ONCE WE FINISH FRIEND REQUESTS IF YOU ARE ALREADY THEIR FRIEND-->
@@ -238,9 +269,9 @@ const confirmLogout = async () => {
               <v-row class="friend-container">
                 <v-col v-for="(friend, index) in JSONFriendRequests" cols="4">
                   <v-row class="card-row">
-                  <FriendCard 
+                  <FriendCard
                   @click="visitProfile(friend.userName)"
-                  :friend="friend" 
+                  :friend="friend"
                   :isRequest="true"
                   @reload="loadData()"
                   >
@@ -250,7 +281,7 @@ const confirmLogout = async () => {
               </v-row>
             </v-card>
         </v-col>
-      
+
         <!-- Friends Section -->
         <v-col cols="12" md="12" class="pt-3 pb-3">
           <v-card class="pa-4 border-styling" outlined>
@@ -261,12 +292,12 @@ const confirmLogout = async () => {
             <v-row class="friend-container">
               <v-col v-for="(friend, index) in JSONFriends" cols="4">
                 <v-row class="card-row">
-                <FriendCard 
+                <FriendCard
                 @click="visitProfile(friend.userName)"
-                :friend="friend" 
+                :friend="friend"
                 :isRequest="false"
                 >
-                
+
                 </FriendCard>
               </v-row>
               </v-col>
