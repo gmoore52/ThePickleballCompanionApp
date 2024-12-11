@@ -11,6 +11,8 @@ const props = defineProps({
 const store = useStore();
 const router = useRouter();
 
+const playerProfilePath = ref(`/images/${props.playerUsername}.jpg`)
+
 function visitProfile(userName){
     if (!userName){
         showAlert('error', `Invalid profile username to visit`)
@@ -23,6 +25,7 @@ function visitProfile(userName){
 
 function formatButtonText(){
     // used to display text on the button if no username is passed in
+    // console.log(props.playerUsername)
     if(props.playerUsername === store.state.user.userName){
         return props.playerUsername + ' (You)'
     }
@@ -31,8 +34,12 @@ function formatButtonText(){
         return props.playerUsername
     }
     else{
-        return "No user selected"
+        return "No user found"
     }
+}
+
+function onImageError(){
+    playerProfilePath.value = '/images/default-profile-image.jpg';
 }
 
 
@@ -47,7 +54,8 @@ function formatButtonText(){
                     :height="24"
                     aspect-ratio="1"
                     cover
-                    :src="`/images/${playerUsername}.jpg`"
+                    :src="playerProfilePath"
+                    @error="onImageError"
                   ></v-img>
                   {{formatButtonText()}}
     </v-btn>

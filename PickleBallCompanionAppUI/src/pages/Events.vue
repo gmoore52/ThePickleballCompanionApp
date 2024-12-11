@@ -4,6 +4,7 @@ import {VTimePicker} from 'vuetify/labs/VTimePicker'
 import {fetchData} from '@/util/fetchData.js';
 import {showAlert} from '@/util/alert'
 import {useStore} from 'vuex';
+import { useRouter } from 'vue-router';
 import {formatDateTime} from '@/util/formatDate.js'
 
 
@@ -37,6 +38,7 @@ const upcomingEvents = ref([]);
 const pastEvents = ref([]);
 
 const store = useStore();
+const router = useRouter();
 
 const frontendStartTime = computed({ // cleans selected time for frontend
   get() {
@@ -269,7 +271,7 @@ function handleSubmit() {
     // date objects are getting created once the time logic is completed
     jsonEvent['eventStart'] = convertToDateString(startDate.value, startTime.value, startAMPM.value);
     jsonEvent['eventEnd'] = convertToDateString(endDate.value, endTime.value, endAMPM.value);
-    console.log(jsonEvent);
+    // console.log(jsonEvent);
 
 
     try {
@@ -281,7 +283,7 @@ function handleSubmit() {
         }
       });
 
-      console.log('Success - game added :', response);
+      // console.log('Success - game added :', response);
 
     } catch (error) {
       console.error('Error adding Event:', error);
@@ -392,6 +394,17 @@ function closeModal() {
 //   return `${fullDate} ${hours}:${minutes}${ampm}`;
 // }
 
+function handleEventBtnClick() {
+  if(store.state.isAuthenticated){
+    showDialog.value = true
+  }
+  
+  else{ // functionality that occurs if you aren't logged in
+    router.push('/login');
+    showAlert('warning', 'You must be logged in to create an event', 1500)
+  }
+}
+
 // Computed property to filter courts based on search query
 const filteredUpcomingEvents = computed(() => {
   if (!searchQuery.value) {
@@ -422,8 +435,8 @@ const filteredOngoingEvents = computed(() => {
       <v-row>
         <v-col cols="12" md="8">
           <!-- Button to open the modal -->
-          <v-btn prepend-icon="mdi-calendar-edit" v-if="isLoggedIn" id='event-btn' class="btn mr-2"
-                 @click="showDialog = true">Add New Event
+          <v-btn prepend-icon="mdi-calendar-edit" id='event-btn' class="btn mr-2"
+                 @click="handleEventBtnClick()">Add New Event
           </v-btn>
           <!-- START MODAL -->
           <v-dialog class="modal-container" persistent v-model="showDialog">
@@ -790,8 +803,8 @@ div.layout {
   border: 2px;
 }
 
-  /* .v-container {
+  .v-container {
     max-width: 1168px;
-  } */
+  }
 
 </style>

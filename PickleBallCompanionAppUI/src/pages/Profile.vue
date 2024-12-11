@@ -25,6 +25,8 @@ const userData = ref({
   skillLevel: ''
 });
 
+const profileImgPath = ref(`/images/${store.state.selectedUsername}.jpg`)
+
 // Skill level mapping to be used with getSkillLevelText to present skill level as a string on the front end
 const skillLevels = {
   1: "Beginner",
@@ -143,6 +145,8 @@ async function uploadProfileImage(){
     headers: {
         'Content-type':'application/json'
     }});
+
+    loadData(); // used here to populate the page with the new image
 }
 
 function visitProfile(userName){
@@ -180,10 +184,14 @@ watch(
       fetchFriendRequests();
       fetchFriends(); // Fetch the friends of the selected profile TODO: pls put whatever function you do here to populate friends, here
       fetchFriendRequestStatus()
+      profileImgPath.value = `/images/${store.state.selectedUsername}.jpg`
     }
   }
 );
 
+function onImageError(){
+  profileImgPath.value = '/images/default-profile-image.jpg';
+}
 
 // Confirm logout action
 const confirmLogout = async () => {
@@ -217,15 +225,10 @@ const confirmLogout = async () => {
                     :height="180"
                     aspect-ratio="1"
                     cover
-                    :src="`/images/${userData.userName}.jpg`"
+                    :src="profileImgPath"
+                    @error="onImageError"
                   ></v-img>
                 </v-card-text>
-                <v-file-input
-                  accept="image/*"
-                  label="Upload Profile Picture"
-                  v-model="fileLoc">
-                </v-file-input>
-                <v-btn @click="uploadProfileImage()"></v-btn>
               </v-col>
 
               <v-col cols="12" md="9" class="profile-content">
@@ -239,6 +242,7 @@ const confirmLogout = async () => {
                   <v-card-text class="white--text">{{ skillLevels[userData.skillLevel] }}</v-card-text>
                   <v-card-title class="white--text">Account Creation Date</v-card-title>
                   <v-card-text class="white--text">{{ formatDate(userData.accCreationDate) }}</v-card-text>
+                
                 </v-card>
 
 
@@ -262,7 +266,22 @@ const confirmLogout = async () => {
               </div> <!-- NOAH ADDED THIS -->
 
               <div class="profile-utility-buttons">
-                <dynamic-friend-button
+                <div v-if="loggedInUserName === store.state.selectedUsername" class="profile-upload-container">
+                    <v-file-input
+                    prepend-icon="mdi-camera"
+                    class="file-input"
+                    density="compact"
+                    accept="image/*"
+                    label="Change profile picture"
+                    v-model="fileLoc">
+                    </v-file-input>
+
+                    <v-btn class ='upload-img-button grey-btn' prepend-icon="mdi-upload" @click="uploadProfileImage()">Upload</v-btn>
+                  </div>
+                  <v-divider v-if="loggedInUserName === store.state.selectedUsername" class="right-pannel-divider">
+                    
+                  </v-divider>
+                  <dynamic-friend-button
                 :friendRequestStatus="friendRequestStatus"
                 :selectedUsername="store.state.selectedUsername"
                 :loggedInUsername="store.state.user.userName"
@@ -371,10 +390,36 @@ const confirmLogout = async () => {
   border-radius: 8px;
 }
 
+.profile-upload-container{
+  width: 250px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.right-pannel-divider{
+  margin-top: 5px;
+  width: 100%;
+  margin-bottom: 5px;
+}
+
 .profile-img{
   justify-content: center;
   text-align: center;
   border-radius: 12px;
+}
+
+.file-input{
+  /* padding-top: 30px; */
+  min-width: 100%;
+}
+
+.v-input__details{
+  padding-top: 0;
+}
+
+.upload-img-button{
+  /* margin-right: auto; */
 }
 
 .info-card{

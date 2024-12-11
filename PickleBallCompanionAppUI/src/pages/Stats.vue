@@ -5,37 +5,39 @@
         <!-- Main Left Section (Welcome and Events) -->
         <v-col cols="12" md="12" class="d-flex flex-column big-col">
           <!-- Profile Box -->
+          <div v-if="store.state.user?.userName !== store.state.selectedUsername" cols="12" md="12" class="pb-3">
+                <v-btn prepend-icon="mdi-arrow-left" class="return-btn" @click="returnToOtherProfile(store.state.selectedUsername)">return</v-btn>
+          </div>
           <v-card class="pa-4 flex-grow-1 big-container">
             <v-row>
-              <v-col v-if="store.state.user?.userName !== store.state.selectedUsername" cols="12" md="12" class="pb-1">
-                <v-btn prepend-icon="mdi-arrow-left" class="return-btn" @click="returnToOtherProfile(store.state.selectedUsername)">return</v-btn>
-            </v-col>
-              <v-col cols="12" md="3">
+              <v-col cols="12" md="4">
                 <v-card class="stats-container">
 
                 <v-card-title class="white--text text-h4 pb-0">Stats</v-card-title>
                 <v-card-subtitle class="white--text text-h6">{{ store.state.selectedUsername }}</v-card-subtitle>
 
 
-                <v-card-title class="white--text">Total Games:</v-card-title>
+                <v-card-title class="white--text">Total Games Played:</v-card-title>
                 <v-card-text class="white--text">{{userStatsAcc.totalGames}}</v-card-text>
                 <v-card-title class="white--text">Total Wins:</v-card-title>
                 <v-card-text class="white--text">{{userStatsAcc.totalWins}}</v-card-text>
                 <v-card-title class="white--text">Total Losses:</v-card-title>
                 <v-card-text class="white--text">{{userStatsAcc.totalLosses}}</v-card-text>
-                <v-card-title class="white--text">W/L Ratio:</v-card-title>
-                <v-card-text class="white--text">{{userStatsAcc.winLossRatio}}</v-card-text>
+                <v-card-title class="white--text">Win/Loss Ratio:</v-card-title>
+                <v-card-text class="white--text">{{(userStatsAcc.winLossRatio).toFixed(3)}}</v-card-text>
+                <v-card-title class="white--text">Most Frequented Court:</v-card-title>
+                
+                <v-card-text class="white--text">{{convertLocIdToName(userStatsAcc.mostFrequentLocationID)}}</v-card-text>
 
-                <v-card-title class="white--text">Favorite Court:</v-card-title>
-                <v-card-text class="white--text">{{userStatsAcc.mostFrequentLocationID}}</v-card-text>
-
-                <v-card-title class="white--text">Top Teammate:</v-card-title>
+                <v-card-title class="white--text">Most Wins With Teammate:</v-card-title>
                 <!-- <v-card-text class="white--text" :v-if="userStatsAcc.mostFrequentTeammateUsername === 'Not enough games played'">{{userStatsAcc.mostFrequentLocationID}}</v-card-text> -->
                 <v-card-text class="d-flex align-center" :v-if="userStatsAcc.mostFrequentTeammateUsername !== 'Not enough games played'">
                   <!-- <v-card-text class = "white--text">{{userStatsAcc.mostFrequentTeammateUsername}}</v-card-text> -->
                   <go-to-player-profile-button
+                  v-if="userStatsAcc.mostFrequentTeammateUsername !== ''"
                   :playerUsername="userStatsAcc.mostFrequentTeammateUsername"
                   ></go-to-player-profile-button>
+                  <span v-else class="white--text">No teammate data found</span>
 
                           <!-- <v-img
                             src="https://static.vecteezy.com/system/resources/previews/046/300/541/non_2x/avatar-user-profile-person-icon-gender-neutral-silhouette-profile-picture-suitable-for-social-media-profiles-icons-screensavers-free-png.png"
@@ -44,13 +46,15 @@
                             contain
                           ></v-img> -->
                 </v-card-text>
-                <v-card-title class="white--text">Strongest Opponent</v-card-title>
+                <v-card-title class="white--text">Most Losses Against Opponent:</v-card-title>
                 <!-- <v-card-text class="white--text" :v-if="userStatsAcc.strongestOpponentUsername === 'No strongest opponent'">{{userStatsAcc.mostFrequentLocationID}}</v-card-text> -->
                 <v-card-text class="d-flex align-center" :v-if="userStatsAcc.strongestOpponentUsername !== 'No strongest opponent'">
 
                   <go-to-player-profile-button
+                  v-if="userStatsAcc.strongestOpponentUsername !== ''"
                   :playerUsername="userStatsAcc.strongestOpponentUsername"
                   ></go-to-player-profile-button>
+                  <span v-else class="white--text">No opponent data found</span>
                   <!-- <v-card-text class = "white--text">{{userStatsAcc.strongestOpponentUsername}}</v-card-text> -->
                           <!-- <v-img
                             src="https://static.vecteezy.com/system/resources/previews/046/300/541/non_2x/avatar-user-profile-person-icon-gender-neutral-silhouette-profile-picture-suitable-for-social-media-profiles-icons-screensavers-free-png.png"
@@ -62,7 +66,7 @@
               </v-card>
               </v-col>
 
-              <v-col cols="12" md="9" class="pl-1">
+              <v-col cols="12" md="8" class="pl-1">
                 <v-card class='stats-container chart-container' v-for="(item, index) in userStatsHst">
 
                 <apexchart height="500" :options="JSON.stringify(chartOptionsStats) != '{}' ? chartOptionsStats[index] : chartOptions" :series="item.series"></apexchart>
@@ -98,6 +102,9 @@ const actions = ref([
 ]);
 
 const isChartDataLoading = ref(true);
+
+const inverseLocationDict = ref({})
+const JSONCourts = ref([]);
 
 const userStatsHst = ref({
   totalWins: {
@@ -325,6 +332,16 @@ onMounted(async () => {
     // fetchFriends(); // Fetch the friends of the selected profile
     // generateDataSeries(null, null, "winLossRatio");
   }
+
+  await getCourts();      // Fetch courts data 
+
+  inverseLocationDict.value = {};
+
+  // Map through the courts to populate dictionaries and ensure camelCase consistency (from original parseData function)
+  for (const loc of JSONCourts.value) {
+    const locName = loc.courtName;
+    inverseLocationDict.value[loc.id] = locName;
+  }
 });
 
 // this will be a function that will re-populate the stats page if you navigate there from someone else's page
@@ -337,10 +354,30 @@ watch(
   }
 );
 
+const getCourts = async () => {
+  JSONCourts.value = [];
+  try {
+    const url = '/data/locations';
+    JSONCourts.value = await fetchData(url);
+  } catch (error) {
+    console.error(error);
+  }
+}
+
 function returnToOtherProfile(userName){
   // store.commit('SET_SELECTED_USERNAME', "Peter_Dinklage3");
   router.push(`/profile/${userName}`); // /${user.value}
 }
+
+function convertLocIdToName(id) {
+  if (id == null || id == ''){
+    return 'No court data found'
+  }
+  else{
+    return inverseLocationDict.value[id]
+  }
+}
+
 
 </script>
 
@@ -373,10 +410,6 @@ function returnToOtherProfile(userName){
   border-radius: 8px;
 }
 
-.chart-options{
-  background-color: #42424254;
-}
-
 .v-card {
   border: 1px solid white;
   padding: 0.8em;
@@ -393,10 +426,10 @@ function returnToOtherProfile(userName){
   margin-bottom: 20px;
 }
 
-/* .v-container {
+.v-container {
   max-width: 1168px;
   }
-*/
+
 
 .apexcharts-tooltip span {
   color: #ffffff;

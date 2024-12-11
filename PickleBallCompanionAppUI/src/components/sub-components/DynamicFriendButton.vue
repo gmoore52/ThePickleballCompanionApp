@@ -35,7 +35,7 @@ function handleRequestDeny(){
     {
       method:'POST',
     });
-    console.log(response)
+    // console.log(response)
     // showAlert('success', 'Friend request accepted')
     showAlert('success',`${store.state.selectedUsername} removed from your friends list`)
   }
@@ -106,18 +106,18 @@ function handleRequestConfirm(){
   <span v-if="store.state.user.userName !== store.state.selectedUsername">
 
     <!-- Request is pending button 'REC' from this user to you-->
-    <v-btn v-if="returnFriendStatus() == `REC - received`" prepend-icon="mdi-account-multiple-plus" class="mt-5" color="green" @click="handleRequestConfirm()">Accept Friend Request</v-btn>
+    <v-btn v-if="returnFriendStatus() == `REC - received`" prepend-icon="mdi-account-multiple-plus" class="mt-0" color="green" @click="handleRequestConfirm()">Accept Friend Request</v-btn>
 
     <!-- Request is pending button 'REC' from you to this user-->
     <span v-if="returnFriendStatus() == `REC - sent`" @click="handlePendingBtnClick()">
-      <v-btn prepend-icon="mdi-account-multiple-plus" disabled color="green" class="mt-5">Request pending</v-btn>
+      <v-btn prepend-icon="mdi-account-multiple-plus" disabled color="green" class="mt-0">Request pending</v-btn>
     </span>
 
     <!-- Add friend button 'ACC' to or from you -->
-    <v-btn v-if="returnFriendStatus() == `ACC`" prepend-icon="mdi-account-multiple-minus" class="mt-5" color="red" @click="handleRequestDeny()">Remove Friend</v-btn>
+    <v-btn v-if="returnFriendStatus() == `ACC`" prepend-icon="mdi-account-multiple-minus" class="mt-0" color="red" @click="handleRequestDeny()">Remove Friend</v-btn>
 
     <!-- It is 'REV', 'REJ' or there is not an entry-->
-    <v-btn v-if="returnFriendStatus() == `NONE`" prepend-icon="mdi-account-multiple-plus" class="mt-5" color="green" @click="handleRequestCreate()">add friend</v-btn>
+    <v-btn v-if="returnFriendStatus() == `NONE`" prepend-icon="mdi-account-multiple-plus" class="mt-0" color="green" @click="handleRequestCreate()">add friend</v-btn>
 
   </span>
 

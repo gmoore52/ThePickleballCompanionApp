@@ -13,6 +13,8 @@ const props = defineProps({
 const store = useStore();
 const router = useRouter();
 
+const friendCardImagePath = ref(`/images/${props.friend.userName}.jpg`)
+
 const emit = defineEmits(['reload']);
 
 function formatFullName(user){
@@ -61,6 +63,10 @@ function handleRequestConfirm(otherUsername){
   emit('reload');
 }
 
+function onImageError(){
+  friendCardImagePath.value = '/images/default-profile-image.jpg';
+}
+
 </script>
 <template>
   <v-card link class="friend-card">
@@ -68,7 +74,10 @@ function handleRequestConfirm(otherUsername){
     <v-row class="no-formatting">
     <v-col cols="3" class="img-container">
       <!-- <img :src="friend.profilerImgLoc"> -->
-      <img class="profile-pic" :src="`/images/${friend.userName}.jpg`">
+      <v-img class="profile-pic" :src="friendCardImagePath" 
+      aspect-ratio="1"
+      cover
+      @error="onImageError"></v-img>
     </v-col>
     <v-col cols="8">
       <div class="inner-container">
@@ -87,12 +96,12 @@ function handleRequestConfirm(otherUsername){
     <v-col v-if="isRequest" cols="12" class="btn-container">
       <v-divider></v-divider>
       <v-card-actions class="btn-actions">
-      <v-btn @click.stop="handleRequestDeny(friend.userName)" prepend-icon="mdi-close">
-        <template v-slot:prepend> <v-icon color="red"></v-icon> </template> 
+      <v-btn @click.stop="handleRequestDeny(friend.userName)">
+        <!-- <template v-slot:prepend> <v-icon color="red"></v-icon> </template>  -->
         Deny
       </v-btn>
-      <v-btn @click.stop="handleRequestConfirm(friend.userName)" prepend-icon="mdi-check">
-        <template v-slot:prepend> <v-icon color="success"></v-icon> </template> 
+      <v-btn @click.stop="handleRequestConfirm(friend.userName)" class="accept-friend-req-btn">
+        <!-- <template v-slot:prepend> <v-icon color="success"></v-icon> </template>  -->
         Confirm
       </v-btn> 
     </v-card-actions>
@@ -125,8 +134,12 @@ function handleRequestConfirm(otherUsername){
   float: right;
 }
 
-.img-container{
+.accept-friend-req-btn{
+  background-color: rgb(33, 150, 243);
+}
 
+.img-container{
+  padding: 8px;
 }
 
 .inner-container{
@@ -135,8 +148,8 @@ function handleRequestConfirm(otherUsername){
 }
 
 .profile-pic{
-  height: 64px;
-  width: 64px;
+  height: 100%;
+  width:100%;
   float: left;
   border-radius: 8px;
 }

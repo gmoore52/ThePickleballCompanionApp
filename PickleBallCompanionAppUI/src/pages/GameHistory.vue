@@ -107,11 +107,13 @@ watch(
 
 <template>
   <v-app>
-    
-  <v-container class="big-container">
-    <v-btn v-if="loggedInUserName !== store.state.selectedUsername" prepend-icon="mdi-arrow-left" class="mr-6 mb-2 return-home-btn" @click="returnToOtherProfile(store.state.selectedUsername)">Return</v-btn>
+  
 
-    <v-row>
+    <v-container class="big-container">    
+      <v-row v-if="store.state.user?.userName !== store.state.selectedUsername" class="pb-3 button-row">
+                <v-btn prepend-icon="mdi-arrow-left" class="return-btn" @click="returnToOtherProfile(store.state.selectedUsername)">return</v-btn>
+      </v-row>
+    <v-row class="bg-div">
       <v-col cols="7" class="top-containers">
         <h2 class="d-inline-block ml-1">Game History for {{ store.state.selectedUsername }}</h2>
 
@@ -147,6 +149,10 @@ watch(
 <style scoped>
 .v-row{
   margin: -12px;
+}
+
+.button-row{
+  min-height: 58px;
 }
 
 .no-games{
@@ -246,10 +252,13 @@ watch(
 }
 
 .big-container{
-  background-color: #212121;
   border-radius: 8px;
   margin-top: 16px;
   margin-bottom: 16px;
+}
+.bg-div{
+  background-color: #212121;
+  border-radius: 8px;
 }
 
 
@@ -284,7 +293,7 @@ watch(
   height: 60px;
 }
 
-/* .v-container {
+.v-container {
     max-width: 1168px;
-  } */
+  }
 </style>

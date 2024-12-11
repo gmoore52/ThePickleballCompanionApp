@@ -222,7 +222,7 @@ const register = async () => {
     passwordError.value ||
     confirmPasswordError.value
   ) {
-    console.log('Form contains errors');
+    // console.log('Form contains errors');
     return; // Stop the form submission if any errors exist
   }
 
@@ -270,7 +270,7 @@ const register = async () => {
       showAlert('error', 'There was an error creating your account. Please try again.', 5000);
     }
   } else {
-    console.log('Form is not valid');
+    // console.log('Form is not valid');
     showAlert('error', 'Please correct the form errors before submitting.', 5000);
   }
 };
