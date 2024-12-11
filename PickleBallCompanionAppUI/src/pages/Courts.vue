@@ -65,6 +65,7 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { fetchData } from '@/util/fetchData.js'
+import {showAlert} from "@/util/alert";
 
 // search bar string
 const searchQuery = ref('')
@@ -105,7 +106,7 @@ const getUserLocation = () => {
         userLocation.value.latitude = position.coords.latitude;
         userLocation.value.longitude = position.coords.longitude;
         calculateDistances();
-        alert(`Location data turned on! \nYour location is Latitude: ${userLocation.value.latitude}, Longitude: ${userLocation.value.longitude}`);
+        showAlert('success','Court distances updated.',3000)
       },
       error => {
         alert('Unable to retrieve your location.');
@@ -173,7 +174,7 @@ const calculateDistances = () => {
 
 /* .spacing{
   margin-left: 16px;
-  margin-right: 16px; 
+  margin-right: 16px;
 } */
 
 #loc-btn{
