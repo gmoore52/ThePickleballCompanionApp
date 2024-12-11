@@ -72,7 +72,7 @@ const submitForm = async () => {
       console.error('Login failed:', error.message);
     }
   } else {
-    console.log('Form is not valid');
+    // console.log('Form is not valid');
   }
 };
 </script>

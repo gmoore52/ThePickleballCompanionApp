@@ -220,7 +220,7 @@ const getCourts = async () => {
     }
     else{ // no nulls and no score err condition, send the data here to backend later
 
-      console.log(jsonGame);
+      // console.log(jsonGame);
 
     try {
         const response = fetchData("/game/logGame", {
@@ -231,7 +231,7 @@ const getCourts = async () => {
         }
       });
 
-      console.log(jsonGame)
+      // console.log(jsonGame)
       if(jsonGame["player1"] != null){
         fetchData(`/statistics/stageUserStatsHst?username=${jsonGame["player1"]}`)
       }
@@ -245,7 +245,7 @@ const getCourts = async () => {
         fetchData(`/statistics/stageUserStatsHst?username=${jsonGame["player4"]}`)
       }
 
-    console.log('Success - game added :', response);
+    // console.log('Success - game added :', response);
     clearForm()
     showAlert('success', 'Game successfully posted')
     } catch (error){

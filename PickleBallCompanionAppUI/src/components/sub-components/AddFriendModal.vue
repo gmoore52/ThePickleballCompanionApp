@@ -90,7 +90,7 @@ async function loadUsers() {
 }
 
 function selectUser(user) {
-  console.log("Selected User:", user);
+  // console.log("Selected User:", user);
 }
 
 function close() {

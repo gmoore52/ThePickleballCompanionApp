@@ -34,13 +34,22 @@
       >
         <v-card class="" outlined>
           <v-row>
-            <v-col cols="8">
+            <v-col cols="4">
               <v-card-title>{{ court.courtName }}</v-card-title>
               <v-card-subtitle>
-                <strong>Distance: {{ court.distance ? `~${court.distance}` : 'Please enable location by clicking the button above.' }}</strong>
+                <!-- <strong> -->
+                  Distance from you: {{ court.distance ? `${court.distance}` : 'Must enable user location' }}
+                <!-- </strong> -->
               </v-card-subtitle>
-              <v-card-text>Location: {{ court.address }}</v-card-text>
-              <v-card-text>Number of courts: {{ court.numOfCourts }}</v-card-text>
+              <v-card-text> <strong> Location: </strong>{{ court.address }}</v-card-text>
+              <v-card-text> <strong> Number of courts: </strong>{{ court.numOfCourts }}</v-card-text>
+            </v-col>
+            <v-col cols="4">
+              <v-card-text class="second-row-formatting"> <strong> Availability: </strong> {{ court.meta?.availability || 'Not Available' }}</v-card-text>
+              <v-card-text>
+                <strong> Shelter: </strong> {{ court.meta?.shelter === 'T' ? 'Yes' : 'No' }}
+              </v-card-text>
+              <v-card-text> <strong> Net Type: </strong> {{ court.meta?.netType || 'Not Specified' }}</v-card-text>
             </v-col>
             <v-col cols="4">
               <v-img cover :src="court.courtPic" alt="Court Image" />
@@ -91,19 +100,21 @@ const filteredCourts = computed(() => {
 // Get user location
 const getUserLocation = () => {
   if (navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition(position => {
-      userLocation.value.latitude = position.coords.latitude;
-      userLocation.value.longitude = position.coords.longitude;
-      // Display current location to the user and calculate distance from user's current location to all courts displayed on the page.
-      calculateDistances();
-      alert(`Location data turned on! \nYour location is Latitude: ${userLocation.value.latitude}, Longitude: ${userLocation.value.longitude}`);
-    }, error => {
-      alert('Unable to retrieve your location.');
-    });
+    navigator.geolocation.getCurrentPosition(
+      position => {
+        userLocation.value.latitude = position.coords.latitude;
+        userLocation.value.longitude = position.coords.longitude;
+        calculateDistances();
+        alert(`Location data turned on! \nYour location is Latitude: ${userLocation.value.latitude}, Longitude: ${userLocation.value.longitude}`);
+      },
+      error => {
+        alert('Unable to retrieve your location.');
+      }
+    );
   } else {
     alert('Geolocation is not supported by your browser.');
   }
-}
+};
 
 // Get location from User to Court selected
 const calculateDistances = () => {
@@ -148,12 +159,21 @@ const calculateDistances = () => {
 
 <style scoped>
 .displayed-court{
+  padding-top: 5px;
+  padding-bottom: 5px;
+}
 
+.v-card-subtitle{
+  padding-top: 0px !important;
+}
+
+.second-row-formatting{
+  padding-top: 48px !important;
 }
 
 /* .spacing{
   margin-left: 16px;
-  margin-right: 16px;
+  margin-right: 16px; 
 } */
 
 #loc-btn{
@@ -187,6 +207,11 @@ const calculateDistances = () => {
 
 .v-card-title, .v-card-subtitle, .v-card-text {
   color: white;
+}
+
+.v-card-text, .v-card-subtitle {
+  padding-top: 8px;
+  padding-bottom: 8px;
 }
 
 .v-text-field {

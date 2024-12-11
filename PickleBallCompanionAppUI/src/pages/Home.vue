@@ -58,7 +58,7 @@
                 </game-history-card>
               </div>
               <v-col class="no-data" v-if="JSONGames.length == 0 && isLoggedIn">No recent games</v-col>
-              <v-col v-if="!isLoggedIn" class="no-data"><a href="/login">Log in</a> to view recent games</v-col>
+              <v-col v-if="!isLoggedIn" class="no-games"><a href="/login">Log in</a> to view recent games</v-col>
             </v-card-text>
           </v-card>
         </v-col>
@@ -202,6 +202,13 @@ function formatCourt(courtNum){
   text-align: center;
   color: white;
   padding-top: 45px;
+}
+
+.no-games{
+  content: center;
+  text-align: center;
+  color: white;
+  padding-top: 6px;
 }
 
 .v-card {
