@@ -9,7 +9,11 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 
 @Service
@@ -89,6 +93,23 @@ public class UserServiceImpl implements UserService {
     }
 
     public Boolean uploadProfileImage(String username, String imageData){
-        return false;
+        try {
+            // Get the original filename
+            String filename = "./PickleBallCompanionAppUI/public/images/" + username + ".jpg";
+
+            byte[] imageBytes = Base64.getDecoder().decode(imageData);
+
+            // Create the file path where the image will be saved
+            File destinationFile = new File("" + filename);
+
+            try (FileOutputStream fos = new FileOutputStream(destinationFile)) {
+                fos.write(imageBytes);
+            }
+
+            return true;
+
+        } catch (IOException e) {
+            return false;
+        }
     }
 }

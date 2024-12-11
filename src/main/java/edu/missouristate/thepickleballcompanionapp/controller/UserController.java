@@ -5,7 +5,12 @@ import edu.missouristate.thepickleballcompanionapp.domain.dto.ProfileImageDTO;
 import edu.missouristate.thepickleballcompanionapp.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.Base64;
 import java.util.List;
 
 @RestController
@@ -28,6 +33,12 @@ public class UserController {
         return userService.checkUserNameAlreadyExists(username);
     }
 
+    @RequestMapping(value = "/uploadProfileImage", method = RequestMethod.POST)
+    @ResponseBody
+    public Boolean uploadProfileImage(@RequestBody ProfileImageDTO file) {
+        return userService.uploadProfileImage(file.getUsername(), file.getImage());
+    }
+
     @RequestMapping(value = "/all/users", method = RequestMethod.GET)
     @ResponseBody
     public List<UserDTO> getAllUsers() {
@@ -38,11 +49,5 @@ public class UserController {
     @ResponseBody
     public Boolean addUser(@RequestBody UserDTO userDTO) {
         return userService.addUser(userDTO);
-    }
-
-    @RequestMapping(value = "/uploadProfileImage", method = RequestMethod.POST)
-    @ResponseBody
-    public Boolean uploadProfileImage(@RequestBody ProfileImageDTO imageDTO) {
-        return userService.uploadProfileImage(imageDTO.getImageData(), imageDTO.getImageData());
     }
 }

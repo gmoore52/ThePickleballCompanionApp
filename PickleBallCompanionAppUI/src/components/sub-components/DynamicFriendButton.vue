@@ -17,9 +17,9 @@ const router = useRouter();
 const emit = defineEmits(['reload']);
 
 function sendNewFriendRequest(){
-  
+
   showAlert('success',`Friend request sent to ${store.state.selectedUsername}`)
-  
+
 }
 
 function returnFriendStatus(){
@@ -38,12 +38,12 @@ function handleRequestDeny(){
     console.log(response)
     // showAlert('success', 'Friend request accepted')
     showAlert('success',`${store.state.selectedUsername} removed from your friends list`)
-  } 
+  }
     catch (error){
     // console.error('Error adding Event:', response);
     showAlert('error', `Friend request could not be rejected`)
-  } 
-  
+  }
+
   emit('reload');
 }
 
@@ -104,39 +104,24 @@ function handleRequestConfirm(){
 
   <!-- One of the buttons will display when you are viewing someone elses profile -->
   <span v-if="store.state.user.userName !== store.state.selectedUsername">
-    
+
     <!-- Request is pending button 'REC' from this user to you-->
-    <v-btn v-if="returnFriendStatus() == `REC - received`" prepend-icon="mdi-account-plus" class="grey-btn" @click="handleRequestConfirm()">
-      Accept Friend Request
-      <template v-slot:prepend> <v-icon color="success"></v-icon> </template>    
-    </v-btn>
+    <v-btn v-if="returnFriendStatus() == `REC - received`" prepend-icon="mdi-account-multiple-plus" class="mt-5" color="green" @click="handleRequestConfirm()">Accept Friend Request</v-btn>
 
     <!-- Request is pending button 'REC' from you to this user-->
     <span v-if="returnFriendStatus() == `REC - sent`" @click="handlePendingBtnClick()">
-      <v-btn prepend-icon="mdi-account-plus" disabled class="grey-btn">
-        Request pending  
-      </v-btn>
+      <v-btn prepend-icon="mdi-account-multiple-plus" disabled color="green" class="mt-5">Request pending</v-btn>
     </span>
 
     <!-- Add friend button 'ACC' to or from you -->
-    <v-btn v-if="returnFriendStatus() == `ACC`" prepend-icon="mdi-account-minus" class="grey-btn" @click="handleRequestDeny()">
-      Remove Friend
-      <template v-slot:prepend> <v-icon color="red"></v-icon> </template>
-    </v-btn>
+    <v-btn v-if="returnFriendStatus() == `ACC`" prepend-icon="mdi-account-multiple-minus" class="mt-5" color="red" @click="handleRequestDeny()">Remove Friend</v-btn>
 
     <!-- It is 'REV', 'REJ' or there is not an entry-->
-    <v-btn v-if="returnFriendStatus() == `NONE`" prepend-icon="mdi-account-plus" class="grey-btn" @click="handleRequestCreate()">
-      add friend
-      <template v-slot:prepend> <v-icon color="success"></v-icon> </template>
-    </v-btn>
+    <v-btn v-if="returnFriendStatus() == `NONE`" prepend-icon="mdi-account-multiple-plus" class="mt-5" color="green" @click="handleRequestCreate()">add friend</v-btn>
 
   </span>
 
 </template>
 <style scoped>
-
-.grey-btn{
-  background-color:#42424254;
-}
 
 </style>
