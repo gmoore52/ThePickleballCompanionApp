@@ -1,3 +1,40 @@
+<script setup>
+import {ref} from 'vue';
+import {useStore} from 'vuex'; // Import useStore
+import {useRouter} from 'vue-router';
+import {showAlert} from '@/util/alert.js'; // Import the showAlert utility
+
+const store = useStore(); // Get the Vuex store
+const router = useRouter();
+const login = ref('');
+const password = ref('');
+const valid = ref(false);
+const loginForm = ref(null);
+
+const rules = {
+  required: (value) => !!value || 'Required.',
+};
+
+const submitForm = async () => {
+  // Validate the form manually when the user clicks 'Login'
+  if (loginForm.value.validate()) {
+    try {
+      await store.dispatch('login', {
+        login: login.value,
+        password: password.value,
+      });
+      // Redirect to the homepage after successful login
+      await router.push('/');
+    } catch (error) {
+      // Show the alert if login fails
+      showAlert('error', 'Incorrect username or password.', 5000); // Show error alert for 5 seconds
+      console.error('Login failed:', error.message);
+    }
+  } else {
+    
+  }
+};
+</script>
 <template>
   <v-container class="d-flex justify-center align-center" fill-height>
     <v-card class="pa-6" width="600">
@@ -39,47 +76,16 @@
   </v-container>
 </template>
 
-<script setup>
-import {ref} from 'vue';
-import {useStore} from 'vuex'; // Import useStore
-import {useRouter} from 'vue-router';
-import {showAlert} from '@/util/alert.js'; // Import the showAlert utility
-
-const store = useStore(); // Get the Vuex store
-const router = useRouter();
-const login = ref('');
-const password = ref('');
-const valid = ref(false);
-const loginForm = ref(null);
-
-const rules = {
-  required: (value) => !!value || 'Required.',
-};
-
-const submitForm = async () => {
-  // Validate the form manually when the user clicks 'Login'
-  if (loginForm.value.validate()) {
-    try {
-      await store.dispatch('login', {
-        login: login.value,
-        password: password.value,
-      });
-      // Redirect to the homepage after successful login
-      await router.push('/');
-    } catch (error) {
-      // Show the alert if login fails
-      showAlert('error', 'Incorrect username or password.', 5000); // Show error alert for 5 seconds
-      console.error('Login failed:', error.message);
-    }
-  } else {
-    console.log('Form is not valid');
-  }
-};
-</script>
 <style scoped>
 .login-header{
   justify-content: center;
   text-align: center;
 }
-/* Custom styles if needed */
+
+.v-container {
+  max-width: 1168px;
+  }
+.v-card{
+  border-radius: 8px;
+}
 </style>

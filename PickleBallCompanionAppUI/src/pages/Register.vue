@@ -1,3 +1,189 @@
+<script setup>
+import {ref} from 'vue'
+import {useRouter} from 'vue-router' // Import useRouter
+import {fetchData} from "@/util/fetchData";
+import {showAlert} from "@/util/alert";
+
+// Data properties
+  const firstName = ref('')
+  const lastName = ref('')
+  const email = ref('')
+  const skillLevel = ref('')
+  const username = ref('')
+  const password = ref('')
+  const confirmPassword = ref('')
+  const formValid = ref(false)
+
+  // Error messages
+  const firstNameError = ref('')
+  const lastNameError = ref('')
+  const emailError = ref('')
+  const skillLevelError = ref('')
+  const usernameError = ref('')
+  const passwordError = ref('')
+  const confirmPasswordError = ref('')
+
+  const router = useRouter(); // Initialize the router
+
+  // Skill level options
+  const skillLevels = ['Beginner', 'Intermediate', 'Advanced', 'Pro']
+
+  // Validation rules
+  const usernameRules = [
+  v => !!v || 'Username is required',
+  v => v.length >= 5 || 'Username must be at least 5 characters'
+  ]
+
+  const passwordRules = [
+  v => !!v || 'Password is required',
+  v => v.length >= 8 || 'Password must be at least 8 characters',
+    v => /[A-Z]/.test(v) || 'Password must contain at least one uppercase letter',
+    v => /[\d!@#$%^&*(),.?":{}|<>]/.test(v) || 'Password must contain at least one number or special character'
+  ]
+
+  const confirmPasswordRules = [
+  v => !!v || 'Please confirm your password',
+  v => v === password.value || 'Passwords do not match',
+    v => v.length >= 8 || 'Password must be at least 8 characters',
+    v => /[A-Z]/.test(v) || 'Password must contain at least one uppercase letter',
+    v => /[\d!@#$%^&*(),.?":{}|<>]/.test(v) || 'Password must contain at least one number or special character'
+  ]
+
+  // Form reference to access validate()
+  const form = ref(null)
+
+  // Field validation functions
+  const validateFirstName = () => {
+  firstNameError.value = firstName.value ? '' : 'First name is required';
+}
+
+  const validateLastName = () => {
+  lastNameError.value = lastName.value ? '' : 'Last name is required';
+}
+
+  const validateEmail = () => {
+  emailError.value = email.value ? '' : 'Email is required';
+}
+
+  const validateSkillLevel = () => {
+  skillLevelError.value = skillLevel.value ? '' : 'Skill level is required';
+}
+
+const validateUsername = async () => {
+  usernameError.value = username.value ? '' : 'Username is required';
+  usernameError.value = await checkUserNameAlreadyExists(username.value) ? 'Username already exists' : '';
+}
+
+const checkUserNameAlreadyExists = async (username) => {
+  return await fetchData(`/users/check/username?username=${username}`);
+};
+
+  const validatePassword = () => {
+  passwordError.value = password.value ? '' : 'Password is required';
+}
+
+  const validateConfirmPassword = () => {
+  confirmPasswordError.value = confirmPassword.value ? '' : 'Please confirm your password';
+}
+
+  const resetForm = () => {
+  firstName.value = '';
+  lastName.value = '';
+  email.value = '';
+  skillLevel.value = '';
+  username.value = '';
+  password.value = '';
+  confirmPassword.value = '';
+  formValid.value = false; // Reset form validation state
+
+  // Clear error messages
+  firstNameError.value = '';
+  lastNameError.value = '';
+  emailError.value = '';
+  skillLevelError.value = '';
+  usernameError.value = '';
+  passwordError.value = '';
+  confirmPasswordError.value = '';
+}
+  // Use router
+
+  // Register button handler
+const register = async () => {
+  // Validate all fields before checking the form
+  validateFirstName();
+  validateLastName();
+  validateEmail();
+  validateSkillLevel();
+  await validateUsername();
+  validatePassword();
+  validateConfirmPassword();
+
+  // Check if any errors exist
+  if (
+    firstNameError.value ||
+    lastNameError.value ||
+    emailError.value ||
+    skillLevelError.value ||
+    usernameError.value ||
+    passwordError.value ||
+    confirmPasswordError.value
+  ) {
+    return; // Stop the form submission if any errors exist
+  }
+
+  // Set the form validity after validation
+  formValid.value = form.value.validate(); // Assuming form validation rules are set up
+
+  // If the form is valid, proceed with submission
+  if (formValid.value) {
+    // Build the UserDTO object
+    const skillLevelMap = {
+      'Beginner': 1,
+      'Intermediate': 2,
+      'Advanced': 3,
+      'Pro': 4
+    };
+
+    const userDTO = {
+      userName: username.value,
+      userFullName: `${firstName.value} ${lastName.value}`, // Combine first and last names
+      emailAddress: email.value,
+      password: password.value,
+      profileImgLoc: null, // Assuming no profile image is provided
+      skillLevel: skillLevelMap[skillLevel.value] || null, // Convert skill level string to integer
+      accCreationDate: new Date() // Set the current date or any other value as needed
+    };
+
+    try {
+      // Send the user data to the backend for registration
+      const response = await fetchData('/users/add', {
+        method: 'POST',
+        body: JSON.stringify(userDTO),
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+
+      // Show success alert and reset the form
+      showAlert('success', 'Your account has been created successfully!', 5000);
+      resetForm();
+
+      // Redirect to the login page after account creation
+      await router.push('/login');
+    } catch (error) {
+      console.error('Error adding user:', error);
+      showAlert('error', 'There was an error creating your account. Please try again.', 5000);
+    }
+  } else {
+    showAlert('error', 'Please correct the form errors before submitting.', 5000);
+  }
+};
+
+const clearUsernameError = () => {
+  usernameError.value = '';
+};
+
+</script>
 <template>
   <v-container class="big-container d-flex">
     <v-card elevation="10" width="600" class="pa-6">
@@ -46,6 +232,7 @@
             label="Username"
             v-model="username"
             :rules="usernameRules"
+            @input="clearUsernameError"
             dense
             :error-messages="usernameError"
           ></v-text-field>
@@ -90,188 +277,8 @@
     </v-card>
   </v-container>
 </template>
-
-<script setup>
-  import { ref } from 'vue'
-  import { useRouter } from 'vue-router' // Import useRouter
-  import { fetchData } from "@/util/fetchData";
-  import {showAlert} from "@/util/alert";
-
-  // Data properties
-  const firstName = ref('')
-  const lastName = ref('')
-  const email = ref('')
-  const skillLevel = ref('')
-  const username = ref('')
-  const password = ref('')
-  const confirmPassword = ref('')
-  const formValid = ref(false)
-
-  // Error messages
-  const firstNameError = ref('')
-  const lastNameError = ref('')
-  const emailError = ref('')
-  const skillLevelError = ref('')
-  const usernameError = ref('')
-  const passwordError = ref('')
-  const confirmPasswordError = ref('')
-
-  // Skill level options
-  const skillLevels = ['Beginner', 'Intermediate', 'Advanced', 'Pro']
-
-  // Validation rules
-  const usernameRules = [
-  v => !!v || 'Username is required',
-  v => v.length >= 5 || 'Username must be at least 5 characters'
-  ]
-
-  const passwordRules = [
-  v => !!v || 'Password is required',
-  v => v.length >= 8 || 'Password must be at least 8 characters',
-    v => /[A-Z]/.test(v) || 'Password must contain at least one uppercase letter',
-    v => /[\d!@#$%^&*(),.?":{}|<>]/.test(v) || 'Password must contain at least one number or special character'
-  ]
-
-  const confirmPasswordRules = [
-  v => !!v || 'Please confirm your password',
-  v => v === password.value || 'Passwords do not match',
-    v => v.length >= 8 || 'Password must be at least 8 characters',
-    v => /[A-Z]/.test(v) || 'Password must contain at least one uppercase letter',
-    v => /[\d!@#$%^&*(),.?":{}|<>]/.test(v) || 'Password must contain at least one number or special character'
-  ]
-
-  // Form reference to access validate()
-  const form = ref(null)
-
-  // Field validation functions
-  const validateFirstName = () => {
-  firstNameError.value = firstName.value ? '' : 'First name is required';
-}
-
-  const validateLastName = () => {
-  lastNameError.value = lastName.value ? '' : 'Last name is required';
-}
-
-  const validateEmail = () => {
-  emailError.value = email.value ? '' : 'Email is required';
-}
-
-  const validateSkillLevel = () => {
-  skillLevelError.value = skillLevel.value ? '' : 'Skill level is required';
-}
-
-  const validateUsername = () => {
-  usernameError.value = username.value ? '' : 'Username is required';
-}
-
-  const validatePassword = () => {
-  passwordError.value = password.value ? '' : 'Password is required';
-}
-
-  const validateConfirmPassword = () => {
-  confirmPasswordError.value = confirmPassword.value ? '' : 'Please confirm your password';
-}
-
-  const resetForm = () => {
-  firstName.value = '';
-  lastName.value = '';
-  email.value = '';
-  skillLevel.value = '';
-  username.value = '';
-  password.value = '';
-  confirmPassword.value = '';
-  formValid.value = false; // Reset form validation state
-
-  // Clear error messages
-  firstNameError.value = '';
-  lastNameError.value = '';
-  emailError.value = '';
-  skillLevelError.value = '';
-  usernameError.value = '';
-  passwordError.value = '';
-  confirmPasswordError.value = '';
-}
-
-  // Use router
-  const router = useRouter(); // Initialize the router
-
-  // Register button handler
-  const register = async () => {
-
-    // formValid only true if all rules are followed
-    // otherwise button is disabled
-    formValid.value = form.value.validate();
-
-    // Validate all fields before checking the form
-    validateFirstName();
-    validateLastName();
-    validateEmail();
-    validateSkillLevel();
-    validateUsername();
-    validatePassword();
-    validateConfirmPassword();
-
-    // Check if any errors exist
-    if (
-    firstNameError.value ||
-    lastNameError.value ||
-    emailError.value ||
-    skillLevelError.value ||
-    usernameError.value ||
-    passwordError.value ||
-    confirmPasswordError.value
-    ) {
-      return;
-    }
-
-    // Validate the form
-    if (form.value.validate()) {
-    // Build the UserDTO object
-      const skillLevelMap = {
-        'Beginner': 1,
-        'Intermediate': 2,
-        'Advanced': 3,
-        'Pro': 4
-      };
-
-      const userDTO = {
-        userName: username.value,
-        userFullName: `${firstName.value} ${lastName.value}`, // Combine first and last names
-        emailAddress: email.value,
-        password: password.value,
-        profileImgLoc: null, // Assuming no profile image is provided
-        skillLevel: skillLevelMap[skillLevel.value] || null, // Convert skill level string to integer
-        accCreationDate: new Date() // Set the current date or any other value as needed
-      };
-
-      try {
-        const response = await fetchData('/users/add', {
-          method: 'POST',
-          body: JSON.stringify(userDTO),
-          headers: {
-          'Content-Type': 'application/json'
-          }
-        });
-
-        showAlert('success', 'Your account has been created', 5000);
-        resetForm()
-
-        // Redirect to the login page
-        await router.push('/login');
-      } catch (error) {
-      console.error('Error adding user:', error);
-      }
-    } else {
-      console.log('Form is not valid');
-    }
-};
-
-</script>
-
 <style scoped>
-.fill-height {
-  
-}
+
 .big-container{
   margin-top: 0px;
   margin-bottom: 0px;
@@ -286,5 +293,8 @@
 .v-btn {
   font-size: 16px;
   font-weight: bold;
+}
+.v-card{
+  border-radius: 8px;
 }
 </style>

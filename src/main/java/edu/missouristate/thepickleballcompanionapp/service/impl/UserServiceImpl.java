@@ -9,7 +9,11 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 
 @Service
@@ -39,6 +43,18 @@ public class UserServiceImpl implements UserService {
             userDTOs.add(userDTO);
         }
         return userDTOs;
+    }
+
+    @Override
+    public Boolean checkUserNameAlreadyExists(String username) {
+        try {
+            // Check if the username exists in the database
+            return userRepository.existsByUserName(username); // Returns true if username exists
+        } catch (Exception e) {
+            // Log the error if something goes wrong (e.g., database issues)
+            e.printStackTrace();
+            return true; // Return true if there was an error, assuming the username might exist
+        }
     }
 
     @Override
@@ -72,6 +88,27 @@ public class UserServiceImpl implements UserService {
             userRepository.save(user);
             return true;
         } catch (Exception e) {
+            return false;
+        }
+    }
+
+    public Boolean uploadProfileImage(String username, String imageData){
+        try {
+            // Get the original filename
+            String filename = "./PickleBallCompanionAppUI/public/images/" + username + ".jpg";
+
+            byte[] imageBytes = Base64.getDecoder().decode(imageData);
+
+            // Create the file path where the image will be saved
+            File destinationFile = new File("" + filename);
+
+            try (FileOutputStream fos = new FileOutputStream(destinationFile)) {
+                fos.write(imageBytes);
+            }
+
+            return true;
+
+        } catch (IOException e) {
             return false;
         }
     }
