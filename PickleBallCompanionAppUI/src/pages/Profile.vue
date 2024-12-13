@@ -65,9 +65,8 @@ async function fetchUserData() {
 const fetchFriendRequests = async () => {
   JSONFriendRequests.value = [];
   try {
-    const url = `/friends/getFriendRequests/${store.state.selectedUsername}`; // TODO change the path and everything here so it works correctly
+    const url = `/friends/getFriendRequests/${store.state.selectedUsername}`; 
     JSONFriendRequests.value = await fetchData(url);
-    // console.log(JSONFriendRequests.value)
   } catch (error) {
     console.error(error);
   }
@@ -75,7 +74,7 @@ const fetchFriendRequests = async () => {
 
 function returnHome(){
   store.commit('UNSET_SELECTED_USERNAME');
-  router.push(`/profile/:userId`); // /${user.value}
+  router.push(`/profile/:userId`); 
 }
 
 // Function to fetch friends data from the database
@@ -92,19 +91,11 @@ async function fetchFriendRequestStatus(){
   if (store.state.user.userName !== store.state.selectedUsername){ // if you are looking at someone elses profile, you want to fetch this status to be used on the DynamicFriendButton
     try {
         friendRequestStatus.value = await fetchData(`/friends/status/${store.state.selectedUsername}/${store.state.user.userName}`);
-        // console.log(friendRequestStatus.value)
-        // showAlert('success', 'Friend request accepted')
     }
       catch (error){
       console.error('Error adding Event:', friendRequestStatus.value);
-      // showAlert('error', `Friend request could not be rejected`)
     }
   }
-  // console.log(friendRequestStatus.value)
-}
-
-function addSelectedFriend(userName){
-  // function is not complete yet, we will be calling to the database here
 }
 
 function visitStats(userName){
@@ -153,14 +144,9 @@ function visitProfile(userName){
   store.commit('SET_SELECTED_USERNAME', userName);
   router.push(`/profile/${userName}`); // /${user.value}
   window.scrollTo(0, 0);
-
-
-  // fetchUserData();
-  // getUsers();
 }
 
 async function loadData(){
-  // console.log("@@@@")
   await fetchUserData(); // Fetch the user data for the selected profile
   await fetchFriendRequests();
   await fetchFriends(); // Fetch the friends of the selected profile
@@ -233,7 +219,7 @@ const confirmLogout = async () => {
 
               <v-col cols="12" md="9" class="profile-content">
 
-                <div class="profile-details"> <!-- NOAH ADDED THIS -->
+                <div class="profile-details"> 
 
                 <v-card class="info-card">
                   <v-card-title class="white--text">Email</v-card-title>
@@ -244,11 +230,7 @@ const confirmLogout = async () => {
                   <v-card-text class="white--text">{{ formatDate(userData.accCreationDate) }}</v-card-text>
                 
                 </v-card>
-
-
                 <!-- Displays if you are looking at a profile other than your own -->
-
-                 <!-- NOTE: THIS BUTTON GOTTA BE DISABLED AND SAY "Friend Added" ONCE WE FINISH FRIEND REQUESTS IF YOU ARE ALREADY THEIR FRIEND-->
                 <div class="profile-details-buttons">
                   <v-btn v-if="loggedInUserName !== store.state.selectedUsername" prepend-icon="mdi-chart-line" class="mt-5 grey-btn" @click="visitStats(store.state.selectedUsername)">
                     View Stats
@@ -261,10 +243,7 @@ const confirmLogout = async () => {
                     </template>
                   </v-btn>
                 </div>
-                <!-- <v-btn v-if="loggedInUserName !== store.state.selectedUsername" prepend-icon="mdi-account-multiple-plus" class="mt-5" color="green" @click="addSelectedFriend(store.state.selectedUsername)">Add Friend</v-btn> -->
-
-              </div> <!-- NOAH ADDED THIS -->
-
+              </div> 
               <div class="profile-utility-buttons">
                 <div v-if="loggedInUserName === store.state.selectedUsername" class="profile-upload-container">
                     <v-file-input
@@ -293,10 +272,7 @@ const confirmLogout = async () => {
                   <template v-slot:prepend> <v-icon color="red"></v-icon> </template>
                 </v-btn>
               </div>
-
               </v-col>
-
-
             </v-row>
           </v-card>
         </v-col>
@@ -410,16 +386,11 @@ const confirmLogout = async () => {
 }
 
 .file-input{
-  /* padding-top: 30px; */
   min-width: 100%;
 }
 
 .v-input__details{
   padding-top: 0;
-}
-
-.upload-img-button{
-  /* margin-right: auto; */
 }
 
 .info-card{
@@ -476,5 +447,4 @@ const confirmLogout = async () => {
   align-items: flex-end;
 }
 
-/* Add styles as needed */
 </style>

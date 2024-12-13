@@ -11,7 +11,7 @@ const store = createStore({
   mutations: {
     SET_USER(state, user) {
       state.user = user;
-      state.selectedUsername = user.userName; // new will addition here
+      state.selectedUsername = user.userName;
       state.isAuthenticated = !!user;
       // Persist the user information to localStorage
       localStorage.setItem('user', JSON.stringify(user));

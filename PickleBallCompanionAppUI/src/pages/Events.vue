@@ -4,7 +4,7 @@ import {VTimePicker} from 'vuetify/labs/VTimePicker'
 import {fetchData} from '@/util/fetchData.js';
 import {showAlert} from '@/util/alert'
 import {useStore} from 'vuex';
-import { useRouter } from 'vue-router';
+import {useRouter} from 'vue-router';
 import {formatDateTime} from '@/util/formatDate.js'
 
 
@@ -12,7 +12,7 @@ import {formatDateTime} from '@/util/formatDate.js'
 const searchQuery = ref(null)
 const showDialog = ref(false);
 
-const eventTitle = ref(null);  // todo fix REALLY weird off by 5 hours glitch on sending to the backend, frontent looks fine I dont know whats going wrong
+const eventTitle = ref(null);  
 const eventLocation = ref(null);
 const startDate = ref(null);
 const endDate = ref(null);
@@ -53,10 +53,6 @@ const frontendEndTime = computed({ // cleans selected time for frontend
     return frontendTime(endTime.value)
   }
 })
-
-// TODO: add profile pictures
-
-// Sample data for courts (you can replace this with API data)
 
 const titleRules = [
   value => {
@@ -123,12 +119,8 @@ const descriptionRules = [
 
 function filterTimeOfEvents() {
   const now = new Date();
-
   for (const event of JSONEvents.value) {
-    // console.log(event)
     if (event.eventStart > now) { // future events
-      // console.log(event.eventStart)
-      // console.log(now)
       upcomingEvents.value.push(event)
     } else if ((event.eventStart <= now) && (event.eventEnd > now)) { // events occuring now
       ongoingEvents.value.push(event)
@@ -203,7 +195,6 @@ const parseData = async () => {
 
   // Populate the list of court names
   locations.value = JSONCourts.value.map((loc) => loc.courtName);
-
 };
 
 
@@ -221,7 +212,6 @@ function frontendTime(time) {
   } else {
     return null
   }
-
 }
 
 // function to format the date for the date object
@@ -252,11 +242,8 @@ function handleSubmit() {
   var dataNames = ['eventTitle', 'eventLoc', 'eventDesc'];
   var dataValues = [eventTitle.value, locationDict.value[eventLocation.value], eventDescription.value];
 
-  // console.log(`Event Location ID: ${locationDict.value[eventLocation.value]}`); // Check the value before submission
-
   for (let i = 0; i < dataNames.length; i++) {
     jsonEvent[dataNames[i]] = dataValues[i];
-    //console.log(dataValues[i])
   }
 
   let nullsErr = checkForNulls();
@@ -271,25 +258,19 @@ function handleSubmit() {
     // date objects are getting created once the time logic is completed
     jsonEvent['eventStart'] = convertToDateString(startDate.value, startTime.value, startAMPM.value);
     jsonEvent['eventEnd'] = convertToDateString(endDate.value, endTime.value, endAMPM.value);
-    // console.log(jsonEvent);
-
 
     try {
       const response = fetchData("/event/logEvent", {
-        method: 'POST', // (or 'GET')
+        method: 'POST', 
         body: JSON.stringify(jsonEvent),
         headers: {
           'Content-type': 'application/json',
         }
       });
 
-      // console.log('Success - game added :', response);
-
     } catch (error) {
       console.error('Error adding Event:', error);
     }
-
-    // post event will occur here
 
     closeModal()
   }
@@ -360,40 +341,6 @@ function closeModal() {
   eventDescription.value = null;
 }
 
-
-// function convertDateObjToFrontendDate(date) {
-//   console.log(date.toLocaleString())
-
-//   let newDate = new Date(date);
-//   let fullDate = newDate.toDateString();
-//   let hours = newDate.getHours();
-//   let minutes = newDate.getMinutes();
-
-//   function convertDateObjToFrontendDate(date){
-//   console.log(date.toLocaleString())
-
-
-//   let newDate = new Date(date);
-//   let fullDate = newDate.toDateString();
-//   let hours = newDate.getHours();
-//   let minutes = newDate.getMinutes();
-
-
-  // if (minutes == 0) {
-  //   minutes = '00'
-  // }
-
-//   let ampm = hours >= 12 ? 'PM' : 'AM';
-//   hours = hours % 12 || 12;
-
-
-//   if(minutes == 0){
-//     minutes = '00'
-//   }
-
-//   return `${fullDate} ${hours}:${minutes}${ampm}`;
-// }
-
 function handleEventBtnClick() {
   if(store.state.isAuthenticated){
     showDialog.value = true
@@ -449,26 +396,20 @@ const filteredOngoingEvents = computed(() => {
                     </h2>
                   </v-col>
                   <v-col cols="1" class="close-container">
-
                     <v-btn class="close-btn" color="red" @click="closeModal()" density="compact" icon="$close"></v-btn>
                   </v-col>
-
                   <v-col cols="6" class="container">
                     <v-text-field v-model="eventTitle" required label="Event Title" :rules="titleRules">
-
                     </v-text-field>
                   </v-col>
                   <v-col cols="6" class="container">
-        
                     <v-autocomplete :items="locations" no-data-text="Location not found" v-model="eventLocation" clearable required label="Event Location" class="" :rules="locationRules">
-
                     </v-autocomplete>
                   </v-col>
                   <v-col cols="12" class="container">
                     <v-textarea v-model="eventDescription"
                                 placeholder="Write a brief description of the event you are creating " required
                                 label="Event Description" :rules="descriptionRules">
-
                     </v-textarea>
                   </v-col>
                   <v-col cols="6" class="event-labels">
@@ -479,7 +420,6 @@ const filteredOngoingEvents = computed(() => {
                   </v-col>
                   <v-col cols="6" class="container">
                     <v-text-field v-model="startDate" required label="Start Date" type="date" :rules="startDateRules">
-
                     </v-text-field>
                   </v-col>
                   <v-col cols="6" class="container">
@@ -517,13 +457,9 @@ const filteredOngoingEvents = computed(() => {
                   </v-col>
 
                   <v-col cols="12" class="">
-                    <!-- prepend-icon="mdi-calendar-plus" -->
                     <v-btn class="submit" type="submit">
                       Add Event
                     </v-btn>
-                  </v-col>
-                  <v-col cols="12" class="errors">
-
                   </v-col>
                 </v-row>
               </v-form>
@@ -559,7 +495,6 @@ const filteredOngoingEvents = computed(() => {
                   <v-row no-gutters>
                     <v-col cols="8">
                       <v-card-title>{{ event.eventTitle }}</v-card-title>
-                      <!-- <v-card-subtitle>Event ID: {{ event.event_id }}</v-card-subtitle> -->
                       <v-card-subtitle>Start: {{ formatDateTime(event.eventStart.toLocaleString()) }}</v-card-subtitle>
                       <v-card-subtitle>End: {{ formatDateTime(event.eventEnd.toLocaleString()) }}</v-card-subtitle>
                       <v-card-text>{{ event.eventDesc }}</v-card-text>
@@ -589,7 +524,6 @@ const filteredOngoingEvents = computed(() => {
                   <v-row no-gutters>
                     <v-col cols="8">
                       <v-card-title>{{ event.eventTitle }}</v-card-title>
-                      <!-- <v-card-subtitle>Event ID: {{ event.eventId }}</v-card-subtitle> -->
                       <v-card-subtitle>Start: {{ formatDateTime(event.eventStart.toLocaleString()) }}</v-card-subtitle>
                       <v-card-subtitle>End: {{ formatDateTime(event.eventEnd.toLocaleString()) }}</v-card-subtitle>
                       <v-card-text>{{ event.eventDesc }}</v-card-text>
@@ -610,86 +544,56 @@ const filteredOngoingEvents = computed(() => {
 </template>
 
 <style scoped>
+.container{
+  padding-top: 0rem;
+  padding-bottom: 0rem;
+}
+.input-format{
+  margin-bottom: 0rem;
+  margin-top: 0rem;
+}
 
-   .container{
-    padding-top: 0rem;
-    padding-bottom: 0rem;
-   }
-   .input-format{
-    margin-bottom: 0rem;
-    margin-top: 0rem;
-  }
-  .errors{
-    display: inline-block;
-    margin: auto;
-    text-align: center;
-    color: rgb(223, 70, 70);
-    font-weight: bold;
-    padding-top: 0;
-    padding-bottom:0;
-    font-size: 14px;
-    height: 0px
-  }
-
-  .centered{
-    justify-content: center;
-    text-align: center;
-  }
-  .submit{
-    background-color: #4caf50;
-    width: 100%;
-    height: 3.5rem;
-    margin-top: 0.4rem
-  }
-  .event-labels{
-    justify-content: center;
-    text-align: center;
-    padding-top: 0;
-  }
-  .modal-header{
-    padding-left: 57px;
-    justify-content: center;
-    text-align: center;
-
+.centered{
+  justify-content: center;
+  text-align: center;
+}
+.submit{
+  background-color: #4caf50;
+  width: 100%;
+  height: 3.5rem;
+  margin-top: 0.4rem
+}
+.event-labels{
+  justify-content: center;
+  text-align: center;
+  padding-top: 0;
+}
+.modal-header{
+  padding-left: 57px;
+  justify-content: center;
+  text-align: center;
+}
 
 .input-format {
   margin-bottom: 0rem;
   margin-top: 0rem;
 }
-
-
-.errors {
-  display: inline-block;
-  margin: auto;
-  text-align: center;
-  color: rgb(223, 70, 70);
-  font-weight: bold;
-  padding-top: 0;
-  padding-bottom: 0;
-  font-size: 14px;
-  height: 0px
+.modal-container{
+  max-width: 800px;
+}
+.modal-card{
+  background-color: #222222;
+  padding: 2.5em;
+}
+.card-item{
+  border-radius: 8px;
+  padding: 0.8rem;
+  background-color: #42424254;
 }
 
-  }
-  .modal-container{
-    max-width: 800px;
-  }
-  .modal-card{
-    background-color: #222222;
-    padding: 2.5em;
-    /* max-height: 672px; */
-  }
-  .card-item{
-    border-radius: 8px;
-    padding: 0.8rem;
-    background-color: #42424254;
-  }
-
-  .v-card{
-    border-radius: 8px !important;
-  }
-  .close-container{
-  }
+.v-card{
+  border-radius: 8px !important;
+}
 
 .submit {
   background-color: #4caf50;
@@ -699,8 +603,6 @@ const filteredOngoingEvents = computed(() => {
 }
 
 .v-img{
-  height: 160px;
-
   height: 160px;
 }
 
@@ -714,7 +616,6 @@ const filteredOngoingEvents = computed(() => {
   padding-left: 57px;
   justify-content: center;
   text-align: center;
-
   padding-right: 0;
 }
 
@@ -726,10 +627,6 @@ const filteredOngoingEvents = computed(() => {
   padding-left: 6px;
 }
 
-.test {
-
-}
-
 .modal-container {
   max-width: 800px;
 }
@@ -737,17 +634,12 @@ const filteredOngoingEvents = computed(() => {
 .modal-card {
   background-color: #222222;
   padding: 2.5em;
-  /* max-height: 672px; */
 }
 
 .card-item {
   border-radius: 8px;
   padding: 0.8rem;
   background-color: #42424254;
-}
-
-.close-container {
-
 }
 
 .close-btn {
@@ -765,8 +657,6 @@ const filteredOngoingEvents = computed(() => {
 .main-container {
   border-radius: 8px;
   padding: 1rem;
-  /* padding-right: 16rem;
-  padding-left: 16rem; */
 }
 
 div.layout {
@@ -790,7 +680,6 @@ div.layout {
 .card {
   padding: 0.8em;
   margin: 0.1em;
-  /* height: 700px; */
 }
 
 .img {
@@ -803,8 +692,8 @@ div.layout {
   border: 2px;
 }
 
-  .v-container {
-    max-width: 1168px;
-  }
+.v-container {
+  max-width: 1168px;
+}
 
 </style>

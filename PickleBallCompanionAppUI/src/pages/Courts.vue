@@ -1,67 +1,3 @@
-<template>
-  <v-container class="big-container">
-    <!-- Search and Location Toolbar -->
-    <div class="spacing">
-      <v-row>
-        <v-col cols="12" md="8" class="top-containers">
-          <v-btn prepend-icon="mdi-map-marker-account" color="#212121" id="loc-btn" class="mr-2" @click="getUserLocation">
-            Click here to use your precise location
-          </v-btn>
-        </v-col>
-        <v-col cols="12" md="4" class="d-flex top-containers">
-          <v-text-field
-            v-model="searchQuery"
-            label="Search"
-            append-icon="mdi-magnify"
-            single-line
-            dense
-            color="black"
-            class="white--text search-bar"
-          ></v-text-field>
-          <!-- <v-btn color="#212121" class="ml-1 search-btn">
-            <v-icon>mdi-magnify</v-icon>
-          </v-btn> -->
-        </v-col>
-      </v-row>
-
-    <!-- List of Courts -->
-    <v-row>
-      <v-col
-        v-for="court in filteredCourts"
-        :key="court.id"
-        cols="12"
-        class="displayed-court"
-      >
-        <v-card class="" outlined>
-          <v-row>
-            <v-col cols="4">
-              <v-card-title>{{ court.courtName }}</v-card-title>
-              <v-card-subtitle>
-                <!-- <strong> -->
-                  Distance from you: {{ court.distance ? `${court.distance}` : 'Must enable user location' }}
-                <!-- </strong> -->
-              </v-card-subtitle>
-              <v-card-text> <strong> Location: </strong>{{ court.address }}</v-card-text>
-              <v-card-text> <strong> Number of courts: </strong>{{ court.numOfCourts }}</v-card-text>
-            </v-col>
-            <v-col cols="4">
-              <v-card-text class="second-row-formatting"> <strong> Availability: </strong> {{ court.meta?.availability || 'Not Available' }}</v-card-text>
-              <v-card-text>
-                <strong> Shelter: </strong> {{ court.meta?.shelter === 'T' ? 'Yes' : 'No' }}
-              </v-card-text>
-              <v-card-text> <strong> Net Type: </strong> {{ court.meta?.netType || 'Not Specified' }}</v-card-text>
-            </v-col>
-            <v-col cols="4">
-              <v-img cover :src="court.courtPic" alt="Court Image" />
-            </v-col>
-          </v-row>
-        </v-card>
-      </v-col>
-    </v-row>
-  </div>
-  </v-container>
-</template>
-
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { fetchData } from '@/util/fetchData.js'
@@ -80,7 +16,6 @@ const getCourts = async () => {
   try {
     const url = '/data/locations';
     courts.value = await fetchData(url);
-    //console.log(courts.value)
   } catch (error) {
     console.error(error);
   }
@@ -123,7 +58,7 @@ const calculateDistances = () => {
     return;
   }
 
-  //Using the Haversine formula to calculate the distance between two points on a sphere given their longitudes and latitudes
+  // Using the Haversine formula to calculate the distance between two points on a sphere given their longitudes and latitudes
   // Radius of Earth in miles
   const R = 3958.8;
 
@@ -156,6 +91,64 @@ const calculateDistances = () => {
   });
 }
 </script>
+<template>
+  <v-container class="big-container">
+    <!-- Search and Location Toolbar -->
+    <div class="spacing">
+      <v-row>
+        <v-col cols="12" md="8" class="top-containers">
+          <v-btn prepend-icon="mdi-map-marker-account" color="#212121" id="loc-btn" class="mr-2" @click="getUserLocation">
+            Click here to use your precise location
+          </v-btn>
+        </v-col>
+        <v-col cols="12" md="4" class="d-flex top-containers">
+          <v-text-field
+            v-model="searchQuery"
+            label="Search"
+            append-icon="mdi-magnify"
+            single-line
+            dense
+            color="black"
+            class="white--text search-bar"
+          ></v-text-field>
+        </v-col>
+      </v-row>
+
+    <!-- List of Courts -->
+    <v-row>
+      <v-col
+        v-for="court in filteredCourts"
+        :key="court.id"
+        cols="12"
+        class="displayed-court"
+      >
+        <v-card class="" outlined>
+          <v-row>
+            <v-col cols="4">
+              <v-card-title>{{ court.courtName }}</v-card-title>
+              <v-card-subtitle>
+                  Distance from you: {{ court.distance ? `${court.distance}` : 'Must enable user location' }}
+              </v-card-subtitle>
+              <v-card-text> <strong> Location: </strong>{{ court.address }}</v-card-text>
+              <v-card-text> <strong> Number of courts: </strong>{{ court.numOfCourts }}</v-card-text>
+            </v-col>
+            <v-col cols="4">
+              <v-card-text class="second-row-formatting"> <strong> Availability: </strong> {{ court.meta?.availability || 'Not Available' }}</v-card-text>
+              <v-card-text>
+                <strong> Shelter: </strong> {{ court.meta?.shelter === 'T' ? 'Yes' : 'No' }}
+              </v-card-text>
+              <v-card-text> <strong> Net Type: </strong> {{ court.meta?.netType || 'Not Specified' }}</v-card-text>
+            </v-col>
+            <v-col cols="4">
+              <v-img cover :src="court.courtPic" alt="Court Image" />
+            </v-col>
+          </v-row>
+        </v-card>
+      </v-col>
+    </v-row>
+  </div>
+  </v-container>
+</template>
 
 <style scoped>
 .displayed-court{
@@ -170,11 +163,6 @@ const calculateDistances = () => {
 .second-row-formatting{
   padding-top: 48px !important;
 }
-
-/* .spacing{
-  margin-left: 16px;
-  margin-right: 16px; 
-} */
 
 #loc-btn{
   background-color:#4caf50 !important;
@@ -216,7 +204,7 @@ const calculateDistances = () => {
 
 .v-text-field {
   background-color: #42424254;
-  padding: 0; /* Remove extra padding */
+  padding: 0; 
 }
 
 .search-bar{
@@ -229,12 +217,11 @@ const calculateDistances = () => {
   width: 360x;
 }
 
-
 .no-padding {
   padding: 0 !important;
 }
 
 .v-container {
-    max-width: 1168px;
+  max-width: 1168px;
 }
 </style>

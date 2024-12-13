@@ -8,7 +8,6 @@
       <v-card-text><b>Skill Level:</b> {{ skillLevels[props.userInfo.skillLevel] }}</v-card-text>
       <v-card-text><b>Account Created:</b> {{ props.userInfo.accCreationDate }}</v-card-text>
 
-
       <v-card-actions>
         <v-btn color="green" @click="close">Close</v-btn>
       </v-card-actions>
@@ -39,7 +38,6 @@ function close() {
 </script>
 
 <style scoped>
-/* Custom styling for the username */
 
 .v-container {
   max-width: 1168px;

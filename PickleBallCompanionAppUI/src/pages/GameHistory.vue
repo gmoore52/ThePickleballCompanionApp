@@ -2,9 +2,7 @@
 import { ref, computed, onMounted, watch } from 'vue'
 import { fetchData } from '@/util/fetchData.js'
 import { useStore } from 'vuex';
-import { formatDateTime } from '@/util/formatDate.js'
 import { useRouter } from 'vue-router';
-import GameHistoryModal from '@/components/sub-components/GameHistoryModal.vue'; 
 import GameHistoryCard from '@/components/sub-components/GameHistoryCard.vue'; 
 
 
@@ -29,9 +27,8 @@ const loggedInUserName = computed(() => {
 const getGames = async () => {
   JSONGames.value = [];
   try {
-    JSONGames.value = await fetchData(`/game/games?username=${store.state.selectedUsername}`); // 
+    JSONGames.value = await fetchData(`/game/games?username=${store.state.selectedUsername}`); 
     modalStates.value = new Array(JSONGames.value.length).fill(false); // Initialize modal states
-    // console.log(JSONGames.value)
   } catch (error) {
     console.error(error);
   }
@@ -42,14 +39,12 @@ const getCourts = async () => {
   try {
     const url = '/data/locations';
     JSONCourts.value = await fetchData(url);
-    // console.log(JSONCourts.value);
   } catch (error) {
     console.error(error);
   }
 }
 
 const sortGames = async () => {
-
   JSONGames.value = JSONGames.value
     .sort((b,a) => new Date(a.gameDate) - new Date(b.gameDate));
 }
@@ -65,7 +60,6 @@ function visitProfile(userName){
 }
 
 function returnToOtherProfile(userName){
-  // store.commit('SET_SELECTED_USERNAME', "Peter_Dinklage3");
   router.push(`/profile/:userId`); // /${user.value} 
   window.scrollTo(0, 0);
 }
@@ -101,14 +95,9 @@ watch(
   }
 );
 
-
-
 </script>
-
 <template>
   <v-app>
-  
-
     <v-container class="big-container">    
       <v-row v-if="store.state.user?.userName !== store.state.selectedUsername" class="pb-3 button-row">
                 <v-btn prepend-icon="mdi-arrow-left" class="return-btn" @click="returnToOtherProfile(store.state.selectedUsername)">return</v-btn>
@@ -116,11 +105,6 @@ watch(
     <v-row class="bg-div">
       <v-col cols="7" class="top-containers">
         <h2 class="d-inline-block ml-1">Game History for {{ store.state.selectedUsername }}</h2>
-
-        <!-- <v-btn color="orange" @click="temp1()">olivia_brown</v-btn>
-        <v-btn color="orange" @click="temp2()">Peter_Dinklage3</v-btn> -->
-        <!-- <v-btn color="orange" @click="unset()">unset</v-btn> -->
-        <!-- <v-btn color="orange" @click="visitProfile(store.state.selectedUsername)">Go to peters profile</v-btn> -->
       </v-col>
       <v-col cols="5" class="top-containers">
         <div class="game-switch">
@@ -223,21 +207,9 @@ watch(
 }
 
 .btn{
-    background-color: #4caf50;
-    height: 90px;
-    width:100%
-  }
-
-.outer{
-
-}
-
-.inner{
-
-}
-
-.displayed-court{
-
+  background-color: #4caf50;
+  height: 90px;
+  width:100%
 }
 
 #loc-btn{
@@ -261,8 +233,6 @@ watch(
   border-radius: 8px;
 }
 
-
-
 .search-btn {
   height: 100%;
 }
@@ -277,7 +247,7 @@ watch(
 
 .v-text-field {
   background-color: #42424254;
-  padding: 0; /* Remove extra padding */
+  padding: 0; 
 }
 
 .v-img {

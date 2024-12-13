@@ -1,57 +1,8 @@
-<template>
-  <!-- App Bar -->
-  <v-app-bar class="sticky" app color="green darken-4" dark>
-    <v-toolbar-title>
-      <div class="text-h4 pickle-title">Pickleball Companion</div>
-    </v-toolbar-title>
-
-    <!-- Tabs within the app bar -->
-    <v-tabs class="d-flex justify-center flex-grow-1" v-model="tab" background-color="grey lighten-2">
-      <v-tab
-        v-for="item in filteredTabs"
-        :key="item.title"
-        :to="item.route"
-        @click="returnToYourView(item.title)"
-        ripple
-      >
-        {{ item.title }}
-      </v-tab>
-    </v-tabs>
-
-    <!-- User-specific buttons -->
-    <v-toolbar-items>
-      <template v-if="isLoggedIn">
-        <v-btn color="white" @click="goToProfile">{{ user }}</v-btn>
-      </template>
-      <template v-else>
-        <v-btn color="white" @click="goToLogin">Login</v-btn>
-        <v-btn color="white" @click="goToRegister">Register</v-btn>
-      </template>
-    </v-toolbar-items>
-  </v-app-bar>
-
-  <!-- Alert Section -->
-  <v-alert
-    class="alert"
-    v-if="alert.visible"
-    :type="alert.type"
-    dismissible
-    @click:close="closeAlert"
-    absolute
-    top
-    left
-    transition="slide-x-transition"
-  >
-    {{ alert.message }}
-  </v-alert>
-</template>
-
 <script setup>
 import { ref, computed } from 'vue';
 import { useStore } from 'vuex';
 import { useRouter } from 'vue-router';
 import { useAlert } from '@/util/alert.js';
-
 
 const router = useRouter();
 const store = useStore();
@@ -103,15 +54,58 @@ const goToProfile = () => {
   router.push(`/profile/:userId`);
 }
 
-function returnToYourView(tabName) {
+function returnToYourView() {
   store.commit('UNSET_SELECTED_USERNAME');
 }
 
-// Example of triggering an alert (you can call this from anywhere)
-const triggerErrorAlert = () => {
-  showAlert('error', 'Error: Incorrect email/username or password.', 5000); // Show alert for 5 seconds
-};
 </script>
+<template>
+  <!-- App Bar -->
+  <v-app-bar class="sticky" app color="green darken-4" dark>
+    <v-toolbar-title>
+      <div class="text-h4 pickle-title">Pickleball Companion</div>
+    </v-toolbar-title>
+
+    <!-- Tabs within the app bar -->
+    <v-tabs class="d-flex justify-center flex-grow-1" v-model="tab" background-color="grey lighten-2">
+      <v-tab
+        v-for="item in filteredTabs"
+        :key="item.title"
+        :to="item.route"
+        @click="returnToYourView(item.title)"
+        ripple
+      >
+        {{ item.title }}
+      </v-tab>
+    </v-tabs>
+
+    <!-- User-specific buttons -->
+    <v-toolbar-items>
+      <template v-if="isLoggedIn">
+        <v-btn color="white" @click="goToProfile">{{ user }}</v-btn>
+      </template>
+      <template v-else>
+        <v-btn color="white" @click="goToLogin">Login</v-btn>
+        <v-btn color="white" @click="goToRegister">Register</v-btn>
+      </template>
+    </v-toolbar-items>
+  </v-app-bar>
+
+  <!-- Alert Section -->
+  <v-alert
+    class="alert"
+    v-if="alert.visible"
+    :type="alert.type"
+    dismissible
+    @click:close="closeAlert"
+    absolute
+    top
+    left
+    transition="slide-x-transition"
+  >
+    {{ alert.message }}
+  </v-alert>
+</template>
 
 <style scoped>
 .alert {

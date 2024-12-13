@@ -15,8 +15,6 @@ INSERT INTO USERS (
       ('Andrew_Larson9', 'Andrew Larson', 'andrewlarsonlovespickle3@gmail.com', '$2a$10$xx8vlZ3Mdx0sDKNiPfbM0.BDhB9Bdl8a7AzlyTHlh7OdPrncAoUnO', NULL, 2, '2024-11-10 21:57:51.686000'),
       ('JohnRobertson22', 'John Robertson', 'johnrobertsonwork@gmail.com', '$2a$10$xx8vlZ3Mdx0sDKNiPfbM0.BDhB9Bdl8a7AzlyTHlh7OdPrncAoUnO', NULL, 3, '2024-11-11 22:14:39.321000');
 
--- Password for ALL accounts inserted here: Password1
-
 INSERT INTO REQUESTS (
     REQUEST_TYPE,
     REQUEST_DATE,

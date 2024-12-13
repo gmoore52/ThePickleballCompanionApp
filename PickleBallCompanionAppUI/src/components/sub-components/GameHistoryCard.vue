@@ -1,9 +1,7 @@
 <script setup>
-import { ref, computed, defineProps, onMounted, watch } from 'vue'
-import { fetchData } from '@/util/fetchData.js'
+import { defineProps} from 'vue'
 import { useStore } from 'vuex';
 import { formatDateTime } from '@/util/formatDate.js'
-import { useRouter } from 'vue-router';
 import GameHistoryModal from '@/components/sub-components/GameHistoryModal.vue'; 
 
 const props = defineProps({
@@ -16,7 +14,6 @@ const props = defineProps({
 });
 
 const store = useStore();
-const router = useRouter();
 
 function calcWinLoss(game){
   if (game.player1 === store.state.selectedUsername || game.player3 === store.state.selectedUsername){
@@ -68,7 +65,7 @@ function returnOtherTeamScore(game){
   }
 }
 
-// logic to do with knowing which team has won based on which player TODO this is just not working logically .......
+// logic to do with knowing which team has won based on which player 
 function calcTeamWinLoss(game, teamNum){
   if (teamNum === 1){
     if(parseInt(game.userScore) < parseInt(game.oppScore)){
@@ -87,32 +84,7 @@ function calcTeamWinLoss(game, teamNum){
     }
   }
   
-    // if (teamNum === 1){
-  //   if(parseInt(game.userScore) < parseInt(game.oppScore)){
-  //     return "Win"
-  //   }
-  //   else if(parseInt(game.userScore) > parseInt(game.oppScore)){
-  //     return "Loss"
-  //   }
-  // }
-  // if (teamNum === 2){
-  //   if(parseInt(game.userScore) < parseInt(game.oppScore)){
-  //     return "Loss"
-  //   }
-  //   else if(parseInt(game.userScore) > parseInt(game.oppScore)){
-  //     return "Win"
-  //   }
-  // }
 }
-
-function returnCorrectScore(game, teamNum){
-  // if(teamNum === 2){
-  //   return game.oppScore
-  // }if(teamNum === 1){
-  //   return game.userScore
-  // }
-}
-
 
 function formatUsername(username){
   if (username == store.state.user.userName){
@@ -130,21 +102,6 @@ function formatNotes(notes){
   else{
     return notes
   }
-}
-
-function formatCourt(courtNum){
-  return locationDict.value[courtNum]
-}
-
-function visitProfile(userName){
-  store.commit('SET_SELECTED_USERNAME', "Peter_Dinklage3");
-  router.push(`/profile/:userId`); // /${user.value} 
-  window.scrollTo(0, 0);
-}
-
-function returnToOtherProfile(userName){
-  // store.commit('SET_SELECTED_USERNAME', "Peter_Dinklage3");
-  router.push(`/profile/:userId`); // /${user.value} 
 }
 
 </script>
@@ -282,24 +239,11 @@ function returnToOtherProfile(userName){
   background-color: #007BFF;
 
 }
-
 .btn{
     background-color: #4caf50;
     height: 90px;
     width:100%
   }
-
-.outer{
-
-}
-
-.inner{
-
-}
-
-.displayed-court{
-
-}
 
 #loc-btn{
   background-color:#4caf50 !important;
@@ -319,8 +263,6 @@ function returnToOtherProfile(userName){
   margin-bottom:16px;
   margin-top:16px;
 }
-
-
 
 .search-btn {
   height: 100%;

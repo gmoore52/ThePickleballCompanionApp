@@ -1,88 +1,3 @@
-<template>
-  <v-app>
-    <v-container>
-      <v-row>
-        <!-- Main Left Section (Welcome and Events) -->
-        <v-col cols="12" md="12" class="d-flex flex-column big-col">
-          <!-- Profile Box -->
-          <div v-if="store.state.user?.userName !== store.state.selectedUsername" cols="12" md="12" class="pb-3">
-                <v-btn prepend-icon="mdi-arrow-left" class="return-btn" @click="returnToOtherProfile(store.state.selectedUsername)">return</v-btn>
-          </div>
-          <v-card class="pa-4 flex-grow-1 big-container">
-            <v-row>
-              <v-col cols="12" md="4">
-                <v-card class="stats-container">
-
-                <v-card-title class="white--text text-h4 pb-0">Stats</v-card-title>
-                <v-card-subtitle class="white--text text-h6">{{ store.state.selectedUsername }}</v-card-subtitle>
-
-
-                <v-card-title class="white--text">Total Games Played:</v-card-title>
-                <v-card-text class="white--text">{{userStatsAcc.totalGames}}</v-card-text>
-                <v-card-title class="white--text">Total Wins:</v-card-title>
-                <v-card-text class="white--text">{{userStatsAcc.totalWins}}</v-card-text>
-                <v-card-title class="white--text">Total Losses:</v-card-title>
-                <v-card-text class="white--text">{{userStatsAcc.totalLosses}}</v-card-text>
-                <v-card-title class="white--text">Win/Loss Ratio:</v-card-title>
-                <v-card-text class="white--text">{{(userStatsAcc.winLossRatio).toFixed(3)}}</v-card-text>
-                <v-card-title class="white--text">Most Frequented Court:</v-card-title>
-                
-                <v-card-text class="white--text">{{convertLocIdToName(userStatsAcc.mostFrequentLocationID)}}</v-card-text>
-
-                <v-card-title class="white--text">Most Wins With Teammate:</v-card-title>
-                <!-- <v-card-text class="white--text" :v-if="userStatsAcc.mostFrequentTeammateUsername === 'Not enough games played'">{{userStatsAcc.mostFrequentLocationID}}</v-card-text> -->
-                <v-card-text class="d-flex align-center" :v-if="userStatsAcc.mostFrequentTeammateUsername !== 'Not enough games played'">
-                  <!-- <v-card-text class = "white--text">{{userStatsAcc.mostFrequentTeammateUsername}}</v-card-text> -->
-                  <go-to-player-profile-button
-                  v-if="userStatsAcc.mostFrequentTeammateUsername !== ''"
-                  :playerUsername="userStatsAcc.mostFrequentTeammateUsername"
-                  ></go-to-player-profile-button>
-                  <span v-else class="white--text">No teammate data found</span>
-
-                          <!-- <v-img
-                            src="https://static.vecteezy.com/system/resources/previews/046/300/541/non_2x/avatar-user-profile-person-icon-gender-neutral-silhouette-profile-picture-suitable-for-social-media-profiles-icons-screensavers-free-png.png"
-                            max-width="50"
-                            max-height="50"
-                            contain
-                          ></v-img> -->
-                </v-card-text>
-                <v-card-title class="white--text">Most Losses Against Opponent:</v-card-title>
-                <!-- <v-card-text class="white--text" :v-if="userStatsAcc.strongestOpponentUsername === 'No strongest opponent'">{{userStatsAcc.mostFrequentLocationID}}</v-card-text> -->
-                <v-card-text class="d-flex align-center" :v-if="userStatsAcc.strongestOpponentUsername !== 'No strongest opponent'">
-
-                  <go-to-player-profile-button
-                  v-if="userStatsAcc.strongestOpponentUsername !== ''"
-                  :playerUsername="userStatsAcc.strongestOpponentUsername"
-                  ></go-to-player-profile-button>
-                  <span v-else class="white--text">No opponent data found</span>
-                  <!-- <v-card-text class = "white--text">{{userStatsAcc.strongestOpponentUsername}}</v-card-text> -->
-                          <!-- <v-img
-                            src="https://static.vecteezy.com/system/resources/previews/046/300/541/non_2x/avatar-user-profile-person-icon-gender-neutral-silhouette-profile-picture-suitable-for-social-media-profiles-icons-screensavers-free-png.png"
-                            max-width="50"
-                            max-height="50"
-                            contain
-                          ></v-img> -->
-                </v-card-text>
-              </v-card>
-              </v-col>
-
-              <v-col cols="12" md="8" class="pl-1">
-                <v-card class='stats-container chart-container' v-for="(item, index) in userStatsHst">
-
-                <apexchart height="500" :options="JSON.stringify(chartOptionsStats) != '{}' ? chartOptionsStats[index] : chartOptions" :series="item.series"></apexchart>
-<!--                <apexchart height="500" :options="chartOptions" :series="userStatsHst.totalWins.series"></apexchart>-->
-                </v-card>
-              </v-col>
-
-
-            </v-row>
-          </v-card>
-        </v-col>
-      </v-row>
-    </v-container>
-  </v-app>
-</template>
-
 <script setup>
 import {ref, onMounted, watch, computed} from 'vue';
 import { useRouter } from 'vue-router'; // Import useRouter from vue-router
@@ -113,18 +28,9 @@ const userStatsHst = ref({
   totalLosses: {
     series: []
   },
-  // totalGames: {
-  //   series: []
-  // },
   winLossRatio: {
     series: []
   },
-  // mostFreqLocation: {
-  // series: [},
-  // mostFreqTeammate: {
-  // series: [},
-  // strongestOpponent: {
-  // series: [},
   mostLossesToStrongestOpponent: {
     series: []
   }
@@ -151,7 +57,6 @@ const chartOptions = {
     }
   },
   forecolor: "#FFFFFF",
-  // colors: ['#77B6EA'],
   dataLabels: {
     enabled: true,
   },
@@ -257,7 +162,6 @@ const userStatsAcc = ref({
 
 function handleAction(action) {
   selectedImage.value = action.image; // Update the selected image
-  // console.log(`Action selected: ${action.title}`);
 }
 
 function generateChartOptions(stat){
@@ -286,21 +190,15 @@ function generateChartOptions(stat){
     });
   });
 
-  // Use the median as the padding value
-  // let padding = (overallMax-overallMin)/2;
   let padding = 2;
   chartOptionsStats.value[stat]["yaxis"]["min"] = overallMin - padding;
   chartOptionsStats.value[stat]["yaxis"]["max"] = overallMax + padding;
-  // chartOptionsStats.value[stat]["yaxis"]["formatter"] = function(val) {
-  //   return val.toFixed(0);
-  // }
-
 }
 
 async function fetchUserStatsHst(username, stat) {
   try {
     isChartDataLoading.value = true;
-    const json = await fetchData(`/statistics/getUserStatsHst?username=${username}&stat=${stat}`); // add commas here like this ${username},${username}
+    const json = await fetchData(`/statistics/getUserStatsHst?username=${username}&stat=${stat}`); // add commas here like this ${username},${username} to generate stats for more users
     userStatsHst.value[stat]["series"] = json;
     generateChartOptions(stat);
 
@@ -321,20 +219,14 @@ async function fetchUserStatsAcc() {
 }
 
 onMounted(async () => {
-  // put fetch function here (also see the watch function below)
   if (isLoggedIn.value) {
-    // fetchData(``)
     fetchUserStatsAcc();
     for(let stat in userStatsHst.value){
       fetchUserStatsHst(store.state.selectedUsername, stat); // Fetch the user data for the selected profile
-
     }
-    // fetchFriends(); // Fetch the friends of the selected profile
-    // generateDataSeries(null, null, "winLossRatio");
   }
 
   await getCourts();      // Fetch courts data 
-
   inverseLocationDict.value = {};
 
   // Map through the courts to populate dictionaries and ensure camelCase consistency (from original parseData function)
@@ -344,7 +236,6 @@ onMounted(async () => {
   }
 });
 
-// this will be a function that will re-populate the stats page if you navigate there from someone else's page
 watch(
   () => store.state.selectedUsername,
   (newUsername, oldUsername) => {
@@ -365,8 +256,7 @@ const getCourts = async () => {
 }
 
 function returnToOtherProfile(userName){
-  // store.commit('SET_SELECTED_USERNAME', "Peter_Dinklage3");
-  router.push(`/profile/${userName}`); // /${user.value}
+  router.push(`/profile/${userName}`); 
 }
 
 function convertLocIdToName(id) {
@@ -378,20 +268,74 @@ function convertLocIdToName(id) {
   }
 }
 
-
 </script>
+<template>
+  <v-app>
+    <v-container>
+      <v-row>
+        <!-- Main Left Section (Welcome and Events) -->
+        <v-col cols="12" md="12" class="d-flex flex-column big-col">
+          <!-- Profile Box -->
+          <div v-if="store.state.user?.userName !== store.state.selectedUsername" cols="12" md="12" class="pb-3">
+                <v-btn prepend-icon="mdi-arrow-left" class="return-btn" @click="returnToOtherProfile(store.state.selectedUsername)">return</v-btn>
+          </div>
+          <v-card class="pa-4 flex-grow-1 big-container">
+            <v-row>
+              <v-col cols="12" md="4">
+                <v-card class="stats-container">
+
+                <v-card-title class="white--text text-h4 pb-0">Stats</v-card-title>
+                <v-card-subtitle class="white--text text-h6">{{ store.state.selectedUsername }}</v-card-subtitle>
+
+                <v-card-title class="white--text">Total Games Played:</v-card-title>
+                <v-card-text class="white--text">{{userStatsAcc.totalGames}}</v-card-text>
+                <v-card-title class="white--text">Total Wins:</v-card-title>
+                <v-card-text class="white--text">{{userStatsAcc.totalWins}}</v-card-text>
+                <v-card-title class="white--text">Total Losses:</v-card-title>
+                <v-card-text class="white--text">{{userStatsAcc.totalLosses}}</v-card-text>
+                <v-card-title class="white--text">Win/Loss Ratio:</v-card-title>
+                <v-card-text class="white--text">{{(userStatsAcc.winLossRatio).toFixed(3)}}</v-card-text>
+                <v-card-title class="white--text">Most Frequented Court:</v-card-title>
+                
+                <v-card-text class="white--text">{{convertLocIdToName(userStatsAcc.mostFrequentLocationID)}}</v-card-text>
+
+                <v-card-title class="white--text">Most Wins With Teammate:</v-card-title>
+                <v-card-text class="d-flex align-center" :v-if="userStatsAcc.mostFrequentTeammateUsername !== 'Not enough games played'">
+                  <go-to-player-profile-button
+                  v-if="userStatsAcc.mostFrequentTeammateUsername !== ''"
+                  :playerUsername="userStatsAcc.mostFrequentTeammateUsername"
+                  ></go-to-player-profile-button>
+                  <span v-else class="white--text">No teammate data found</span>
+                </v-card-text>
+                <v-card-title class="white--text">Most Losses Against Opponent:</v-card-title>
+                <v-card-text class="d-flex align-center" :v-if="userStatsAcc.strongestOpponentUsername !== 'No strongest opponent'">
+
+                  <go-to-player-profile-button
+                  v-if="userStatsAcc.strongestOpponentUsername !== ''"
+                  :playerUsername="userStatsAcc.strongestOpponentUsername"
+                  ></go-to-player-profile-button>
+                  <span v-else class="white--text">No opponent data found</span>
+                </v-card-text>
+              </v-card>
+              </v-col>
+
+              <v-col cols="12" md="8" class="pl-1">
+                <v-card class='stats-container chart-container' v-for="(item, index) in userStatsHst">
+
+                <apexchart height="500" :options="JSON.stringify(chartOptionsStats) != '{}' ? chartOptionsStats[index] : chartOptions" :series="item.series"></apexchart>
+                </v-card>
+              </v-col>
+            </v-row>
+          </v-card>
+        </v-col>
+      </v-row>
+    </v-container>
+  </v-app>
+</template>
 
 <style scoped>
-/* .v-row{
-  margin: -12px;
-} */
-
 .v-app {
   height: 100vh;
-}
-
-.big-col{
-
 }
 
 .stats-container{
@@ -442,6 +386,5 @@ function convertLocIdToName(id) {
 text.apexcharts-title-text{
   font-size: 123px !important;
 }
-
 
 </style>

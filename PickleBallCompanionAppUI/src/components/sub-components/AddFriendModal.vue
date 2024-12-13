@@ -1,3 +1,38 @@
+<script setup>
+import { ref, defineEmits, defineProps, onMounted } from 'vue';
+import { fetchData } from "@/util/fetchData";
+import UserProfilePopup from './UserProfilePopup.vue';
+import GoToPlayerProfileButton from '@/components/sub-components/GoToPlayerProfileButton.vue';
+
+const dialog = ref(false);
+const userOptions = ref([]);
+const selectedUser = ref(null);
+const selectedUserData = ref({});
+const valid = ref(false);
+const showUserProfileDialog = ref(false);
+
+const props = defineProps({
+  currentUser: String
+});
+
+const emit = defineEmits(['close']);
+
+onMounted(loadUsers);
+
+async function loadUsers() {
+  try {
+    const response = await fetchData('/users/all/users');
+    userOptions.value = response.filter(user => user.userName !== props.currentUser);
+  } catch (error) {
+    console.error("Error fetching users:", error);
+  }
+}
+
+function close() {
+  selectedUser.value = null;
+  emit('close');
+}
+</script>
 <template>
   <v-overlay
     v-model="dialog"
@@ -34,13 +69,11 @@
           hide-details
           clearable
           no-data-text="No username found"
-          @change="selectUser"
         ></v-autocomplete>
       </v-form>
 
       <!-- Card Actions -->
       <div class="friend-btn">
-        <!-- <v-spacer></v-spacer> -->
         <go-to-player-profile-button
           @click="close"
           :playerUsername="selectedUser"
@@ -56,49 +89,6 @@
     />
   </v-overlay>
 </template>
-
-<script setup>
-import { ref, defineEmits, defineProps, onMounted } from 'vue';
-import { fetchData } from "@/util/fetchData";
-import { useRouter } from 'vue-router';
-import UserProfilePopup from './UserProfilePopup.vue';
-import GoToPlayerProfileButton from '@/components/sub-components/GoToPlayerProfileButton.vue';
-
-const dialog = ref(false);
-const userOptions = ref([]);
-const selectedUser = ref(null);
-const selectedUserData = ref({});
-const valid = ref(false);
-const showUserProfileDialog = ref(false);
-
-const props = defineProps({
-  currentUser: String
-});
-
-const emit = defineEmits(['close']);
-const router = useRouter();
-
-onMounted(loadUsers);
-
-async function loadUsers() {
-  try {
-    const response = await fetchData('/users/all/users');
-    userOptions.value = response.filter(user => user.userName !== props.currentUser);
-  } catch (error) {
-    console.error("Error fetching users:", error);
-  }
-}
-
-function selectUser(user) {
-  // console.log("Selected User:", user);
-}
-
-function close() {
-  selectedUser.value = null;
-  emit('close');
-}
-</script>
-
 <style scoped>
 .add-friend-card {
   width: 400px;
@@ -113,5 +103,4 @@ function close() {
   padding-top: 0px;
   padding: 12px;
 }
-
 </style>

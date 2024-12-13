@@ -1,7 +1,5 @@
 <script setup>
-
-import { ref, defineEmits, defineProps, onMounted } from 'vue';
-import { fetchData } from "@/util/fetchData";
+import { defineEmits, defineProps} from 'vue';
 import { formatDateTime } from '@/util/formatDate.js'
 import { useRouter } from 'vue-router'; // Import useRouter from vue-router
 import { useStore } from 'vuex';
@@ -47,7 +45,7 @@ function formatNotes(notes){
 
 function visitProfile(userName){
   store.commit('SET_SELECTED_USERNAME', userName);
-  router.push(`/profile/${userName}`); // /${user.value} 
+  router.push(`/profile/${userName}`); 
 }
 
 </script>
@@ -121,7 +119,6 @@ function visitProfile(userName){
   margin-left: 16px;
   margin-top: 5px;
   margin-bottom: 5px;
-  /* background-color: */
 
 }
 

@@ -1,6 +1,5 @@
 <script setup>
-import { ref, defineEmits, defineProps, onMounted } from 'vue';
-import { useRouter } from 'vue-router';
+import { ref, defineEmits, defineProps} from 'vue';
 import { useStore } from 'vuex';
 import { showAlert } from '@/util/alert'
 import { fetchData } from '@/util/fetchData.js';
@@ -11,7 +10,6 @@ const props = defineProps({
 });
 
 const store = useStore();
-const router = useRouter();
 
 const friendCardImagePath = ref(`/images/${props.friend.userName}.jpg`)
 
@@ -28,7 +26,6 @@ function formatFullName(user){
 
 function handleRequestDeny(otherUsername){
   try {
-      // console.log(`/friends/accept/${store.state.selectedUsername}/${otherUsername}`)
       const response = fetchData(`/friends/reject/${store.state.selectedUsername}/${otherUsername}`,
       {
         method:'POST',
@@ -38,13 +35,11 @@ function handleRequestDeny(otherUsername){
       console.error('Error adding Event:', error);
       showAlert('error', `Friend request not successfully rejected`)
     }
-
-    emit('reload');
+  emit('reload');
 }
 
 function handleRequestConfirm(otherUsername){
   try {
-      // console.log(`/friends/accept/${store.state.selectedUsername}/${otherUsername}`)
       const response = fetchData(`/friends/accept/${store.state.selectedUsername}/${otherUsername}`,
       {
         method:'POST',
@@ -55,11 +50,6 @@ function handleRequestConfirm(otherUsername){
       console.error('Error adding Event:', error);
       showAlert('error', `Friend request not successfully accepted`)
     }
-
-
-  // addFriend(otherUsername)
-  // otherUsername
-
   emit('reload');
 }
 
@@ -73,7 +63,6 @@ function onImageError(){
   <v-col cols="12" class="">
     <v-row class="no-formatting">
     <v-col cols="3" class="img-container">
-      <!-- <img :src="friend.profilerImgLoc"> -->
       <v-img class="profile-pic" :src="friendCardImagePath" 
       aspect-ratio="1"
       cover
@@ -90,18 +79,15 @@ function onImageError(){
       </div>
     </v-col>
     <v-col cols="1">
-        <!-- <v-btn></v-btn> -->
-
+     <!-- Empty col for spacing -->
     </v-col>
     <v-col v-if="isRequest" cols="12" class="btn-container">
       <v-divider></v-divider>
       <v-card-actions class="btn-actions">
       <v-btn @click.stop="handleRequestDeny(friend.userName)">
-        <!-- <template v-slot:prepend> <v-icon color="red"></v-icon> </template>  -->
         Deny
       </v-btn>
       <v-btn @click.stop="handleRequestConfirm(friend.userName)" class="accept-friend-req-btn">
-        <!-- <template v-slot:prepend> <v-icon color="success"></v-icon> </template>  -->
         Confirm
       </v-btn> 
     </v-card-actions>
@@ -109,9 +95,6 @@ function onImageError(){
   </v-row>
   </v-col>
   </v-card>
-
-  <!-- mdi-account-cancel -->
-
 </template>
 <style scoped>
 
@@ -167,7 +150,6 @@ function onImageError(){
   padding: 6px;
   background-color: #42424254;
   border-radius: 8px;
-  /* height: 100px; */
   width: 100%;
 }
 
